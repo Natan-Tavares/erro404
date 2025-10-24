@@ -4,22 +4,30 @@
 
 #include <raylib.h>
 
-typedef struct 
+typedef enum state{
+
+    IDLE = 0,
+    WALK = 1
+
+}state;
+
+typedef struct animation
 {
-    
-    Texture2D texture;
-    Rectangle frame;
-    int frameSpeed;
-    int currentFrame;
-    int framesCounter;
-    int framesQuantity;
-    Vector2 textureQuantityFrames;
+    int first;
+    int last;
+
+    int current;
+    float speed;
+
+    float durationLeft;
+
+    state state;
 
 }animation;
 
-    //função para animar
-void animate(animation *animation);
 
-void changeAnimation(animation *animation,Texture novaTextura,int framesQuantity);
+void UpdateAnimation(animation *animation);
+
+Rectangle GetAnimationFrame(animation *animation,int numframesPerRow);
 
 #endif

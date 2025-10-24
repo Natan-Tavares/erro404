@@ -5,15 +5,15 @@
 #include <sprite.h>
 
 //Função para mover o player, não retorna nada
-void MovePlayer(Sprite *player);
+void MovePlayer(Sprite *self);
 
 //Função para desenhar o player na tela
-void DrawPlayer(Sprite *player);
+void DrawPlayer(Sprite *self,Texture2D textura);
 
 //Função para setar a animação do player
-void SetPlayerAnimation(Sprite *player,States state);
+void SetPlayerAnimation(animation *self,state state);
 
 //Função que muda a animação do player de acordo com seu estado
-void PlayerStatemachine(Sprite *player);
+void PlayerStatemachine(Sprite *self);
 
 #endif
