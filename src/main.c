@@ -21,7 +21,7 @@ int main()
         .last = 6,
         .current = 0,
         .speed = 0.1,
-        .durationLeft = 0.5,
+        .durationLeft = 0.1,
         .state = IDLE
     };
 

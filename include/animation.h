@@ -4,6 +4,7 @@
 
 #include <raylib.h>
 
+//Definições de estados
 typedef enum state{
 
     IDLE = 0,
@@ -11,23 +12,25 @@ typedef enum state{
 
 }state;
 
+//animação, 6 componentes
 typedef struct animation
 {
-    int first;
-    int last;
+    int first; //index do primeiro frame
+    int last; //index do ultimo frame
 
-    int current;
-    float speed;
+    int current; //index do frame atual
+    float speed; //tempo que leva ate o proximo frame(quanto menor mais rapido)
 
-    float durationLeft;
+    float durationLeft; //duração ate o proximo frame(inicialize = speed)
 
-    state state;
+    state state; // animação em execução
 
 }animation;
 
-
+//Função para atualizar a animação
 void UpdateAnimation(animation *animation);
 
+//Função para pegar o espaço no arquivo do frame
 Rectangle GetAnimationFrame(animation *animation,int numframesPerRow);
 
 #endif

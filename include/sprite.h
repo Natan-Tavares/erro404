@@ -5,15 +5,16 @@
 #include <raylib.h>
 #include <animation.h>
 
+//sprite, 5 componentes
 typedef struct Sprite
 {
-    animation animation;
+    animation animation; // componente dos valores da animação
 
-    Vector2 position;
-    Vector2 direction;
-    Vector2 velocity;
+    Vector2 position; // componente da posição x e y do sprite
+    Vector2 direction; // componente da direção x e y do sprite
+    Vector2 velocity; // componente da direção multiplicada pela speed
     
-    float speed;
+    float speed; // componente que armazena a velocidade de movimento
     
 }Sprite;
 

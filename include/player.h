@@ -4,7 +4,7 @@
 
 #include <sprite.h>
 
-//Função para mover o player, não retorna nada
+//Função para mover o player
 void MovePlayer(Sprite *self);
 
 //Função para desenhar o player na tela
