@@ -5,12 +5,18 @@
 #include <raylib.h>
 #include <animation.h>
 
+typedef enum {
+    IDLE = 0, 
+    WALK = 1,
+}States;
+
 typedef struct Sprite
 {
     animation animation;
     Vector2 position;
+    Vector2 direction;
     Rectangle hitBoxRectangle;
-    int xSpriteDirection;
+    States state;
     float speed;
     
     Vector2 velocity;

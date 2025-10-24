@@ -12,15 +12,13 @@ void animate(animation *animation){
 
 			if (animation->currentFrame > (animation->framesQuantity-1)) animation->currentFrame = 0;
 
-			animation->frame.x = (float)animation->currentFrame*(float)animation->texture.width/9;
+			animation->frame.x = (float)animation->currentFrame*(float)animation->texture.width/animation->textureQuantityFrames.x;
 		}
 }
 
-void changeAnimation(animation *animation,char *fileName,int framesQuantity){
+void changeAnimation(animation *animation,Texture novaTextura,int framesQuantity){
 
-    UnloadTexture(animation->texture);
-
-    animation->texture = LoadTexture(fileName);
+    animation->texture = novaTextura;
 
     animation->framesQuantity = framesQuantity;
     animation->currentFrame = 0;

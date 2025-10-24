@@ -13,12 +13,13 @@ typedef struct
     int currentFrame;
     int framesCounter;
     int framesQuantity;
+    Vector2 textureQuantityFrames;
 
 }animation;
 
     //função para animar
 void animate(animation *animation);
 
-void changeAnimation(animation *animation,char *fileName,int framesQuantity);
+void changeAnimation(animation *animation,Texture novaTextura,int framesQuantity);
 
 #endif

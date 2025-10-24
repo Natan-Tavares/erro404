@@ -3,13 +3,19 @@
 #include <player.h>
 #include <animation.h>
 
+/*
+	Não carregue texturas durante a execução do jogo,
+	Carregue as texturas antes de iniciar a janela do jogo 
+	e so aplique as texturas carregas nos campos de textura.
+*/
+
 int main(){
 
+	//definindo valores da janela
 	const int screenWidth = 800;
 	const int screenHeight = 450;
+	const Vector2 windowCenter = {(float)screenWidth/2,(float)screenHeight/2};
 
-	//Iniciando a janela
-	Vector2 windowCenter = {(float)screenWidth/2,(float)screenHeight/2};
 	InitWindow(screenWidth,screenHeight,"main");
 
 	//criando o player e definido suas animações
@@ -28,11 +34,13 @@ int main(){
 	
 	//Definindo defaults
 	player.speed = 2;
-	player.xSpriteDirection = 1;
+	player.direction.x = 1;
 	player.position.x = windowCenter.x;
 	player.position.y = windowCenter.y;
 
 	player.animation.frame = frameRectangle;
+	player.animation.textureQuantityFrames.x = 9;
+
 
 	//Definindo o fps do jogo
 	SetTargetFPS(60);
@@ -56,15 +64,10 @@ int main(){
 
 			DrawFPS(10,10);
 
-			DrawTexturePro(
-				player.animation.texture,
-				(Rectangle){player.animation.frame.x,player.animation.frame.y,player.animation.frame.width * GetPlayerDirection(&player),player.animation.frame.height},
-				(Rectangle){player.position.x,player.position.y,100,100},
-				(Vector2){0,0},
-				0,
-				WHITE
-			);
+			DrawPlayer(&player);
+
 			DrawRectangleRec(collisionTeste,GREEN);
+
 
 		EndDrawing();
 
