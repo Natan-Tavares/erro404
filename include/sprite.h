@@ -18,7 +18,7 @@ typedef struct Sprite
     
 }Sprite;
 
-Rectangle GetSpriteHitbox(Sprite *self);
+Rectangle GetSpriteHitbox(Sprite self,float width,float height);
 
     //Função para atualizar a posição X do sprite
 void applyVelX(Sprite *self);

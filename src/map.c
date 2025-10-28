@@ -70,26 +70,3 @@ void DrawMap(unsigned char *self) {
 }
 
 
-int main(void) {
-
-    unsigned char *map;
-
-    InitWindow(WIDTH, HEIGHT, "mapTeste");
-
-    while (!WindowShouldClose()) {
-
-        unsigned char *map = ReadMap("resources/maps/map.bin");
-
-        BeginDrawing();
-        ClearBackground(SKYBLUE);
-
-        DrawMap(map);
-
-        EndDrawing();
-    }
-
-    free(map);
-    CloseWindow();
-
-    return 0;
-}

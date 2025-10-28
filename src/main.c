@@ -2,12 +2,17 @@
 #include <animation.h>
 #include <player.h>
 #include <sprite.h>
+#include <camera.h>
+
+#define WINDOW_WIDTH 1020
+#define WINDOW_HEIGHT 810
 
 int main()
 {
-    InitWindow(600,400,"main");
+    SetConfigFlags(FLAG_FULLSCREEN_MODE);
+    InitWindow(WINDOW_WIDTH,WINDOW_HEIGHT,"main");
 
-    Texture textura = LoadTexture("resources/soldier.png");
+    Texture textura = LoadTexture("resources/textures/Soldier.png");
 
     Rectangle colisao = (Rectangle){
         .x = 100,
@@ -32,6 +37,13 @@ int main()
         .speed = 2
     };
 
+    Camera2D camera = (Camera2D){
+        .offset = (Vector2){WINDOW_WIDTH/2,WINDOW_HEIGHT/2},
+        .rotation = 0.0,
+        .target = sprite.position,
+        .zoom = 3.0,
+    };
+
     SetTargetFPS(60);
 
     while (!WindowShouldClose())
@@ -49,14 +61,21 @@ int main()
 
         UpdateAnimation(&(sprite.animation));
 
+        if(GetDistanceFromSprite(&camera,sprite) > 25){
+            UpdateCamera2D(&camera,sprite.position);
+        }
+
         BeginDrawing();
 
             ClearBackground(SKYBLUE);
 
-            DrawPlayer(&sprite,textura);
+            BeginMode2D(camera);
 
-            DrawRectangleRec(colisao,GREEN);
+                DrawPlayer(&sprite,textura);
 
+                DrawRectangleRec(colisao,GREEN);
+        
+            EndMode2D();
         EndDrawing();
     }
     

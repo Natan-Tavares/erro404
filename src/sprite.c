@@ -8,13 +8,13 @@
     *Nota: a width e height estão sujeitas a mudança
     e são asssim devido o tamanho de cada frame da animação
 */
-Rectangle GetSpriteHitbox(Sprite *self){
+Rectangle GetSpriteHitbox(Sprite self,float width,float height){
 
     return (Rectangle){
-        .x = self->position.x,
-        .y = self->position.y,
-        .width = 100,
-        .height = 100,
+        .x = self.position.x-(width/2),
+        .y = self.position.y-(height/2),
+        .width = width,
+        .height = height,
     };
 
 }
@@ -37,7 +37,7 @@ void applyVelY(Sprite *self){
 */
 void checkCollisionY(Sprite *self,Rectangle collisionRectangle){
 
-    Rectangle hitbox = GetSpriteHitbox(self);
+    Rectangle hitbox = GetSpriteHitbox(*self,20,25);
 
     if (CheckCollisionRecs(hitbox, collisionRectangle)) {
             
@@ -60,7 +60,7 @@ void checkCollisionY(Sprite *self,Rectangle collisionRectangle){
 */
 void checkCollisionX(Sprite *self,Rectangle collisionRectangle){
 
-    Rectangle hitbox = GetSpriteHitbox(self);
+    Rectangle hitbox = GetSpriteHitbox(*self,20,25);
 
     if (CheckCollisionRecs(hitbox, collisionRectangle)) {
             

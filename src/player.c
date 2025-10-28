@@ -42,11 +42,15 @@ void DrawPlayer(Sprite *self,Texture2D textura){
     Rectangle animationFrame = GetAnimationFrame(&(self->animation),9); 
     animationFrame.width *= self->direction.x;
 
+    Rectangle dest = GetAnimationFrame(&(self->animation),9);
+    dest.x = self->position.x;
+    dest.y = self->position.y;
+
     DrawTexturePro(
 	    textura,
 		animationFrame,
-		GetSpriteHitbox(self),
-		(Vector2){0,0},
+		dest,
+		(Vector2){50,50},
 		0,
 		WHITE
     );
