@@ -9,7 +9,6 @@
     e são asssim devido o tamanho de cada frame da animação
 */
 Rectangle GetSpriteHitbox(Sprite self,float width,float height){
-
     return (Rectangle){
         .x = self.position.x-(width/2),
         .y = self.position.y-(height/2),

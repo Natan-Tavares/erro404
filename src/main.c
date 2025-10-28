@@ -3,13 +3,13 @@
 #include <player.h>
 #include <sprite.h>
 #include <camera.h>
+#include <tilemap.h>
 
 #define WINDOW_WIDTH 1020
 #define WINDOW_HEIGHT 810
 
 int main()
 {
-    SetConfigFlags(FLAG_FULLSCREEN_MODE);
     InitWindow(WINDOW_WIDTH,WINDOW_HEIGHT,"main");
 
     Texture textura = LoadTexture("resources/textures/Soldier.png");
@@ -44,6 +44,8 @@ int main()
         .zoom = 3.0,
     };
 
+    unsigned char *map = ReadMap("resources/maps/map.bin");
+
     SetTargetFPS(60);
 
     while (!WindowShouldClose())
@@ -52,10 +54,10 @@ int main()
         MovePlayer(&sprite);
 
         applyVelX(&sprite);
-        checkCollisionX(&sprite,colisao);
+        CheckTilesCollisionX(&sprite,map);        
 
         applyVelY(&sprite);
-        checkCollisionY(&sprite,colisao);
+        CheckTilesCollisionY(&sprite,map);
 
         PlayerStatemachine(&sprite);
 
@@ -71,15 +73,16 @@ int main()
 
             BeginMode2D(camera);
 
-                DrawPlayer(&sprite,textura);
+                DrawMap(map);
 
-                DrawRectangleRec(colisao,GREEN);
+                DrawPlayer(&sprite,textura);
         
             EndMode2D();
         EndDrawing();
     }
     
     UnloadTexture(textura);
+    free(map);
     
     return 0;
 }
