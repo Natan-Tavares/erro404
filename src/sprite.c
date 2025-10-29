@@ -34,9 +34,7 @@ void applyVelY(Sprite *self){
     o lado em que a sobreposição for maior significa que não esta sorbreposta    
     então ele redefine a posição do sprite tirando a sobreposição
 */
-void checkCollisionY(Sprite *self,Rectangle collisionRectangle){
-
-    Rectangle hitbox = GetSpriteHitbox(*self,20,25);
+void checkCollisionY(Sprite *self,Rectangle hitbox,Rectangle collisionRectangle){
 
     if (CheckCollisionRecs(hitbox, collisionRectangle)) {
             
@@ -57,9 +55,7 @@ void checkCollisionY(Sprite *self,Rectangle collisionRectangle){
     o lado em que a sobreposição for maior significa que não esta sorbreposta
     então ele redefine a posição do sprite tirando a sobreposição
 */
-void checkCollisionX(Sprite *self,Rectangle collisionRectangle){
-
-    Rectangle hitbox = GetSpriteHitbox(*self,20,25);
+void checkCollisionX(Sprite *self,Rectangle hitbox,Rectangle collisionRectangle){
 
     if (CheckCollisionRecs(hitbox, collisionRectangle)) {
             

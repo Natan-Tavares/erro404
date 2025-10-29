@@ -2,7 +2,7 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <sprite.h>
-#include <tilemap.h>
+
 
 /*
     Função para atualizar a velocidade do player de acordo com o input,
@@ -95,14 +95,3 @@ void PlayerStatemachine(Sprite *self){
     if(self->animation.state != newState) SetPlayerAnimation(&(self->animation),newState);
 
     }
-
-Vector2 GetPlayerTile(Sprite *self){
-
-    return (Vector2){
-
-    .x = (int)self->position.x/TILE_SIZE,
-    .y = (int)self->position.y/TILE_SIZE
-
-    };
-
-}

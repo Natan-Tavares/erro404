@@ -6,7 +6,7 @@
 #include <player.h>
 
 /*
-    Função para checar se foi possivel manipular um arquivo;
+    Função para checar se foi possivel manipular um arquivo.
 */
 bool CheckFile(FILE *file){
     if(file){
@@ -17,7 +17,8 @@ bool CheckFile(FILE *file){
 }
 
 /*
-    Função para escrever valores default em um arquivo binario de mapa;
+    Função interna para casos especificos que escrev valores default
+     em um arquivo binario de mapa.
 */
 void WriteMap(const char *fileName) {
 
@@ -40,7 +41,7 @@ void WriteMap(const char *fileName) {
 
 /*
     Função para ler um arquivo em binario que contem os valores de cada tile 
-    de um mapa, passando os valores para uma lista
+    de um mapa, passando os valores para uma lista.
 */
 unsigned char *ReadMap(const char *fileName) {
 
@@ -63,7 +64,7 @@ unsigned char *ReadMap(const char *fileName) {
 }
 
 /*
-    Função para checar o tile de acordo com o seu index
+    Função para checar qual o tile de acordo com o seu index.
 */
 Color CheckTile(unsigned char tile) {
     switch (tile) {
@@ -77,6 +78,7 @@ Color CheckTile(unsigned char tile) {
 
 /*
     Função para desenhar o mapa de acordo com a posição de cada tile na lista
+    e do tamanho do tile.
 */
 void DrawMap(unsigned char *self) {
 
@@ -91,37 +93,71 @@ void DrawMap(unsigned char *self) {
     }
 }
 
+/*
+    Função para pegar os tiles em que o sprite esta em cima,
+    checar se eles são colisiveis, se forem criar um retangulo
+    e gerar colisão entre esse retangulo e o Y do sprite.
+    *Nota: função suscetível a mudança quando os tiles forem definidos,
+    para mudar a forma de checar os tiles colisiveis.
+*/
 void CheckTilesCollisionX(Sprite *sprite, unsigned char *map) {
 
-    Vector2 tile = GetPlayerTile(sprite);
+    Rectangle hitbox = GetSpriteHitbox(*sprite,20,25);
 
-    for(int i = -1;i < 3;i+=2){
-        if(map[(int)(tile.y * MAP_COLS + (tile.x+i))] == 3){
-            Rectangle tileRectangle = (Rectangle){
-                .x = (tile.x+i) * TILE_SIZE,
-                .y = tile.y * TILE_SIZE,
-                .width = TILE_SIZE,
-                .height = TILE_SIZE
-            };
-            checkCollisionX(sprite,tileRectangle);
+    int leftTile = hitbox.x / TILE_SIZE;
+    int rightTile = (hitbox.x + hitbox.width - 1)/TILE_SIZE;
+    int topTile = hitbox.y / TILE_SIZE;
+    int bottomTile = (hitbox.y + hitbox.height - 1) / TILE_SIZE;
 
+    for(int y = topTile; y <= bottomTile; y++){
+        for(int x = leftTile; x <= rightTile; x++){
+
+            if(map[y * MAP_COLS + x] == 3){
+
+                Rectangle tileRectangle = (Rectangle){
+                    .x = x * TILE_SIZE,
+                    .y = y * TILE_SIZE,
+                    .width = TILE_SIZE,
+                    .height = TILE_SIZE
+                };
+
+                checkCollisionX(sprite,hitbox,tileRectangle);
+            }
         }
     }
 }
 
+
+/*
+    Função para pegar os tiles em que o sprite esta em cima,
+    checar se eles são colisiveis, se forem criar um retangulo
+    e gerar colisão entre esse retangulo e o Y do sprite
+    *Nota: função suscetível a mudança quando os tiles forem definidos,
+    para mudar a forma de checar os tiles colisiveis 
+*/
 void CheckTilesCollisionY(Sprite *sprite, unsigned char *map) {
 
-    Vector2 tile = GetPlayerTile(sprite);
+    Rectangle hitbox = GetSpriteHitbox(*sprite,20,25);
 
-    for(int i = -1;i < 3;i+=2){
-        if(map[(int)((tile.y+i) * MAP_COLS + tile.x)] == 3){
-            Rectangle tileRectangle = (Rectangle){
-                .x = tile.x * TILE_SIZE,
-                .y = (tile.y+i) * TILE_SIZE,
-                .width = TILE_SIZE,
-                .height = TILE_SIZE
-            };
-            checkCollisionY(sprite,tileRectangle);
+    int leftTile = hitbox.x / TILE_SIZE;
+    int rightTile = (hitbox.x + hitbox.width - 1)/TILE_SIZE;
+    int topTile = hitbox.y / TILE_SIZE;
+    int bottomTile = (hitbox.y + hitbox.height - 1) / TILE_SIZE;
+
+    for(int y = topTile; y <= bottomTile; y++){
+        for(int x = leftTile; x <= rightTile; x++){
+
+            if(map[y * MAP_COLS + x] == 3){
+
+                Rectangle tileRectangle = (Rectangle){
+                    .x = x * TILE_SIZE,
+                    .y = y * TILE_SIZE,
+                    .width = TILE_SIZE,
+                    .height = TILE_SIZE
+                };
+
+                checkCollisionY(sprite,hitbox,tileRectangle);
+            }
         }
     }
 }

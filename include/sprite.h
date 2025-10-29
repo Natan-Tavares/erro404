@@ -27,9 +27,9 @@ void applyVelX(Sprite *self);
 void applyVelY(Sprite *self);
 
     //Função para impedir a interpolação em Y de um sprite e um retangulo 
-void checkCollisionY(Sprite *self,Rectangle collisionRectangle);
+void checkCollisionY(Sprite *self,Rectangle hitbox,Rectangle collisionRectangle);
 			
     //Função para impedir a interpolação em X de um sprite e um retangulo
-void checkCollisionX(Sprite *self,Rectangle collisionRectangle);
+void checkCollisionX(Sprite *self,Rectangle hitbox,Rectangle collisionRectangle);
 
 #endif

@@ -3,6 +3,7 @@
         "raylib.h": "c",
         "animation.h": "c",
         "stdlib.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "player.h": "c"
     }
 }

@@ -15,6 +15,4 @@ void SetPlayerAnimation(animation *self,state state);
 //Função que muda a animação do player de acordo com seu estado
 void PlayerStatemachine(Sprite *self);
 
-Vector2 GetPlayerTile(Sprite *self);
-
 #endif
