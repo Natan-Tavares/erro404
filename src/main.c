@@ -4,15 +4,32 @@
 #include <sprite.h>
 #include <camera.h>
 #include <tilemap.h>
+#include <string.h>
 
-#define WINDOW_WIDTH 1020
-#define WINDOW_HEIGHT 810
+#define WINDOW_WIDTH 1200
+#define WINDOW_HEIGHT 900
+
+typedef enum GameScreen { MENU, GAME, EXIT } GameScreen;
 
 int main()
 {
-    InitWindow(WINDOW_WIDTH,WINDOW_HEIGHT,"main");
+    InitWindow(WINDOW_WIDTH,WINDOW_HEIGHT,"Erro.404");
+	SetTargetFPS(60);
+
+	GameScreen currentScreen = MENU;
+
+	const char *titleText = "erro.404";
+    int titleLength = strlen(titleText);
+    int lettersShown = 0;
+    float timer = 0.0f;
+    float letterDelay = 0.2f;
+
+	const char *menuOptions[] = { "START", "EXIT" };
+    int selected = 0;
+    int totalOptions = 2;
 
     Texture textura = LoadTexture("resources/textures/Soldier.png");
+	unsigned char *map = ReadMap("resources/maps/map.bin");
 
     Rectangle colisao = (Rectangle){
         .x = 100,
@@ -44,45 +61,98 @@ int main()
         .zoom = 3.0,
     };
 
-    unsigned char *map = ReadMap("resources/maps/map.bin");
-
-    SetTargetFPS(60);
-
     while (!WindowShouldClose())
     {
 
-        MovePlayer(&sprite);
+		if (currentScreen == MENU) {
+            timer += GetFrameTime();
+            if (timer >= letterDelay && lettersShown < titleLength) {
+                lettersShown++;
+                timer = 0.0f;
+            }
 
-        applyVelX(&sprite);
-        CheckTilesCollisionX(&sprite,map);        
+			if (IsKeyPressed(KEY_W)) selected--;
+            if (IsKeyPressed(KEY_S)) selected++;
+            if (selected < 0) selected = totalOptions - 1;
+            if (selected >= totalOptions) selected = 0;
 
-        applyVelY(&sprite);
-        CheckTilesCollisionY(&sprite,map);
+            if (IsKeyPressed(KEY_ENTER)) {
+                if (selected == 0) currentScreen = GAME;
+                else if (selected == 1) currentScreen = EXIT;
+            }
+        }
+        else if (currentScreen == GAME) {
+            if (IsKeyPressed(KEY_ESCAPE)) currentScreen = MENU;
 
-        PlayerStatemachine(&sprite);
+			MovePlayer(&sprite);
 
-        UpdateAnimation(&(sprite.animation));
+			applyVelX(&sprite);
+			CheckTilesCollisionX(&sprite,map);        
 
-        if(GetDistanceFromSprite(&camera,sprite) > 25){
-            UpdateCamera2D(&camera,sprite.position);
+			applyVelY(&sprite);
+			CheckTilesCollisionY(&sprite,map);
+
+			PlayerStatemachine(&sprite);
+
+			UpdateAnimation(&(sprite.animation));
+
+			if(GetDistanceFromSprite(&camera,sprite) > 25){
+				UpdateCamera2D(&camera,sprite.position);
+			}
+		}	
+		else if (currentScreen == EXIT) {
+            break;
         }
 
         BeginDrawing();
+        ClearBackground(BLACK);
 
-            ClearBackground(SKYBLUE);
+		if (currentScreen == MENU) {
 
-            BeginMode2D(camera);
+			int titleFontSize = 60;
+			int titleWidth = MeasureText(TextSubtext(titleText, 0, lettersShown), titleFontSize);
+			int titleX = (WINDOW_WIDTH - titleWidth) / 2;
+			int titleY = WINDOW_HEIGHT / 3;
 
-                DrawMap(map);
+			DrawText(TextSubtext(titleText, 0, lettersShown), titleX, titleY, titleFontSize, RAYWHITE);
 
-                DrawPlayer(&sprite,textura);
-        
-            EndMode2D();
-        EndDrawing();
+			int optionFontSize = 30;
+			int spacing = 50;
+
+			int menuStartY = titleY + 150;
+			for (int i = 0; i < totalOptions; i++) {
+				int textWidth = MeasureText(menuOptions[i], optionFontSize);
+				int optionX = (WINDOW_WIDTH - textWidth) / 2;
+				int optionY = menuStartY + i * spacing;
+
+				Color color = (i == selected) ? WHITE : DARKGRAY;
+				DrawText(menuOptions[i], optionX, optionY, optionFontSize, color);
+
+				if (i == selected) {
+					DrawText(">", optionX - 40, optionY, optionFontSize, WHITE);
+				}
+			}
+
+			const char *hint = "Use W/S para navegar | ENTER para confirmar";
+			int hintFontSize = 18;
+			int hintWidth = MeasureText(hint, hintFontSize);
+			DrawText(hint, (WINDOW_WIDTH - hintWidth) / 2, WINDOW_HEIGHT - 100, hintFontSize, DARKGRAY);
+		}
+        else if (currentScreen == GAME) {
+
+				BeginMode2D(camera);
+
+					DrawMap(map);
+
+					DrawPlayer(&sprite,textura);
+			
+				EndMode2D();
+		}
+		EndDrawing();
     }
     
     UnloadTexture(textura);
     free(map);
-    
+    CloseWindow();
     return 0;
 }
