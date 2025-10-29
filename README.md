@@ -10,7 +10,11 @@ Jogo narrativo que explora glitches, memórias corrompidas e a sensação de est
 
 2. No local de instalação vá ate `instalação/raylib/w64devkit/bin`, copie o caminho e adicione no seu PATH do windows.
 
-3. No local de instalação vá ate `instalação/raylib/raylib/src`, então rode no terminal`make PLATFORM=PLATFORM_DESKTOP`
+3. No local de instalação vá ate `instalação/raylib/raylib/src`, então rode:
+
+```bash
+ make PLATFORM=PLATFORM_DESKTOP 
+ ```
 
 4. Copie o arquivo `libraylib.a` para dentro da pasta lib do projeto
 
