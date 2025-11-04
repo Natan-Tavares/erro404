@@ -1,4 +1,8 @@
+//bibliotecas externas
 #include <raylib.h>
+#include <stdlib.h>
+
+//bibliotecas internas
 #include <animation.h>
 #include <player.h>
 #include <sprite.h>

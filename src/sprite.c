@@ -1,5 +1,4 @@
 #include <raylib.h>
-#include <animation.h>
 #include "sprite.h"
 
 /*
@@ -29,44 +28,49 @@ void applyVelY(Sprite *self){
 }
 
 /*
-    Função para impedir a interpolação em Y de um sprite e um retangulo 
+    Função para checar a interpolação em Y de um sprite e um retangulo 
     É feito o calculo da sobreposição dos dois lados de cada retangulo
-    o lado em que a sobreposição for maior significa que não esta sorbreposta    
-    então ele redefine a posição do sprite tirando a sobreposição
+    o lado em que a sobreposição for maior significa que não esta sobreposta    
+    retornando o outro lado
 */
-void checkCollisionY(Sprite *self,Rectangle hitbox,Rectangle collisionRectangle){
+float CheckCollisionY(Rectangle hitbox,Rectangle collisionRectangle){
 
     if (CheckCollisionRecs(hitbox, collisionRectangle)) {
             
-            float overlapUp  = (hitbox.y + hitbox.height) - collisionRectangle.y;
-            float overlapDown = (collisionRectangle.y + collisionRectangle.height) - hitbox.y;
+        float overlapUp  = (hitbox.y + hitbox.height) - collisionRectangle.y;
+        float overlapDown = (collisionRectangle.y + collisionRectangle.height) - hitbox.y;
 
-            if (overlapUp < overlapDown) {
-                self->position.y -= overlapUp;
-            } else {
-                self->position.y += overlapDown;
-            }
+        if (overlapUp < overlapDown) {
+            return -overlapUp;
+        } else {
+            return overlapDown;
         }
     }
+
+    return 0;
+
+}
 
 /*
-    Função para impedir a interpolação em X de um sprite e um retangulo
-    É feito o calculo da sobreposição dos dois lados de cada retangulo
-    o lado em que a sobreposição for maior significa que não esta sorbreposta
-    então ele redefine a posição do sprite tirando a sobreposição
+    Função para checar a interpolação em X de um sprite e um retangulo
+    A função calcula a sobreposição dos dois lados de cada retangulo
+    o lado em que a sobreposição for maior significa que não esta sobreposta
+    retornando a sobreposição do outro lado
 */
-void checkCollisionX(Sprite *self,Rectangle hitbox,Rectangle collisionRectangle){
+float CheckCollisionX(Rectangle hitbox,Rectangle collisionRectangle){
 
     if (CheckCollisionRecs(hitbox, collisionRectangle)) {
             
-            float overlapLeft  = (hitbox.x + hitbox.width) - collisionRectangle.x;
-            float overlapRight = (collisionRectangle.x + collisionRectangle.width) - hitbox.x;
+        float overlapLeft  = (hitbox.x + hitbox.width) - collisionRectangle.x;
+        float overlapRight = (collisionRectangle.x + collisionRectangle.width) - hitbox.x;
 
-            if (overlapLeft < overlapRight) {
-                self->position.x -= overlapLeft;
-            } else {
-                self->position.x += overlapRight;
-            }
-
+        if (overlapLeft < overlapRight) {
+            return -overlapLeft;
+        } else {
+            return overlapRight;
         }
     }
+
+    return 0;
+
+}

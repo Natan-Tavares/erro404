@@ -2,8 +2,6 @@
 #define TILEMAP_H
 
 #include <raylib.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <sprite.h>
 
 #define HEIGHT 512 //altura dos mapas(recomendado que seja divisivel pelo tamanho do tile)
@@ -12,6 +10,15 @@
 
 #define MAP_ROWS (HEIGHT / TILE_SIZE) //Quantidade de linhas dos mapas
 #define MAP_COLS (WIDTH / TILE_SIZE) //Quantidade de colunas dos mapas
+
+typedef struct 
+{
+    int left;
+    int right;
+    int top;
+    int bottom;
+
+}TileBounds;
 
 //Função para ler o arquivo de um mapa
 unsigned char *ReadMap(const char *fileName);

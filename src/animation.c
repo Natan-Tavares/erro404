@@ -1,5 +1,5 @@
-#include <raylib.h>    
 #include "animation.h"
+#include <raylib.h>    
 
 /*
     Função para atualizar o frame da animação

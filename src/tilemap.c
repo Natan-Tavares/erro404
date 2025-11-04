@@ -1,9 +1,11 @@
 #include "tilemap.h"
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <raylib.h>
+
 #include <sprite.h>
-#include <player.h>
 
 /*
     Função para checar se foi possivel manipular um arquivo.
@@ -17,8 +19,9 @@ bool CheckFile(FILE *file){
 }
 
 /*
-    Função interna para casos especificos que escrev valores default
-     em um arquivo binario de mapa.
+    Função interna para casos especificos que escreve valores default
+    em um arquivo binario de mapa.
+    *Nota: Função especifica para testes de desenvolvimento(Não use guilherme)
 */
 void WriteMap(const char *fileName) {
 
@@ -77,6 +80,31 @@ Color CheckTile(unsigned char tile) {
 }
 
 /*
+    Função para criar um retangulo de acordo com a posição do tile
+*/
+Rectangle CreateTileRectangle(Vector2 position){
+
+    return (Rectangle){
+        .x = position.x *TILE_SIZE,
+        .y = position.y *TILE_SIZE,
+        .width = TILE_SIZE,
+        .height = TILE_SIZE
+    };
+}
+
+TileBounds GetTileBounds(Rectangle hitbox){
+
+    return (TileBounds){
+
+        .left = hitbox.x / TILE_SIZE,
+        .bottom = (hitbox.y + hitbox.height - 1) / TILE_SIZE,
+        .right = (hitbox.x + hitbox.width - 1)/TILE_SIZE,
+        .top = hitbox.y / TILE_SIZE
+    };
+
+}
+
+/*
     Função para desenhar o mapa de acordo com a posição de cada tile na lista
     e do tamanho do tile.
 */
@@ -103,28 +131,26 @@ void DrawMap(unsigned char *self) {
 void CheckTilesCollisionX(Sprite *sprite, unsigned char *map) {
 
     Rectangle hitbox = GetSpriteHitbox(*sprite,20,25);
+    TileBounds tiles = GetTileBounds(hitbox);
 
-    int leftTile = hitbox.x / TILE_SIZE;
-    int rightTile = (hitbox.x + hitbox.width - 1)/TILE_SIZE;
-    int topTile = hitbox.y / TILE_SIZE;
-    int bottomTile = (hitbox.y + hitbox.height - 1) / TILE_SIZE;
+    float totalPush = 0;
 
-    for(int y = topTile; y <= bottomTile; y++){
-        for(int x = leftTile; x <= rightTile; x++){
+    for(int y = tiles.top; y <= tiles.bottom; y++){
+        for(int x = tiles.left; x <= tiles.right; x++){
 
             if(map[y * MAP_COLS + x] == 3){
 
-                Rectangle tileRectangle = (Rectangle){
-                    .x = x * TILE_SIZE,
-                    .y = y * TILE_SIZE,
-                    .width = TILE_SIZE,
-                    .height = TILE_SIZE
-                };
+                Rectangle tileRectangle = CreateTileRectangle((Vector2){x,y});
 
-                checkCollisionX(sprite,hitbox,tileRectangle);
+                float push = CheckCollisionX(hitbox,tileRectangle);
+
+                if (fabs(push) > fabs(totalPush)) totalPush = push;
+        
             }
         }
     }
+
+    sprite->position.x += totalPush;
 }
 
 
@@ -138,26 +164,25 @@ void CheckTilesCollisionX(Sprite *sprite, unsigned char *map) {
 void CheckTilesCollisionY(Sprite *sprite, unsigned char *map) {
 
     Rectangle hitbox = GetSpriteHitbox(*sprite,20,25);
+    TileBounds tiles = GetTileBounds(hitbox);
 
-    int leftTile = hitbox.x / TILE_SIZE;
-    int rightTile = (hitbox.x + hitbox.width - 1)/TILE_SIZE;
-    int topTile = hitbox.y / TILE_SIZE;
-    int bottomTile = (hitbox.y + hitbox.height - 1) / TILE_SIZE;
+    float totalPush = 0;
 
-    for(int y = topTile; y <= bottomTile; y++){
-        for(int x = leftTile; x <= rightTile; x++){
+    for(int y = tiles.top; y <= tiles.bottom; y++){
+        for(int x = tiles.left; x <= tiles.right; x++){
 
             if(map[y * MAP_COLS + x] == 3){
 
-                Rectangle tileRectangle = (Rectangle){
-                    .x = x * TILE_SIZE,
-                    .y = y * TILE_SIZE,
-                    .width = TILE_SIZE,
-                    .height = TILE_SIZE
-                };
+                Rectangle tileRectangle = CreateTileRectangle((Vector2){x,y});
 
-                checkCollisionY(sprite,hitbox,tileRectangle);
+                float push = CheckCollisionY(hitbox,tileRectangle);
+
+                if (fabs(push) > fabs(totalPush)) totalPush = push;
+
             }
         }
     }
+    
+    sprite->position.y += totalPush;
+
 }
