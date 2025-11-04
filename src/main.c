@@ -1,6 +1,7 @@
 //bibliotecas externas
 #include <raylib.h>
 #include <stdlib.h>
+#include <string.h>
 
 //bibliotecas internas
 #include <animation.h>
@@ -8,7 +9,6 @@
 #include <sprite.h>
 #include <camera.h>
 #include <tilemap.h>
-#include <string.h>
 
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 900
@@ -35,11 +35,11 @@ int main()
     Texture textura = LoadTexture("resources/textures/Soldier.png");
 	unsigned char *map = ReadMap("resources/maps/map.bin");
 
-    Rectangle colisao = (Rectangle){
-        .x = 100,
-        .y = 100,
-        .width = 30,
-        .height = 30
+    Rectangle npc = (Rectangle){
+        .x = 0,
+        .y = 0,
+        .width = 16,
+        .height = 16
     };
 
     animation idle = {
@@ -149,7 +149,9 @@ int main()
 					DrawMap(map);
 
 					DrawPlayer(&sprite,textura);
-			
+
+                    DrawRectangleRec(npc,GREEN);
+
 				EndMode2D();
 		}
 		EndDrawing();
