@@ -9,6 +9,7 @@
 #include <sprite.h>
 #include <camera.h>
 #include <tilemap.h>
+#include <npc.h>
 
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 900
@@ -32,15 +33,10 @@ int main()
     int selected = 0;
     int totalOptions = 2;
 
+    int numberOfNpcs;
     Texture textura = LoadTexture("resources/textures/Soldier.png");
 	unsigned char *map = ReadMap("resources/maps/map.bin");
-
-    Rectangle npc = (Rectangle){
-        .x = 0,
-        .y = 0,
-        .width = 16,
-        .height = 16
-    };
+    npc *npcsList = LoadNpcs("resources/npcs.txt",&numberOfNpcs);
 
     animation idle = {
         .first = 0,
@@ -144,21 +140,28 @@ int main()
 		}
         else if (currentScreen == GAME) {
 
+            int titleFontSize = 60;
+			int titleWidth = MeasureText(TextSubtext(titleText, 0, lettersShown), titleFontSize);
+            int titleX = (WINDOW_WIDTH - titleWidth) / 2;
+			int titleY = WINDOW_HEIGHT / 3;
+
 				BeginMode2D(camera);
 
 					DrawMap(map);
 
 					DrawPlayer(&sprite,textura);
 
-                    DrawRectangleRec(npc,GREEN);
+                    DrawNpcs(npcsList,numberOfNpcs);
 
 				EndMode2D();
 		}
+
 		EndDrawing();
     }
     
     UnloadTexture(textura);
     free(map);
+    free(npcsList);
     CloseWindow();
     return 0;
 }

@@ -1,7 +1,17 @@
-
-
-# npc 1
-
-id:1
+#
+id:0
 position:0,0
 
+#
+id:1
+position:32,32
+dialogue:Pedrinhooooo <3!
+dialogue:peace!
+
+#
+id:2
+position:16,16
+
+#
+id:3
+position:48,48
