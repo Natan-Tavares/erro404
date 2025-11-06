@@ -25,13 +25,13 @@ void UpdateCamera2D(Camera2D *self,Vector2 target){
     Função que faz pitagoras entre a distancia x e y do sprite e da camera para retornar
     a menor distancia entre os dois
 */
-float GetDistanceFromSprite(Camera2D *self,Sprite sprite){
+float GetDistance(Vector2 a,Vector2 b){
 
     Vector2 dist = (Vector2){
-        .x = (float)abs((int)(self->target.x - sprite.position.x)),
-        .y = (float)abs((int)(self->target.y - sprite.position.y))
+        .x = (float)abs((a.x - b.x)),
+        .y = (float)abs((a.y - b.y))
     };
 
-    return (float)sqrt((pow(dist.x,2.0)) + (pow(dist.y,2.0)));
+    return sqrtf((dist.x * dist.x) + (dist.y * dist.y));
 
 }

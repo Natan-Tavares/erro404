@@ -3,24 +3,45 @@
 #define NPC_H
 
 #include <raylib.h>
+#include <sprite.h>
 #include <animation.h>
 
 #define MAX_LINE_LENGTH 512
 #define MAX_DIALOGUE 10
 #define MAX_DIALOGUE_LENGTH 512
 
+ typedef struct GameManager GameManager;
+
+typedef struct 
+{
+
+    char text[MAX_DIALOGUE_LENGTH];
+    int visibleChars;
+    bool activate;
+    
+}Dialogue;
+
 typedef struct 
 {
     int id;
     animation animation;
     Vector2 position;
-    char dialogues[MAX_DIALOGUE][MAX_DIALOGUE_LENGTH];
+    Dialogue dialogues[MAX_DIALOGUE];
     int dialogueCount;
+    bool isPlayerNearby;
 
-}npc;
+}Npc;
 
-npc *LoadNpcs(const char* filename,int *numberOfNpcs);
+Npc *LoadNpcs(const char* filename,int *numberOfNpcs);
 
-void DrawNpcs(npc *npcList,int numberOfNpcs);
+void DrawNpcs(Npc *npcList,int numberOfNpcs);
+
+void CheckNpcProximities(Npc *npcList, int numberOfNpcs, Sprite player, float detectionRange);
+
+void TalkToNpc(Npc *npc,GameManager *game);
+
+void UpdateActivateDialogue(GameManager *game);
+
+void DrawActivateDialogue(GameManager *game);
 
 #endif

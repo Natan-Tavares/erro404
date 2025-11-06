@@ -5,6 +5,9 @@
         "stdlib.h": "c",
         "stdio.h": "c",
         "player.h": "c",
-        "tilemap.h": "c"
+        "tilemap.h": "c",
+        "game.h": "c",
+        "string.h": "c",
+        "sprite.h": "c"
     }
 }

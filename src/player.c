@@ -2,6 +2,8 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <sprite.h>
+#include <npc.h>
+#include <game.h>
 
 
 /*
@@ -95,3 +97,18 @@ void PlayerStatemachine(Sprite *self){
     if(self->animation.state != newState) SetPlayerAnimation(&(self->animation),newState);
 
     }
+
+void InteractWithNpc(Npc *npcList, int numberOfNpcs,GameManager *game){
+
+    for(int i = 0;i < numberOfNpcs;i++){
+        if(npcList[i].isPlayerNearby && IsKeyDown(KEY_E)){
+            if(game->activeNpc == &npcList[i]){
+
+            }else{
+                TalkToNpc(&npcList[i],game);
+            }
+            break;
+        }
+    }
+
+}

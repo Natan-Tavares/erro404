@@ -9,6 +9,6 @@
 void UpdateCamera2D(Camera2D *self,Vector2 target);
 
 //Diz a menor distancia do sprite ate a camera
-float GetDistanceFromSprite(Camera2D *self,Sprite sprite);
+float GetDistance(Vector2 a,Vector2 b);
 
 #endif

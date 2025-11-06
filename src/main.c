@@ -4,6 +4,7 @@
 #include <string.h>
 
 //bibliotecas internas
+#include <game.h>
 #include <animation.h>
 #include <player.h>
 #include <sprite.h>
@@ -11,32 +12,27 @@
 #include <tilemap.h>
 #include <npc.h>
 
-#define WINDOW_WIDTH 1200
-#define WINDOW_HEIGHT 900
-
-typedef enum GameScreen { MENU, GAME, EXIT } GameScreen;
-
 int main()
 {
-    InitWindow(WINDOW_WIDTH,WINDOW_HEIGHT,"Erro.404");
+    InitWindow(WINDOW_WIDTH,WINDOW_HEIGHT,"ERR0 404");
 	SetTargetFPS(60);
-
-	GameScreen currentScreen = MENU;
-
-	const char *titleText = "erro.404";
-    int titleLength = strlen(titleText);
-    int lettersShown = 0;
-    float timer = 0.0f;
-    float letterDelay = 0.2f;
-
-	const char *menuOptions[] = { "START", "EXIT" };
-    int selected = 0;
-    int totalOptions = 2;
 
     int numberOfNpcs;
     Texture textura = LoadTexture("resources/textures/Soldier.png");
 	unsigned char *map = ReadMap("resources/maps/map.bin");
-    npc *npcsList = LoadNpcs("resources/npcs.txt",&numberOfNpcs);
+    Npc *npcsList = LoadNpcs("resources/npcs.txt",&numberOfNpcs);
+
+    GameManager game = (GameManager){
+
+        .currentScreen = MENU,
+        .menu = (Menu){
+            .titleText = "ERRO 404",
+            .lettersShown = 0,
+            .selected = 0,
+            .totalOptions = 2,
+
+        },
+    };
 
     animation idle = {
         .first = 0,
@@ -64,25 +60,12 @@ int main()
     while (!WindowShouldClose())
     {
 
-		if (currentScreen == MENU) {
-            timer += GetFrameTime();
-            if (timer >= letterDelay && lettersShown < titleLength) {
-                lettersShown++;
-                timer = 0.0f;
-            }
+		if (game.currentScreen == MENU) {
+            UpdateMenu(&game);
 
-			if (IsKeyPressed(KEY_W)) selected--;
-            if (IsKeyPressed(KEY_S)) selected++;
-            if (selected < 0) selected = totalOptions - 1;
-            if (selected >= totalOptions) selected = 0;
-
-            if (IsKeyPressed(KEY_ENTER)) {
-                if (selected == 0) currentScreen = GAME;
-                else if (selected == 1) currentScreen = EXIT;
-            }
         }
-        else if (currentScreen == GAME) {
-            if (IsKeyPressed(KEY_ESCAPE)) currentScreen = MENU;
+        else if (game.currentScreen == GAME) {
+            if (IsKeyPressed(KEY_C)) game.currentScreen = MENU;
 
 			MovePlayer(&sprite);
 
@@ -96,64 +79,39 @@ int main()
 
 			UpdateAnimation(&(sprite.animation));
 
-			if(GetDistanceFromSprite(&camera,sprite) > 25){
+			if(GetDistance(camera.target,sprite.position) > 25){
 				UpdateCamera2D(&camera,sprite.position);
 			}
+
+            CheckNpcProximities(npcsList,numberOfNpcs,sprite,60.0);
+
+            InteractWithNpc(npcsList,numberOfNpcs,&game);
+
+            UpdateActivateDialogue(&game);
+
 		}	
-		else if (currentScreen == EXIT) {
+		else if (game.currentScreen == EXIT) {
             break;
         }
 
         BeginDrawing();
         ClearBackground(BLACK);
 
-		if (currentScreen == MENU) {
-
-			int titleFontSize = 60;
-			int titleWidth = MeasureText(TextSubtext(titleText, 0, lettersShown), titleFontSize);
-			int titleX = (WINDOW_WIDTH - titleWidth) / 2;
-			int titleY = WINDOW_HEIGHT / 3;
-
-			DrawText(TextSubtext(titleText, 0, lettersShown), titleX, titleY, titleFontSize, RAYWHITE);
-
-			int optionFontSize = 30;
-			int spacing = 50;
-
-			int menuStartY = titleY + 150;
-			for (int i = 0; i < totalOptions; i++) {
-				int textWidth = MeasureText(menuOptions[i], optionFontSize);
-				int optionX = (WINDOW_WIDTH - textWidth) / 2;
-				int optionY = menuStartY + i * spacing;
-
-				Color color = (i == selected) ? WHITE : DARKGRAY;
-				DrawText(menuOptions[i], optionX, optionY, optionFontSize, color);
-
-				if (i == selected) {
-					DrawText(">", optionX - 40, optionY, optionFontSize, WHITE);
-				}
-			}
-
-			const char *hint = "Use W/S para navegar | ENTER para confirmar";
-			int hintFontSize = 18;
-			int hintWidth = MeasureText(hint, hintFontSize);
-			DrawText(hint, (WINDOW_WIDTH - hintWidth) / 2, WINDOW_HEIGHT - 100, hintFontSize, DARKGRAY);
+		if (game.currentScreen == MENU) {
+            DrawMenu(&game);
 		}
-        else if (currentScreen == GAME) {
+        else if (game.currentScreen == GAME) {
+			BeginMode2D(camera);
 
-            int titleFontSize = 60;
-			int titleWidth = MeasureText(TextSubtext(titleText, 0, lettersShown), titleFontSize);
-            int titleX = (WINDOW_WIDTH - titleWidth) / 2;
-			int titleY = WINDOW_HEIGHT / 3;
+				DrawMap(map);
 
-				BeginMode2D(camera);
+				DrawPlayer(&sprite,textura);
 
-					DrawMap(map);
+                DrawNpcs(npcsList,numberOfNpcs);
 
-					DrawPlayer(&sprite,textura);
+                DrawActivateDialogue(&game);
 
-                    DrawNpcs(npcsList,numberOfNpcs);
-
-				EndMode2D();
+			EndMode2D();
 		}
 
 		EndDrawing();

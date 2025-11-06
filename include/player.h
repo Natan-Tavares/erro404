@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <sprite.h>
+#include <npc.h>
 
 //Função para mover o player
 void MovePlayer(Sprite *self);
@@ -14,5 +15,7 @@ void SetPlayerAnimation(animation *self,state state);
 
 //Função que muda a animação do player de acordo com seu estado
 void PlayerStatemachine(Sprite *self);
+
+void InteractWithNpc(Npc *npcList, int numberOfNpcs,GameManager *game);
 
 #endif
