@@ -8,6 +8,12 @@
 #include <string.h>
 #include <raylib.h>
 
+/*
+    conta o numero de npcs em um arquivo, passado o arquivo para leitura
+    le cada linha e se ela começar com um # soma +1 a quantidade de npcs.
+    Nota: cada # é um npc é possivel se escrever coisas dps do # mas mantenha
+    um # por npc.
+*/
 int CountNpcs(FILE *file){
 
     char line[MAX_LINE_LENGTH];
@@ -24,7 +30,10 @@ int CountNpcs(FILE *file){
 
 }
 
-void ReadNpcs(Npc *npcs,FILE *file){
+/*
+
+*/
+void ReadNpcs(Npc *npcList,FILE *file){
 
     char line[MAX_LINE_LENGTH];
 
@@ -39,21 +48,21 @@ void ReadNpcs(Npc *npcs,FILE *file){
 
         if(!strncmp(line,"id:",3)){
             index++;
-            npcs[index].dialogueCount = 0;
-            npcs[index].id = atoi(line+3);
+            npcList[index].dialogueCount = 0;
+            npcList[index].id = atoi(line+3);
 
         }else if(!strncmp(line,"position:",9)){
-            sscanf(line+9,"%f,%f",&npcs[index].position.x,&npcs[index].position.y);
+            sscanf(line+9,"%f,%f",&npcList[index].position.x,&npcList[index].position.y);
 
         }else if(!strncmp(line,"dialogue:",9)){
             const char *dialogueText = line + 9;
-            if (dialogueText[0] == '\0') continue;
+            if (dialogueText[0] == '\0') continue; //checa se pegou uma linha vazia
 
-            int currentDialogue = npcs[index].dialogueCount;
-            strncpy(npcs[index].dialogues[currentDialogue].text,dialogueText, MAX_DIALOGUE_LENGTH - 1);
+            int currentDialogue = npcList[index].dialogueCount;
+            strncpy(npcList[index].dialogues[currentDialogue].text,dialogueText, MAX_DIALOGUE_LENGTH - 1);
 
-            npcs[index].dialogues[currentDialogue].text[MAX_DIALOGUE_LENGTH - 1] = '\0';
-            npcs[index].dialogueCount++; 
+            npcList[index].dialogues[currentDialogue].text[MAX_DIALOGUE_LENGTH - 1] = '\0';
+            npcList[index].dialogueCount++; 
         }
 
     }
