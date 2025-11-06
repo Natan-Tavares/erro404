@@ -1,17 +1,17 @@
-#
-id:0
-position:0,0
 
 #
-id:1
+id:0
 position:32,32
-dialogue:Pedrinhooooo <3!
+dialogue:Pedrinhooooo inteligente amo todos os dialogos que ele escreve\nque homem <3!
 dialogue:peace!
 
 #
-id:2
-position:16,16
+id:1
+position:100,100
 
 #
-id:3
-position:48,48
+id:2
+position:200,200
+dialogue:eu amo rolas
+dialogue:amo todas elas
+dialogue:que medo

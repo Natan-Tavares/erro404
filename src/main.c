@@ -1,6 +1,7 @@
 //bibliotecas externas
 #include <raylib.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 //bibliotecas internas
@@ -17,10 +18,8 @@ int main()
     InitWindow(WINDOW_WIDTH,WINDOW_HEIGHT,"ERR0 404");
 	SetTargetFPS(60);
 
-    int numberOfNpcs;
     Texture textura = LoadTexture("resources/textures/Soldier.png");
 	unsigned char *map = ReadMap("resources/maps/map.bin");
-    Npc *npcsList = LoadNpcs("resources/npcs.txt",&numberOfNpcs);
 
     GameManager game = (GameManager){
 
@@ -32,7 +31,13 @@ int main()
             .totalOptions = 2,
 
         },
+        .activeNpc = NULL,
+        .activeDialogueindex = 0,
+        .isDialogueActive = false,
+
     };
+
+    Npc *npcList = LoadNpcs("resources/npcs.txt",&game.numberOfNpcs);
 
     animation idle = {
         .first = 0,
@@ -83,11 +88,11 @@ int main()
 				UpdateCamera2D(&camera,sprite.position);
 			}
 
-            CheckNpcProximities(npcsList,numberOfNpcs,sprite,60.0);
+            CheckNpcProximities(npcList,sprite,game);
 
-            InteractWithNpc(npcsList,numberOfNpcs,&game);
+            InteractWithNpc(npcList,&game);
 
-            UpdateActivateDialogue(&game);
+            UpdateActiveDialogue(&game);
 
 		}	
 		else if (game.currentScreen == EXIT) {
@@ -107,19 +112,20 @@ int main()
 
 				DrawPlayer(&sprite,textura);
 
-                DrawNpcs(npcsList,numberOfNpcs);
-
-                DrawActivateDialogue(&game);
+                DrawNpcs(npcList,game);
 
 			EndMode2D();
-		}
+
+            DrawActiveDialogue(&game);
+		
+        }
 
 		EndDrawing();
     }
     
     UnloadTexture(textura);
     free(map);
-    free(npcsList);
+    free(npcList);
     CloseWindow();
     return 0;
 }

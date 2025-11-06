@@ -4,19 +4,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <raylib.h>
+#include <game.h>
 
 #include <sprite.h>
-
-/*
-    Função para checar se foi possivel manipular um arquivo.
-*/
-bool CheckFile(FILE *file){
-    if(file){
-        return true;
-    }
-    perror("Erro No arquivo:");
-    return false;
-}
 
 /*
     Função interna para casos especificos que escreve valores default

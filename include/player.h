@@ -16,6 +16,7 @@ void SetPlayerAnimation(animation *self,state state);
 //Função que muda a animação do player de acordo com seu estado
 void PlayerStatemachine(Sprite *self);
 
-void InteractWithNpc(Npc *npcList, int numberOfNpcs,GameManager *game);
+//Função de interagir com o Npc
+void InteractWithNpc(Npc *npcList,GameManager *gameManager);
 
 #endif

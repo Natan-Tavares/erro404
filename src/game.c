@@ -1,7 +1,19 @@
 #include "game.h"
 
+#include <stdio.h>
 #include <raylib.h>
 #include <string.h>
+
+/*
+    Função para checar se foi possivel manipular um arquivo.
+*/
+bool CheckFile(FILE *file){
+    if(file){
+        return true;
+    }
+    perror("Erro No arquivo:");
+    return false;
+}
 
 void UpdateMenu(GameManager *game){
 	

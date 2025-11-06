@@ -96,19 +96,33 @@ void PlayerStatemachine(Sprite *self){
 
     if(self->animation.state != newState) SetPlayerAnimation(&(self->animation),newState);
 
-    }
+}
 
-void InteractWithNpc(Npc *npcList, int numberOfNpcs,GameManager *game){
+/*
+    Função que checa se o local que o npc passado esta, é o mesmo em que o 
+    npc ativo do jogo esta. 
+*/
+bool CheckActiveNpc(Npc *npcToCheck,GameManager gameManager){
 
-    for(int i = 0;i < numberOfNpcs;i++){
-        if(npcList[i].isPlayerNearby && IsKeyDown(KEY_E)){
-            if(game->activeNpc == &npcList[i]){
+    if(npcToCheck != gameManager.activeNpc) return false;
 
-            }else{
-                TalkToNpc(&npcList[i],game);
-            }
-            break;
+    return true;
+
+}
+
+/*
+    Função que faz o player interagir com os npcs, ele passa por toda lista de npcs
+    checando cada um, o player estiver perto do npc e apertar o botão de interação,
+    checa se ele ja esta interagindo com esse npc que ele esta proximo, e executa 
+    ou não a função de falar com o npc. 
+*/
+void InteractWithNpc(Npc *npcList,GameManager *gameManager){
+
+    for(int i = 0;i < gameManager->numberOfNpcs;i++){
+
+        if(npcList[i].isPlayerNearby && IsKeyPressed(KEY_E)){
+            if(!CheckActiveNpc(&npcList[i],*gameManager)) TalkToNpc(&npcList[i],gameManager);
         }
-    }
 
+    }
 }

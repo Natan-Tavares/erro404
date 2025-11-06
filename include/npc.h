@@ -10,7 +10,7 @@
 #define MAX_DIALOGUE 10
 #define MAX_DIALOGUE_LENGTH 512
 
- typedef struct GameManager GameManager;
+typedef struct GameManager GameManager;
 
 typedef struct 
 {
@@ -34,14 +34,14 @@ typedef struct
 
 Npc *LoadNpcs(const char* filename,int *numberOfNpcs);
 
-void DrawNpcs(Npc *npcList,int numberOfNpcs);
+void DrawNpcs(Npc *npcList,GameManager GameManager);
 
-void CheckNpcProximities(Npc *npcList, int numberOfNpcs, Sprite player, float detectionRange);
+void CheckNpcProximities(Npc *npcList, Sprite player,GameManager gameManager);
 
 void TalkToNpc(Npc *npc,GameManager *game);
 
-void UpdateActivateDialogue(GameManager *game);
+void UpdateActiveDialogue(GameManager *game);
 
-void DrawActivateDialogue(GameManager *game);
+void DrawActiveDialogue(GameManager *game);
 
 #endif
