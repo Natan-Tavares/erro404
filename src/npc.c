@@ -147,7 +147,6 @@ void StartNpcDilogue(Npc *npc,int dialogueIndex,GameManager *gameManager){
 
     gameManager->activeNpc = npc;
     gameManager->activeDialogueindex = dialogueIndex;
-    gameManager->dialogueDelay = 0.2f;
     gameManager->justPressedInteract = true;
 
     Dialogue *activeDialogue = &(gameManager->activeNpc->dialogues[gameManager->activeDialogueindex]);
@@ -176,54 +175,69 @@ void StopNpcDialogue(GameManager *gameManager){
 
 }
 
-void UpdateActiveDialogue(GameManager *game){
-    if(!game->activeNpc) return;
-
+void UpdateVisibleChars(Dialogue *activeDialogue,float lettersDelay){
     static float timer = 0;
-    float lettersDelay = 0.5;
+    int textLen = strlen(activeDialogue->text);
 
-    if(game->justPressedInteract){
-        game->justPressedInteract = false;
-        return;
-    }
-
-    Dialogue *activeDialogue = &(game->activeNpc->dialogues[game->activeDialogueindex]);
-    
-    if(!activeDialogue->activate){
-        game->activeNpc = NULL; 
-        return;
-    } 
-
-    int textLen = (int)strlen(activeDialogue->text);
     timer += GetFrameTime();
-
     if(timer >= lettersDelay && activeDialogue->visibleChars < textLen){
         activeDialogue->visibleChars++;
-    }
+        timer = 0;
 
-    if(activeDialogue->visibleChars >= textLen && IsKeyPressed(KEY_E)){
-        if(game->activeDialogueindex + 1 < game->activeNpc->dialogueCount){
-
-            activeDialogue->activate = false;
-            StartNpcDilogue(game->activeNpc,game->activeDialogueindex +1,game);
-            return;
-        } else {
-            StopNpcDialogue(game);
-            return;
-        }
-    }
-
-    if(activeDialogue->visibleChars < textLen && IsKeyPressed(KEY_E) && !game->justPressedInteract){
-        activeDialogue->visibleChars = textLen;
     }
 }
 
-void DrawActiveDialogue(GameManager *game){
-    
-    if(!game->activeNpc) return;
+void GoToNextDialogue(GameManager *gameManager,Dialogue *activeDialogue){
 
-    Dialogue *activeDialogue = &(game->activeNpc->dialogues[game->activeDialogueindex]);
-    if( !activeDialogue->activate) return;
+    int textLen = strlen(activeDialogue->text);
+
+    if(activeDialogue->visibleChars >= textLen && IsKeyPressed(KEY_E)){
+        if(gameManager->activeDialogueindex + 1 < gameManager->activeNpc->dialogueCount){
+            activeDialogue->activate = false;
+            StartNpcDilogue(gameManager->activeNpc,gameManager->activeDialogueindex +1,gameManager); //atualiza os valores do dialogo do npc
+            return;
+        
+        } else {
+            StopNpcDialogue(gameManager);
+            return;
+
+        }
+    
+    }   
+}
+
+void JumpDialogue(Dialogue *activeDialogue){
+    int textLen = strlen(activeDialogue->text);
+
+    if(activeDialogue->visibleChars < textLen && IsKeyPressed(KEY_E)){
+        activeDialogue->visibleChars = textLen;
+    }    
+}
+
+void UpdateActiveDialogue(GameManager *gameManager){
+    if(!gameManager->activeNpc) return; //Caso não tenha nenhum npc ativo ele não atualiza
+
+    if(CheckJustInteract(gameManager)) return; //Se ele tiver acabado de interagir não atualiza o dialogo
+
+    Dialogue *activeDialogue = &(gameManager->activeNpc->dialogues[gameManager->activeDialogueindex]);
+    
+    if(!activeDialogue->activate){
+        gameManager->activeNpc = NULL;
+        return; //se o dialogo ativo não estiver realmente ativo, retira o npc de npcAtivo e retorna
+    } 
+
+    UpdateVisibleChars(activeDialogue,0.05);
+
+    GoToNextDialogue(gameManager,activeDialogue);
+
+    JumpDialogue(activeDialogue);
+}
+
+void DrawActiveDialogue(GameManager *gameManager){    
+    if(!gameManager->activeNpc) return;
+
+    Dialogue *activeDialogue = &(gameManager->activeNpc->dialogues[gameManager->activeDialogueindex]);
+    if( !activeDialogue->activate) return; //Caso o dialogo não esteja ativo a função não faz nada
 
     DrawRectangle(50,400,700,150,Fade(BLACK,0.8));
 

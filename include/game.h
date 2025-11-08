@@ -44,6 +44,8 @@ typedef struct GameManager
 
 bool CheckFile(FILE *file);
 
+bool CheckJustInteract(GameManager *self);
+
 void UpdateMenu(GameManager *game);
 
 void DrawMenu(GameManager *game);

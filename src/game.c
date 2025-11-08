@@ -15,6 +15,14 @@ bool CheckFile(FILE *file){
     return false;
 }
 
+bool CheckJustInteract(GameManager *self){
+	if(self->justPressedInteract){
+		self->justPressedInteract = false;
+		return true;
+	}
+	return false;
+}
+
 void UpdateMenu(GameManager *game){
 	
     int titleLength = strlen(game->menu.titleText);

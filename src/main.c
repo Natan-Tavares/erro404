@@ -31,6 +31,7 @@ int main()
             .totalOptions = 2,
 
         },
+        .dialogueDelay = 0.2f,
         .activeNpc = NULL,
         .activeDialogueindex = 0,
         .isDialogueActive = false,
@@ -68,8 +69,7 @@ int main()
 		if (game.currentScreen == MENU) {
             UpdateMenu(&game);
 
-        }
-        else if (game.currentScreen == GAME) {
+        }else if (game.currentScreen == GAME) {
             if (IsKeyPressed(KEY_C)) game.currentScreen = MENU;
 
 			MovePlayer(&sprite);
@@ -94,35 +94,34 @@ int main()
 
             UpdateActiveDialogue(&game);
 
-		}	
-		else if (game.currentScreen == EXIT) {
+		}else if (game.currentScreen == EXIT) {
             break;
         }
 
         BeginDrawing();
-        ClearBackground(BLACK);
+            ClearBackground(BLACK);
 
-		if (game.currentScreen == MENU) {
-            DrawMenu(&game);
-		}
-        else if (game.currentScreen == GAME) {
-			BeginMode2D(camera);
+		    if (game.currentScreen == MENU) {
+                DrawMenu(&game);
+    		}
+            else if (game.currentScreen == GAME) {
+		    	BeginMode2D(camera);
 
-				DrawMap(map);
+			    	DrawMap(map);
 
-				DrawPlayer(&sprite,textura);
+				    DrawPlayer(&sprite,textura);
 
-                DrawNpcs(npcList,game.numberOfNpcs);
+                    DrawNpcs(npcList,game.numberOfNpcs);
 
-			EndMode2D();
+			    EndMode2D();
 
-            DrawActiveDialogue(&game);
+                DrawActiveDialogue(&game);
 		
-        }
+            }
 
 		EndDrawing();
     }
-    
+
     UnloadTexture(textura);
     free(map);
     free(npcList);
