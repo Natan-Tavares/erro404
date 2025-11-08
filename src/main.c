@@ -88,7 +88,7 @@ int main()
 				UpdateCamera2D(&camera,sprite.position);
 			}
 
-            CheckNpcProximities(npcList,sprite,game);
+            CheckAllNpcProximities(npcList,sprite,game);
 
             InteractWithNpc(npcList,&game);
 
@@ -112,7 +112,7 @@ int main()
 
 				DrawPlayer(&sprite,textura);
 
-                DrawNpcs(npcList,game);
+                DrawNpcs(npcList,game.numberOfNpcs);
 
 			EndMode2D();
 

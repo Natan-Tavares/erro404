@@ -30,40 +30,65 @@ int CountNpcs(FILE *file){
 
 }
 
+void replaceEscapedNewlines(char *text) {
+    char *src = text;
+    char *dst = text;
+
+    while (*src) {
+        if (src[0] == '\\' && src[1] == 'n') {
+            *dst++ = '\n';
+            src += 2;
+        } else {
+            *dst++ = *src++;
+        }
+    }
+
+    *dst = '\0';
+}
+
+void fillNpcValues(Npc *npc,char *line){
+
+    if(!strncmp(line,"id:",3)){
+        npc->dialogueCount = 0;
+        npc->id = atoi(line+3);
+        
+    }else if(!strncmp(line,"position:",9)){
+        sscanf(line+9,"%f,%f",&(npc->position.x),&(npc->position.y));
+
+    }else if(!strncmp(line,"dialogue:",9)){
+        const char *dialogueText = line + 9;
+
+        int currentDialogue = npc->dialogueCount;
+        strncpy(npc->dialogues[currentDialogue].text,dialogueText, MAX_DIALOGUE_LENGTH - 1);
+
+        npc->dialogues[currentDialogue].text[MAX_DIALOGUE_LENGTH - 1] = '\0';
+
+        replaceEscapedNewlines(npc->dialogues[currentDialogue].text);
+
+        npc->dialogueCount++; 
+    }
+
+}
+
 /*
 
 */
 void ReadNpcs(Npc *npcList,FILE *file){
 
     char line[MAX_LINE_LENGTH];
-
     int index = -1;
+
     while(fgets(line,sizeof(line),file))
     {
-        line[strcspn(line, "\r\n")] = '\0';
+        if(line[0] == '#'){
+          index++;
+          continue;  
+        } 
 
-        if(line[0] == '#' || strlen(line) == 0) continue;
+        if(strlen(line) == 0) continue; //checa se a linha esta vazia
+        line[strcspn(line, "\n")] = '\0'; //retira o ultimo \n da string da linha
 
-        line[strcspn(line, "\n")] = '\0';
-
-        if(!strncmp(line,"id:",3)){
-            index++;
-            npcList[index].dialogueCount = 0;
-            npcList[index].id = atoi(line+3);
-
-        }else if(!strncmp(line,"position:",9)){
-            sscanf(line+9,"%f,%f",&npcList[index].position.x,&npcList[index].position.y);
-
-        }else if(!strncmp(line,"dialogue:",9)){
-            const char *dialogueText = line + 9;
-            if (dialogueText[0] == '\0') continue; //checa se pegou uma linha vazia
-
-            int currentDialogue = npcList[index].dialogueCount;
-            strncpy(npcList[index].dialogues[currentDialogue].text,dialogueText, MAX_DIALOGUE_LENGTH - 1);
-
-            npcList[index].dialogues[currentDialogue].text[MAX_DIALOGUE_LENGTH - 1] = '\0';
-            npcList[index].dialogueCount++; 
-        }
+        fillNpcValues(&npcList[index],line); //preenche os valores do npc de acordo com a linha passada
 
     }
 
@@ -76,19 +101,19 @@ Npc *LoadNpcs(const char* filename,int *numberOfNpcs){
 
     if(!CheckFile(file)) return NULL;
 
-    *numberOfNpcs = CountNpcs(file);
+    *numberOfNpcs = CountNpcs(file); //conta o numero de npcs
 
     Npc *npcs = malloc(sizeof(Npc) * (*numberOfNpcs));
 
-    ReadNpcs(npcs,file);
+    ReadNpcs(npcs,file); //le o arquivo preenchendo os npcs  na lista
 
     fclose(file);
     return npcs;
 }
 
-void DrawNpcs(Npc *npcList,GameManager gameManager){
+void DrawNpcs(Npc *npcList,int numberOfNpcs){
 
-    for(int i = 0;i < gameManager.numberOfNpcs;i++){
+    for(int i = 0;i < numberOfNpcs;i++){
         Color color = npcList[i].isPlayerNearby ? YELLOW : GREEN;
 
         DrawRectangle(
@@ -110,7 +135,7 @@ void UpdateNpcProximity(Npc *npc,Sprite player, float detectionRange) {
 
 }
 
-void CheckNpcProximities(Npc *npcList, Sprite player,GameManager gameManager){
+void CheckAllNpcProximities(Npc *npcList, Sprite player,GameManager gameManager){
     for (int i = 0; i < gameManager.numberOfNpcs; i++) {
         UpdateNpcProximity(&npcList[i], player, 60);
 
@@ -129,7 +154,6 @@ void StartNpcDilogue(Npc *npc,int dialogueIndex,GameManager *gameManager){
     activeDialogue->visibleChars = 0;
     activeDialogue->activate = true;
     
-
 }
 
 void TalkToNpc(Npc *npc,GameManager *game){

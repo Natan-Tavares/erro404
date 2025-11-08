@@ -34,9 +34,9 @@ typedef struct
 
 Npc *LoadNpcs(const char* filename,int *numberOfNpcs);
 
-void DrawNpcs(Npc *npcList,GameManager GameManager);
+void DrawNpcs(Npc *npcList,int numberOfNpcs);
 
-void CheckNpcProximities(Npc *npcList, Sprite player,GameManager gameManager);
+void CheckAllNpcProximities(Npc *npcList, Sprite player,GameManager gameManager);
 
 void TalkToNpc(Npc *npc,GameManager *game);
 
