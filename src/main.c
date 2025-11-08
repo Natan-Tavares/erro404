@@ -31,7 +31,6 @@ int main()
             .totalOptions = 2,
 
         },
-        .dialogueDelay = 0.2f,
         .activeNpc = NULL,
         .activeDialogueindex = 0,
         .isDialogueActive = false,

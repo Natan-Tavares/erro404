@@ -28,7 +28,7 @@ void applyVelY(Sprite *self){
 }
 
 /*
-    Função para checar a interpolação em Y de um sprite e um retangulo 
+    Função para checar a sobreposição em Y de um sprite e um retangulo 
     É feito o calculo da sobreposição dos dois lados de cada retangulo
     o lado em que a sobreposição for maior significa que não esta sobreposta    
     retornando o outro lado
@@ -52,7 +52,7 @@ float CheckCollisionY(Rectangle hitbox,Rectangle collisionRectangle){
 }
 
 /*
-    Função para checar a interpolação em X de um sprite e um retangulo
+    Função para checar a sobreposição em X de um sprite e um retangulo
     A função calcula a sobreposição dos dois lados de cada retangulo
     o lado em que a sobreposição for maior significa que não esta sobreposta
     retornando a sobreposição do outro lado

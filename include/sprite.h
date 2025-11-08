@@ -26,10 +26,10 @@ void applyVelX(Sprite *self);
     //Função para atualizar a posição Y do sprite
 void applyVelY(Sprite *self);
 
-    //Função para checar a interpolação em Y de um sprite e um retangulo 
+    //Função para checar a sobreposição em Y de um sprite e um retangulo 
 float CheckCollisionY(Rectangle hitbox,Rectangle collisionRectangle);
 			
-    //Função para checar a interpolação em X de um sprite e um retangulo
+    //Função para checar a sobreposição em X de um sprite e um retangulo
 float CheckCollisionX(Rectangle hitbox,Rectangle collisionRectangle);
 
 #endif

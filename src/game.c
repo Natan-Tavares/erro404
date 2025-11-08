@@ -2,7 +2,30 @@
 
 #include <stdio.h>
 #include <raylib.h>
+#include <math.h>
 #include <string.h>
+
+/*
+    Função para aproximar um valor inicial de um final usando um fator
+*/
+float lerp(float start, float end, float t) {
+    return start + (end - start) * t;
+}
+
+/*
+    Função que faz pitagoras entre a distancia x e y de dois vetores para retornar
+    a menor distancia entre os dois
+*/
+float GetDistance(Vector2 a,Vector2 b){
+
+    Vector2 dist = (Vector2){
+        .x = (float)abs((a.x - b.x)),
+        .y = (float)abs((a.y - b.y))
+    };
+
+    return sqrtf((dist.x * dist.x) + (dist.y * dist.y));
+
+}
 
 /*
     Função para checar se foi possivel manipular um arquivo.
@@ -15,6 +38,9 @@ bool CheckFile(FILE *file){
     return false;
 }
 
+/*
+	Função para checar se o player acabou de interagir com alguma coisa.
+*/
 bool CheckJustInteract(GameManager *self){
 	if(self->justPressedInteract){
 		self->justPressedInteract = false;
@@ -23,28 +49,39 @@ bool CheckJustInteract(GameManager *self){
 	return false;
 }
 
-void UpdateMenu(GameManager *game){
+/*
+    Atualiza os caracteres ativos do dialogo passado de acordo com o delay
+    de cada letra.
+    *Nota: Faz a animação de letras aparecendo na tela.
+*/
+void UpdateVisibleChars(char *text,int *visibleChars,float lettersDelay){
+    static float timer = 0;
+    int textLen = strlen(text);
+
+    timer += GetFrameTime();
+    if(timer >= lettersDelay && *visibleChars < textLen){
+        (*visibleChars)++;
+        timer = 0;
+
+    }
+}
+
+void UpdateMenu(GameManager *gameManager){
 	
-    int titleLength = strlen(game->menu.titleText);
-    static float timer = 0.0f;
-    float letterDelay = 0.2f;
+    int titleLength = strlen(gameManager->menu.titleText);
 
 	const char *menuOptions[] = { "START", "EXIT" };
 
-    timer += GetFrameTime();
-    if (timer >= letterDelay && game->menu.lettersShown < titleLength) {
-        game->menu.lettersShown++;
-        timer = 0.0f;
-    }
+	UpdateVisibleChars(gameManager->menu.titleText,&(gameManager->menu.lettersShown),0.5);
 
-	if (IsKeyPressed(KEY_W)) game->menu.selected--;
-    if (IsKeyPressed(KEY_S)) game->menu.selected++;
-    if (game->menu.selected < 0) game->menu.selected = game->menu.totalOptions - 1;
-    if (game->menu.selected >= game->menu.totalOptions) game->menu.selected = 0;
+	if (IsKeyPressed(KEY_W)) gameManager->menu.selected--;
+    if (IsKeyPressed(KEY_S)) gameManager->menu.selected++;
+    if (gameManager->menu.selected < 0) gameManager->menu.selected = gameManager->menu.totalOptions - 1;
+    if (gameManager->menu.selected >= gameManager->menu.totalOptions) gameManager->menu.selected = 0;	
 
     if (IsKeyPressed(KEY_ENTER)) {
-        if (game->menu.selected == 0) game->currentScreen = GAME;
-        else if (game->menu.selected == 1) game->currentScreen = EXIT;
+        if (gameManager->menu.selected == 0) gameManager->currentScreen = GAME;
+        else if (gameManager->menu.selected == 1) gameManager->currentScreen = EXIT;
     }
 
 }
