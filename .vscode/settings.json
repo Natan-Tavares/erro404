@@ -8,6 +8,7 @@
         "tilemap.h": "c",
         "game.h": "c",
         "string.h": "c",
-        "sprite.h": "c"
+        "sprite.h": "c",
+        "npc.h": "c"
     }
 }

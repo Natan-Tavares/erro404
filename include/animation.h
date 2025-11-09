@@ -4,6 +4,8 @@
 
 #include <raylib.h>
 
+typedef struct Sprite Sprite;
+
 //Definições de estados
 typedef enum state{
 
@@ -31,6 +33,6 @@ typedef struct animation
 void UpdateAnimation(animation *animation);
 
 //Função para pegar o espaço no arquivo do frame
-Rectangle GetAnimationFrame(animation *animation,int numframesPerRow);
+Rectangle GetAnimationFrame(Sprite sprite,Vector2 numFramesPerAxle);
 
 #endif

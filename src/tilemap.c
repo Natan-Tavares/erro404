@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <raylib.h>
+#include <object.h>
 #include <game.h>
 
 #include <sprite.h>
@@ -118,9 +119,9 @@ void DrawMap(unsigned char *self) {
     *Nota: função suscetível a mudança quando os tiles forem definidos,
     para mudar a forma de checar os tiles colisiveis.
 */
-void CheckTilesCollisionX(Sprite *sprite, unsigned char *map) {
+void CheckTilesCollisionX(Object *object, unsigned char *map) {
 
-    Rectangle hitbox = GetSpriteHitbox(*sprite,20,25);
+    Rectangle hitbox = GetObjectHitbox(*object,20,25);
     TileBounds tiles = GetTileBounds(hitbox);
 
     float totalPush = 0;
@@ -140,7 +141,7 @@ void CheckTilesCollisionX(Sprite *sprite, unsigned char *map) {
         }
     }
 
-    sprite->position.x += totalPush;
+    object->position.x += totalPush;
 }
 
 
@@ -151,9 +152,9 @@ void CheckTilesCollisionX(Sprite *sprite, unsigned char *map) {
     *Nota: função suscetível a mudança quando os tiles forem definidos,
     para mudar a forma de checar os tiles colisiveis 
 */
-void CheckTilesCollisionY(Sprite *sprite, unsigned char *map) {
+void CheckTilesCollisionY(Object *object, unsigned char *map) {
 
-    Rectangle hitbox = GetSpriteHitbox(*sprite,20,25);
+    Rectangle hitbox = GetObjectHitbox(*object,20,25);
     TileBounds tiles = GetTileBounds(hitbox);
 
     float totalPush = 0;
@@ -173,6 +174,6 @@ void CheckTilesCollisionY(Sprite *sprite, unsigned char *map) {
         }
     }
     
-    sprite->position.y += totalPush;
+    object->position.y += totalPush;
 
 }

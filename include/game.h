@@ -34,6 +34,8 @@ typedef struct GameManager
     Menu menu; //armazena os valores do menu do jogo
 
     int numberOfNpcs; //Componente que armazena a quantidade de npcs no mapa
+    int numberOfItemEntitys; //Componente que armazena a quantidade de entidades de items no mapa
+
     Npc *activeNpc; //Componente que armazena qual npc esta ativo 
 
     int activeDialogueindex; //Componente que armazena qual dialogo do npc ativo esta ativo
@@ -43,6 +45,8 @@ typedef struct GameManager
 
 }GameManager;
 
+
+void replaceEscapedNewlines(char *text);
 
     //Função para fazer interpolação linear de dois valores
 float lerp(float start, float end, float t);

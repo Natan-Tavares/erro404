@@ -12,13 +12,13 @@
 #include <camera.h>
 #include <tilemap.h>
 #include <npc.h>
+#include <item.h>
 
 int main()
 {
     InitWindow(WINDOW_WIDTH,WINDOW_HEIGHT,"ERR0 404");
 	SetTargetFPS(60);
 
-    Texture textura = LoadTexture("resources/textures/Soldier.png");
 	unsigned char *map = ReadMap("resources/maps/map.bin");
 
     GameManager game = (GameManager){
@@ -38,6 +38,7 @@ int main()
     };
 
     Npc *npcList = LoadNpcs("resources/npcs.txt",&game.numberOfNpcs);
+    ItemEntity *ItemEntitylist = LoadItems("resources/items.txt",&game.numberOfItemEntitys);
 
     animation idle = {
         .first = 0,
@@ -48,19 +49,27 @@ int main()
         .state = IDLE
     };
 
-    Sprite sprite = (Sprite){
-        .animation = idle,
-        .position = (Vector2){.x = 0, .y = 0},
-        .direction = (Vector2){1,0},
-        .speed = 2
+    Player player = (Player){
+        .object = (Object){
+            .position = (Vector2){0,0},
+            .direction = (Vector2){1,1},
+            .speed = 2.0,
+        },
+        .sprite = (Sprite){
+            .texture = LoadTexture("resources/textures/Soldier.png"),
+            .animation = idle,        
+        },
+
     };
 
     Camera2D camera = (Camera2D){
         .offset = (Vector2){WINDOW_WIDTH/2,WINDOW_HEIGHT/2},
         .rotation = 0.0,
-        .target = sprite.position,
+        .target = player.object.position,
         .zoom = 3.0,
     };
+
+    InitInventory(&player.inventory);
 
     while (!WindowShouldClose())
     {
@@ -71,23 +80,27 @@ int main()
         }else if (game.currentScreen == GAME) {
             if (IsKeyPressed(KEY_C)) game.currentScreen = MENU;
 
-			MovePlayer(&sprite);
+			MovePlayer(&player);
 
-			applyVelX(&sprite);
-			CheckTilesCollisionX(&sprite,map);        
+			applyVelX(&(player.object));
+			CheckTilesCollisionX(&(player.object),map);        
 
-			applyVelY(&sprite);
-			CheckTilesCollisionY(&sprite,map);
+			applyVelY(&(player.object));
+			CheckTilesCollisionY(&(player.object),map);
 
-			PlayerStatemachine(&sprite);
+			PlayerStatemachine(&player);
 
-			UpdateAnimation(&(sprite.animation));
+			UpdateAnimation(&(player.sprite.animation));
 
-			if(GetDistance(camera.target,sprite.position) > 25){
-				UpdateCamera2D(&camera,sprite.position);
+            UpdateItemEntity(ItemEntitylist,game.numberOfItemEntitys,&player);
+
+            UpdateItemsAnimation();
+
+			if(GetDistance(camera.target,player.object.position) > 25){
+				UpdateCamera2D(&camera,player.object.position);
 			}
 
-            CheckAllNpcProximities(npcList,sprite,game);
+            CheckAllNpcProximities(npcList,player,game);
 
             InteractWithNpc(npcList,&game);
 
@@ -108,22 +121,27 @@ int main()
 
 			    	DrawMap(map);
 
-				    DrawPlayer(&sprite,textura);
+				    DrawPlayer(&player);
 
                     DrawNpcs(npcList,game.numberOfNpcs);
+
+                    DrawItemEntityList(ItemEntitylist,game.numberOfItemEntitys);
 
 			    EndMode2D();
 
                 DrawActiveDialogue(&game);
 		
+                DrawInventory(&player.inventory,(Vector2){100,100});
             }
 
 		EndDrawing();
     }
 
-    UnloadTexture(textura);
+    UnloadTexture(player.sprite.texture);
     free(map);
     free(npcList);
+    FreeItemCatalog();
+    free(ItemEntitylist);
     CloseWindow();
     return 0;
 }

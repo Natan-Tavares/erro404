@@ -11,6 +11,7 @@
 #define MAX_DIALOGUE_LENGTH 512 //Numero maximo de caracteres que um dialogo de npc pode ter
 
 typedef struct GameManager GameManager; //Definindo a struct do gerenciador do jogo que foi declarada em outro scopo 
+typedef struct Player Player;
 
 //Dialogo,3 componentes
 typedef struct 
@@ -41,7 +42,7 @@ Npc *LoadNpcs(const char* filename,int *numberOfNpcs);
 void DrawNpcs(Npc *npcList,int numberOfNpcs);
 
 //Checa as proximidades de todos os npcs na lista passada na função
-void CheckAllNpcProximities(Npc *npcList, Sprite player,GameManager gameManager);
+void CheckAllNpcProximities(Npc *npcList,Player player,GameManager gameManager);
 
 //Função para checar se o npc tem dialogos
 void TalkToNpc(Npc *npc,GameManager *game);

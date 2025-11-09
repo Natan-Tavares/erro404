@@ -5,18 +5,17 @@
 #include <npc.h>
 #include <game.h>
 
-
 /*
     Função para atualizar a velocidade do player de acordo com o input,
     multiplicando a direção do input pela speed do sprite
 */
-void MovePlayer(Sprite *self){
+void MovePlayer(Player *self){
 
     float xDirection = (int)IsKeyDown(KEY_D) - (int)IsKeyDown(KEY_A);
     float yDirection = (int)IsKeyDown(KEY_S) - (int)IsKeyDown(KEY_W);
 
-    self->velocity.x = xDirection * self->speed;
-    self->velocity.y = yDirection * self->speed;
+    self->object.velocity.x = xDirection * self->object.speed;
+    self->object.velocity.y = yDirection * self->object.speed;
 
 }
 
@@ -24,12 +23,12 @@ void MovePlayer(Sprite *self){
     Função para mudar o valor da direção em que o player esta virado de acordo com a velocidade
     (lembre-se de iniciar a direção com um valor default)
 */
-void GetPlayerDirection(Sprite *self){
+void GetPlayerDirection(Player *self){
 
-    if(self->velocity.x > 0){
-        self->direction.x = 1;
-    }else if(self->velocity.x < 0){
-        self->direction.x = -1;
+    if(self->object.velocity.x > 0){
+        self->object.direction.x = 1;
+    }else if(self->object.velocity.x < 0){
+        self->object.direction.x = -1;
     }
 
 }
@@ -39,18 +38,18 @@ void GetPlayerDirection(Sprite *self){
     e virar o player de acordo com a direção em que esta se movendo
     (multiplicando o valor do largura do frame que ele desenha pela direção em que esta virado) 
 */
-void DrawPlayer(Sprite *self,Texture2D textura){
+void DrawPlayer(Player *self){
     GetPlayerDirection(self);
 
-    Rectangle animationFrame = GetAnimationFrame(&(self->animation),9); 
-    animationFrame.width *= self->direction.x;
+    Rectangle animationFrame = GetAnimationFrame(self->sprite,(Vector2){9,7}); 
+    animationFrame.width *= self->object.direction.x;
 
-    Rectangle dest = GetAnimationFrame(&(self->animation),9);
-    dest.x = self->position.x;
-    dest.y = self->position.y;
+    Rectangle dest = GetAnimationFrame(self->sprite,(Vector2){9,7});
+    dest.x = self->object.position.x;
+    dest.y = self->object.position.y;
 
     DrawTexturePro(
-	    textura,
+	    self->sprite.texture,
 		animationFrame,
 		dest,
 		(Vector2){50,50},
@@ -84,22 +83,22 @@ void SetPlayerAnimation(animation *self,state state){
     Função que checa a velocidade e então checa se o estado de movimento mudou
     caso tenha mudado, muda a animação do player entre parado e andando.
 */
-void PlayerStatemachine(Sprite *self){
+void PlayerStatemachine(Player *self){
 
     state newState;
 
-    if(self->velocity.x != 0 || self->velocity.y != 0){
+    if(self->object.velocity.x != 0 || self->object.velocity.y != 0){
         newState = WALK;
     }else{
         newState = IDLE;
     }
 
-    if(self->animation.state != newState) SetPlayerAnimation(&(self->animation),newState);
+    if(self->sprite.animation.state != newState) SetPlayerAnimation(&(self->sprite.animation),newState);
 
 }
 
 /*
-    Função que checa se o local que o npc passado esta, é o mesmo em que o 
+    Função que checa se o local na memoria que o npc passado esta, é o mesmo em que o 
     npc ativo do jogo esta. 
 */
 bool CheckActiveNpc(Npc *npcToCheck,GameManager gameManager){

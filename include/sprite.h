@@ -1,35 +1,15 @@
-
 #ifndef SPRITE_H
 #define SPRITE_H
 
 #include <raylib.h>
 #include <animation.h>
 
-//sprite, 5 componentes
+//sprite, 2 componentes
 typedef struct Sprite
 {
+    Texture2D texture;
     animation animation; // componente dos valores da animação
 
-    Vector2 position; // componente da posição x e y do sprite
-    Vector2 direction; // componente da direção x e y do sprite
-    Vector2 velocity; // componente da direção multiplicada pela speed
-    
-    float speed; // componente que armazena a velocidade de movimento
-    
 }Sprite;
-
-Rectangle GetSpriteHitbox(Sprite self,float width,float height);
-
-    //Função para atualizar a posição X do sprite
-void applyVelX(Sprite *self);
-
-    //Função para atualizar a posição Y do sprite
-void applyVelY(Sprite *self);
-
-    //Função para checar a sobreposição em Y de um sprite e um retangulo 
-float CheckCollisionY(Rectangle hitbox,Rectangle collisionRectangle);
-			
-    //Função para checar a sobreposição em X de um sprite e um retangulo
-float CheckCollisionX(Rectangle hitbox,Rectangle collisionRectangle);
 
 #endif

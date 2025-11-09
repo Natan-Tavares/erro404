@@ -1,5 +1,6 @@
 #include "animation.h"
-#include <raylib.h>    
+#include <raylib.h>   
+#include <sprite.h> 
 
 /*
     Função para atualizar o frame da animação
@@ -22,7 +23,6 @@ void UpdateAnimation(animation *animation){
 
 }
 
-
 /*
     Função para pegar o frame da animação;
     A posição x no arquivo da animação é pego de acodo com o frame atual
@@ -30,15 +30,18 @@ void UpdateAnimation(animation *animation){
     *Nota: os tamanhos do retangulo podem e serão alterados no futuro, pois so são 
     essas devido ao arquivo dos sprites e o seu tamanho.
 */
-Rectangle GetAnimationFrame(animation *animation,int numframesPerRow){
+Rectangle GetAnimationFrame(Sprite sprite,Vector2 numFramesPerAxle){
 
-    int x = (animation->current % numframesPerRow) * 100;
-    int y = (int)animation->state * 100;
+    float width = sprite.texture.width/numFramesPerAxle.x;
+    float height = sprite.texture.height/numFramesPerAxle.y;
+
+    int x = (sprite.animation.current % (int)numFramesPerAxle.x) * (width);
+    int y = (int)sprite.animation.state * height;
 
     return (Rectangle){
         .x = (float)x,
         .y = (float)y,
-        .width = 100,
-        .height = 100
+        .width = width,
+        .height = height
     };
 }

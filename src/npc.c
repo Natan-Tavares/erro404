@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <raylib.h>
+#include <player.h>
 
 /*
     conta o numero de npcs em um arquivo, passado o arquivo para leitura
@@ -29,30 +30,6 @@ int CountNpcs(FILE *file){
     return count;
 
 }
-
-
-/*
-    Função que repoe \ n dentro de uma string por literais \n.
-    com duas variaveis apontando para o espaço de memoria da strig
-    as variaveis reescrevem a string de acordo com os caracteres
-    reescrevendo os \n.
-*/
-void replaceEscapedNewlines(char *text) {
-    char *src = text;
-    char *dst = text;
-
-    while (*src) {
-        if (src[0] == '\\' && src[1] == 'n') {
-            *dst++ = '\n';
-            src += 2;
-        } else {
-            *dst++ = *src++;
-        }
-    }
-
-    *dst = '\0';
-}
-
 
 /*
     Função que preenche os valores de um npc.
@@ -166,8 +143,8 @@ void DrawNpcs(Npc *npcList,int numberOfNpcs){
     Calcula a distancia do npc para o player e checa se ele é menor que o raio
     de detecção
 */
-void UpdateNpcProximity(Npc *npc,Sprite player, float detectionRange) {
-    float dist = GetDistance(npc->position, player.position);
+void UpdateNpcProximity(Npc *npc,Object object, float detectionRange) {
+    float dist = GetDistance(npc->position, object.position);
     npc->isPlayerNearby = (dist <= detectionRange);
 
 }
@@ -177,9 +154,9 @@ void UpdateNpcProximity(Npc *npc,Sprite player, float detectionRange) {
     Atualiza a poximidade de todos os npcs
     Recebendo a lista de npcs, passa npc por npc para a função UpdateNpcProximity
 */
-void CheckAllNpcProximities(Npc *npcList, Sprite player,GameManager gameManager){
+void CheckAllNpcProximities(Npc *npcList,Player player,GameManager gameManager){
     for (int i = 0; i < gameManager.numberOfNpcs; i++) {
-        UpdateNpcProximity(&npcList[i], player, 60);
+        UpdateNpcProximity(&npcList[i], player.object, 60);
 
     }
 }

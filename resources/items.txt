@@ -1,0 +1,12 @@
+
+#
+id:0
+position:32,32
+
+#
+id:0
+position:64,64
+
+#
+id:0
+position:100,100

@@ -6,6 +6,28 @@
 #include <string.h>
 
 /*
+    Função que repoe \ n dentro de uma string por literais \n.
+    com duas variaveis apontando para o espaço de memoria da strig
+    as variaveis reescrevem a string de acordo com os caracteres
+    reescrevendo os \n.
+*/
+void replaceEscapedNewlines(char *text){
+    char *src = text;
+    char *dst = text;
+
+    while (*src) {
+        if (src[0] == '\\' && src[1] == 'n') {
+            *dst++ = '\n';
+            src += 2;
+        } else {
+            *dst++ = *src++;
+        }
+    }
+
+    *dst = '\0';
+}
+
+/*
     Função para aproximar um valor inicial de um final usando um fator
 */
 float lerp(float start, float end, float t) {
