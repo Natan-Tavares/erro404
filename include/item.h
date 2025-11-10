@@ -24,13 +24,13 @@ typedef struct ItemEntity
 
 }ItemEntity;
 
-Item *getItemById(int id);
+Item *GetItemById(int id);
 
 ItemEntity *LoadItems(const char* filename,int *numberOfItems);
 
 void FreeItemCatalog();
 
-void FreeItemCatalog();
+Item *GetItemCatalog();
 
 void DrawItemEntityList(ItemEntity *ItemEntityList,int numberOfItemEntitys);
 

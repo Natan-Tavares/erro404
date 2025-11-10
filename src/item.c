@@ -32,7 +32,7 @@ void FreeItemCatalog(){
     for(int i = 0;i < NUMBER_OF_ITEMS;i++) UnloadTexture(itemCatalog[i].sprite.texture);
 }
 
-Item *getItemById(int id){
+Item *GetItemById(int id){
 
     Item* itemCatalog = GetItemCatalog();
 
@@ -114,7 +114,7 @@ Rectangle GetItemHitbox(ItemEntity *itemEntity){
 }
 
 void CheckCollect(ItemEntity *itemEntity,Player *player){
-    Item *item = getItemById(itemEntity->itemId);
+    Item *item = GetItemById(itemEntity->itemId);
 
     Rectangle itemHitbox = GetItemHitbox(itemEntity);
     Rectangle playerHitbox = GetObjectHitbox(player->object,20,25);
@@ -131,7 +131,7 @@ void CheckCollect(ItemEntity *itemEntity,Player *player){
 }
 
 void DrawItem(ItemEntity *itemEntity,Vector2 position){
-    Item *item = getItemById(itemEntity->itemId);
+    Item *item = GetItemById(itemEntity->itemId);
 
     Rectangle animationFrame = GetAnimationFrame(item->sprite,(Vector2){6,1});
     Rectangle dest = GetAnimationFrame(item->sprite,(Vector2){6,1});
@@ -169,7 +169,7 @@ void UpdateItemEntity(ItemEntity *ItemEntityList,int numberOfItemEntitys,Player 
 
 void UpdateItemsAnimation(){
     for(int i = 0;i < NUMBER_OF_ITEMS;i++){
-        Item *item = getItemById(i);
+        Item *item = GetItemById(i);
 
         UpdateAnimation(&item->sprite.animation);
 

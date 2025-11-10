@@ -13,8 +13,25 @@
 typedef struct GameManager GameManager; //Definindo a struct do gerenciador do jogo que foi declarada em outro scopo 
 typedef struct Player Player;
 
+typedef enum
+{
+
+    NOT_STARTED = 0, 
+    IN_PROGRESS,
+    COMPLETED,
+
+}QuestState;
+
+typedef enum
+{
+
+    NORMAL,
+    QUEST_GIVER,
+
+} NpcType;
+
 //Dialogo,3 componentes
-typedef struct 
+typedef struct Dialogue
 {
 
     char text[MAX_DIALOGUE_LENGTH]; //Componente que armazena o texto do dialogo
@@ -23,8 +40,19 @@ typedef struct
     
 }Dialogue;
 
+typedef struct Quest
+{
+    int id;
+    char name[32];
+    char description[128];
+    int requiredItemId;
+    int quantityOfRequiredItem;
+    bool isCompleted;
+
+}Quest;
+
 //Npc,6 componentes
-typedef struct 
+typedef struct Npc 
 {
     int id; //componente que armazena o id no npc
     animation animation; //Componente que armazena animação do npc
@@ -33,7 +61,20 @@ typedef struct
     int dialogueCount; //Componente que armazena o numero que dialogos que o npc tem
     bool isPlayerNearby; //Componente que armazena se o player esta proximo ou não do npc
 
+    NpcType type;
+    Quest quest;
+    QuestState questState;
+
 }Npc;
+
+typedef void (*NpcValueHandler)(Npc *npc, const char *value);
+
+typedef struct NpcFieldHandler
+{
+    const char *key;
+    NpcValueHandler handle;
+
+}NpcFieldHandler;
 
 //Carrega os npcs dentro do arquivo passado, armazenando o numero de npcs no inteiro passado retornando a lista de npcs
 Npc *LoadNpcs(const char* filename,int *numberOfNpcs);

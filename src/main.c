@@ -69,6 +69,8 @@ int main()
         .zoom = 3.0,
     };
 
+    WriteMap("resources/maps/map.bin");
+
     InitInventory(&player.inventory);
 
     while (!WindowShouldClose())
@@ -96,9 +98,7 @@ int main()
 
             UpdateItemsAnimation();
 
-			if(GetDistance(camera.target,player.object.position) > 25){
-				UpdateCamera2D(&camera,player.object.position);
-			}
+			if(GetDistance(camera.target,player.object.position) > 25) UpdateCamera2D(&camera,player.object.position);
 
             CheckAllNpcProximities(npcList,player,game);
 

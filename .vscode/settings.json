@@ -9,6 +9,7 @@
         "game.h": "c",
         "string.h": "c",
         "sprite.h": "c",
-        "npc.h": "c"
+        "npc.h": "c",
+        "object.h": "c"
     }
 }

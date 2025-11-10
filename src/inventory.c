@@ -32,15 +32,29 @@ bool AddItemToInventory(Inventory *self, ItemEntity itemEntity, int quantity){
 }
 
 void DrawInventory(Inventory *self, Vector2 position) {
+    
     for (int i = 0; i < NUMBER_OF_SLOTS; i++) {
-        float x = position.x + (i % 6) * 50;
-        float y = position.y + (i / 6) * 50;
+        float x = position.x + (i % (NUMBER_OF_SLOTS/2)) * 50;
+        float y = position.y + (i / (NUMBER_OF_SLOTS/2)) * 50;
 
         DrawRectangleLines(x, y, 48, 48, GRAY);
 
         if (self->slots[i].itemId != -1) {
-            DrawText(TextFormat("ID:%d x%d", self->slots[i].itemId, self->slots[i].quantity),
-                     x + 5, y + 15, 10, WHITE);
+            Item *item = GetItemById(self->slots[i].itemId);
+
+            Rectangle src = GetAnimationFrame(item->sprite,(Vector2){6,1});
+            Rectangle dest = (Rectangle){x+1,y+8,32,32};
+
+            DrawTexturePro(
+                item->sprite.texture,
+                src,
+                dest,
+                (Vector2){0,0},
+                0,
+                WHITE
+            );
+
+            DrawText(TextFormat("x%d",self->slots[i].quantity),x + 28, y + 32, 10, WHITE);
         }
     }
 }

@@ -9,6 +9,29 @@
 
 #include <sprite.h>
 
+Tile *GetTileCatalog(){
+    static Tile catalog[NUMBER_OF_TILES];
+
+    static bool initialized = false;
+
+    if(!initialized){
+        catalog[0] = (Tile){1,false,(Sprite){.texture=LoadTexture("resources/textures/grass.png")}};
+        catalog[1] = (Tile){2,true,(Sprite){.texture=LoadTexture("resources/textures/brick.png")}};
+        
+        initialized = true;
+    }
+    return catalog;
+}
+
+Tile GetTileById(unsigned char id){
+    Tile *catalog = GetTileCatalog();
+
+    for(int i = 0; i < NUMBER_OF_TILES;i++){
+        if(catalog[i].id == id) return catalog[i];
+    }
+
+}
+
 /*
     Função interna para casos especificos que escreve valores default
     em um arquivo binario de mapa.
@@ -58,19 +81,6 @@ unsigned char *ReadMap(const char *fileName) {
 }
 
 /*
-    Função para checar qual o tile de acordo com o seu index.
-*/
-Color CheckTile(unsigned char tile) {
-    switch (tile) {
-        case 0: return LIGHTGRAY;
-        case 1: return DARKGRAY;
-        case 2: return RED;
-        case 3: return BLUE;
-        default: return BLACK;
-    }
-}
-
-/*
     Função para criar um retangulo de acordo com a posição do tile
 */
 Rectangle CreateTileRectangle(Vector2 position){
@@ -104,10 +114,17 @@ void DrawMap(unsigned char *self) {
     for (int y = 0; y < MAP_ROWS; y++) {
         for (int x = 0; x < MAP_COLS; x++) {
 
-            unsigned char tile = self[y * MAP_COLS + x];
-            Color color = CheckTile(tile);
+            Tile tile = GetTileById(self[y * MAP_COLS + x]);
 
-            DrawRectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color);
+            DrawTexturePro(
+                tile.sprite.texture,
+                (Rectangle){0,0,16,16},
+                (Rectangle){x*TILE_SIZE,y*TILE_SIZE,TILE_SIZE,TILE_SIZE},
+                (Vector2){0,0},
+                0.0,
+                WHITE
+            );
+
         }
     }
 }
@@ -129,7 +146,7 @@ void CheckTilesCollisionX(Object *object, unsigned char *map) {
     for(int y = tiles.top; y <= tiles.bottom; y++){
         for(int x = tiles.left; x <= tiles.right; x++){
 
-            if(map[y * MAP_COLS + x] == 3){
+            if(GetTileById(map[y * MAP_COLS + x]).isSolid == true){
 
                 Rectangle tileRectangle = CreateTileRectangle((Vector2){x,y});
 
@@ -162,7 +179,7 @@ void CheckTilesCollisionY(Object *object, unsigned char *map) {
     for(int y = tiles.top; y <= tiles.bottom; y++){
         for(int x = tiles.left; x <= tiles.right; x++){
 
-            if(map[y * MAP_COLS + x] == 3){
+            if(GetTileById(map[y * MAP_COLS + x]).isSolid == true){
 
                 Rectangle tileRectangle = CreateTileRectangle((Vector2){x,y});
 

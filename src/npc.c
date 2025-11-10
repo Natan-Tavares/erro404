@@ -31,6 +31,47 @@ int CountNpcs(FILE *file){
 
 }
 
+void HandleId(Npc *npc,const char *value){
+    npc->id = atoi(value);
+}
+
+void HandlePosition(Npc *npc,const char *value){
+    sscanf(value,"%f,%f",&npc->position.x,&npc->position.y);
+}
+
+void HandleDialogue(Npc *npc,const char *value){
+    int i = npc->dialogueCount++;
+    strncpy(npc->dialogues[i].text,value,MAX_DIALOGUE_LENGTH -1);
+    replaceEscapedNewlines(npc->dialogues[i].text);
+}
+
+void HandleNpcType(Npc *npc,const char *value){
+    if(!strcmp(value, "normal")) npc->type = NORMAL;
+    else if(!strcmp(value,"quest_giver")) npc->type = QUEST_GIVER;
+    else npc->type = NORMAL;
+}
+
+void HandleQuestId(Npc *npc,const char *value){
+    npc->quest.id = atoi(value);
+
+}
+
+void HandleQuestName(Npc *npc,const char *value){
+    strcpy(npc->quest.name,value);    
+}
+
+void HandleQuestDescription(Npc *npc,const char *value){
+    strcpy(npc->quest.description,value);
+}
+
+void HandleQuestItemId(Npc *npc,const char *value){
+    npc->quest.requiredItemId = atoi(value);
+}
+
+void HandleQuestQuantityItem(Npc *npc,const char *value){
+    npc->quest.quantityOfRequiredItem = atoi(value);
+}
+
 /*
     Função que preenche os valores de um npc.
     recebendo um ponteiro para um npc e uma string,
@@ -39,24 +80,24 @@ int CountNpcs(FILE *file){
 */
 void fillNpcValues(Npc *npc,char *line){
 
-    if(!strncmp(line,"id:",3)){
-        npc->dialogueCount = 0;
-        npc->id = atoi(line+3);
-        
-    }else if(!strncmp(line,"position:",9)){
-        sscanf(line+9,"%f,%f",&(npc->position.x),&(npc->position.y));
+    static const NpcFieldHandler npcHandlers[] = {
+        {"id:", HandleId},
+        {"position:", HandlePosition},
+        {"dialogue:", HandleDialogue},
+        {"npcType:", HandleNpcType},
+        {"questId:", HandleQuestId},
+        {"questName:", HandleQuestName},
+        {"questDescription:", HandleQuestDescription},
+        {"questItemId:", HandleQuestItemId},
+        {"questQuantityItem:", HandleQuestQuantityItem},
+    };
 
-    }else if(!strncmp(line,"dialogue:",9)){
-        const char *dialogueText = line + 9;
+    static const int npcHandleCount = sizeof(npcHandlers) / sizeof(npcHandlers[0]);
 
-        int currentDialogue = npc->dialogueCount;
-        strncpy(npc->dialogues[currentDialogue].text,dialogueText, MAX_DIALOGUE_LENGTH - 1);
-
-        npc->dialogues[currentDialogue].text[MAX_DIALOGUE_LENGTH - 1] = '\0';
-
-        replaceEscapedNewlines(npc->dialogues[currentDialogue].text);
-
-        npc->dialogueCount++; 
+    for(int i = 0; i<npcHandleCount; i++){
+        if(!strncmp(line, npcHandlers[i].key , strlen(npcHandlers[i].key) )){
+            npcHandlers[i].handle(npc,line + strlen(npcHandlers[i].key));
+        }
     }
 
 }
@@ -76,9 +117,10 @@ void ReadNpcs(Npc *npcList,FILE *file){
     {
         if(strlen(line) == 0) continue; //checa se a linha esta vazia
 
-        if(line[0] == '#'){ 
+        if(line[0] == '#'){ //Checa se encontrou um npc novo
             index++; //se tiver um # aumenta o indice da lista de npcs
-          continue;  
+            memset(&npcList[index], 0, sizeof(Npc));          
+            continue;  
         } 
 
         line[strcspn(line, "\n")] = '\0'; //retira o ultimo \n da string da linha
