@@ -8,6 +8,42 @@
 #include <string.h>
 #include <raylib.h>
 #include <player.h>
+#include <utils.h>
+
+Npc *GetNpcCatalog(){
+    static Npc catalog[NUMBER_OF_NPCS];
+    static bool isInitialized = false;
+    
+    if(!isInitialized){
+        memset(catalog,0,sizeof(catalog));
+        catalog[0] = (Npc){.id=0,.name="Coisa amarela",.type=QUEST_GIVER,.questId=0,.sprite = (Sprite){.texture=LoadTexture("resources/textures/the_thing.png")}};
+
+        isInitialized = true;
+    }
+
+    return catalog;
+}
+
+void FreeNpcCatalog(){
+    Npc *catalog = GetNpcCatalog();
+
+    for(int i = 0;i< NUMBER_OF_NPCS;i++){
+        if(catalog[i].sprite.texture.id != 0){
+            UnloadTexture(catalog[i].sprite.texture);
+            catalog[i].sprite.texture.id = 0;
+        }
+    }
+}
+
+Npc *GetNpcById(int id){
+    Npc *catalog = GetNpcCatalog();
+
+    for(int i =0;i < NUMBER_OF_NPCS;i++){
+        if(catalog[i].id == id) return &catalog[i];
+    }
+
+    return NULL; 
+}
 
 /*
     conta o numero de npcs em um arquivo, passado o arquivo para leitura
@@ -15,7 +51,7 @@
     Nota: cada # é um npc é possivel se escrever coisas dps do # mas mantenha
     um # por npc.
 */
-int CountNpcs(FILE *file){
+int CountNpcEntitys(FILE *file){
 
     char line[MAX_LINE_LENGTH];
     int count = 0;
@@ -31,45 +67,27 @@ int CountNpcs(FILE *file){
 
 }
 
-void HandleId(Npc *npc,const char *value){
-    npc->id = atoi(value);
+void HandleId(NpcEntity *npcEntity,const char *value){
+    npcEntity->npcId = atoi(value);
 }
 
-void HandlePosition(Npc *npc,const char *value){
+void HandlePosition(NpcEntity *npc,const char *value){
     sscanf(value,"%f,%f",&npc->position.x,&npc->position.y);
 }
 
-void HandleDialogue(Npc *npc,const char *value){
-    int i = npc->dialogueCount++;
-    strncpy(npc->dialogues[i].text,value,MAX_DIALOGUE_LENGTH -1);
-    replaceEscapedNewlines(npc->dialogues[i].text);
+void HandleDialogue(NpcEntity *npcEntity,const char *value){
+    strncpy(npcEntity->normalDialogue.text,value,MAX_DIALOGUE_LENGTH -1);
+    replaceEscapedNewlines(npcEntity->normalDialogue.text);
 }
 
-void HandleNpcType(Npc *npc,const char *value){
-    if(!strcmp(value, "normal")) npc->type = NORMAL;
-    else if(!strcmp(value,"quest_giver")) npc->type = QUEST_GIVER;
-    else npc->type = NORMAL;
+void HandleRequestDialogue(NpcEntity *npcEntity,const char *value){
+    strncpy(npcEntity->requestDialogue.text,value, MAX_DIALOGUE_LENGTH-1);
+    replaceEscapedNewlines(npcEntity->requestDialogue.text);
 }
 
-void HandleQuestId(Npc *npc,const char *value){
-    npc->quest.id = atoi(value);
-
-}
-
-void HandleQuestName(Npc *npc,const char *value){
-    strcpy(npc->quest.name,value);    
-}
-
-void HandleQuestDescription(Npc *npc,const char *value){
-    strcpy(npc->quest.description,value);
-}
-
-void HandleQuestItemId(Npc *npc,const char *value){
-    npc->quest.requiredItemId = atoi(value);
-}
-
-void HandleQuestQuantityItem(Npc *npc,const char *value){
-    npc->quest.quantityOfRequiredItem = atoi(value);
+void HandleThanksDialogue(NpcEntity *npcEntity,const char *value){
+    strncpy(npcEntity->thanksDialogue.text,value, MAX_DIALOGUE_LENGTH-1);
+    replaceEscapedNewlines(npcEntity->thanksDialogue.text);
 }
 
 /*
@@ -78,25 +96,21 @@ void HandleQuestQuantityItem(Npc *npc,const char *value){
     analisa a string procurando pelos dados especificos do npc
     Então pega os dados e preenche os campos do npc.
 */
-void fillNpcValues(Npc *npc,char *line){
+void fillNpcEntityValues(NpcEntity *NpcEntity,char *line){
 
     static const NpcFieldHandler npcHandlers[] = {
         {"id:", HandleId},
         {"position:", HandlePosition},
         {"dialogue:", HandleDialogue},
-        {"npcType:", HandleNpcType},
-        {"questId:", HandleQuestId},
-        {"questName:", HandleQuestName},
-        {"questDescription:", HandleQuestDescription},
-        {"questItemId:", HandleQuestItemId},
-        {"questQuantityItem:", HandleQuestQuantityItem},
+        {"requestDialogue:",HandleRequestDialogue},
+        {"thanksDialogue:",HandleThanksDialogue}
     };
 
     static const int npcHandleCount = sizeof(npcHandlers) / sizeof(npcHandlers[0]);
 
     for(int i = 0; i<npcHandleCount; i++){
         if(!strncmp(line, npcHandlers[i].key , strlen(npcHandlers[i].key) )){
-            npcHandlers[i].handle(npc,line + strlen(npcHandlers[i].key));
+            npcHandlers[i].handle(NpcEntity,line + strlen(npcHandlers[i].key));
         }
     }
 
@@ -108,7 +122,7 @@ void fillNpcValues(Npc *npc,char *line){
     de preencher os valos do npc, checando se tem um # antes de cada 
     declaração de npc,aumenta o indice da lista  
 */
-void ReadNpcs(Npc *npcList,FILE *file){
+void ReadNpcs(NpcEntity *npcEntityList,FILE *file){
 
     char line[MAX_LINE_LENGTH];
     int index = -1;
@@ -119,13 +133,13 @@ void ReadNpcs(Npc *npcList,FILE *file){
 
         if(line[0] == '#'){ //Checa se encontrou um npc novo
             index++; //se tiver um # aumenta o indice da lista de npcs
-            memset(&npcList[index], 0, sizeof(Npc));          
+            memset(&npcEntityList[index], 0, sizeof(NpcEntity));          
             continue;  
         } 
 
         line[strcspn(line, "\n")] = '\0'; //retira o ultimo \n da string da linha
 
-        fillNpcValues(&npcList[index],line); //preenche os valores do npc de acordo com a linha passada
+        fillNpcEntityValues(&npcEntityList[index],line); //preenche os valores do npc de acordo com a linha passada
 
     }
 
@@ -139,16 +153,16 @@ void ReadNpcs(Npc *npcList,FILE *file){
     com a função ReadNpcs e então retorna a lista.
     *Nota: Lembre-se de dar free na lista de npcs no final do programa
 */
-Npc *LoadNpcs(const char* filename,int *numberOfNpcs){
+NpcEntity *LoadNpcs(const char* filename,int *numberOfNpcs){
 
     char line[MAX_LINE_LENGTH];
     FILE *file = fopen(filename,"r");
 
     if(!CheckFile(file)) return NULL;
 
-    *numberOfNpcs = CountNpcs(file); //conta o numero de npcs
+    *numberOfNpcs = CountNpcEntitys(file); //conta o numero de npcs
 
-    Npc *npcs = malloc(sizeof(Npc) * (*numberOfNpcs));
+    NpcEntity *npcs = malloc(sizeof(NpcEntity) * (*numberOfNpcs));
 
     ReadNpcs(npcs,file); //le o arquivo preenchendo os npcs  na lista
 
@@ -163,17 +177,20 @@ Npc *LoadNpcs(const char* filename,int *numberOfNpcs){
     checa a variavel isPlayerNearby para saber se o player esta proximo
     e muda a sua cor de acordo com a proximidade do player;s
 */
-void DrawNpcs(Npc *npcList,int numberOfNpcs){
+void DrawNpcs(NpcEntity *npcEntityList,int numberOfNpcs){
 
     for(int i = 0;i < numberOfNpcs;i++){
-        Color color = npcList[i].isPlayerNearby ? YELLOW : GREEN;
+        Npc *npc = GetNpcById(npcEntityList[i].npcId);
 
-        DrawRectangle(
-            npcList[i].position.x,
-            npcList[i].position.y,
-            TILE_SIZE,
-            TILE_SIZE,
-            color
+        if (!npc) continue;
+
+        DrawTexturePro(
+            npc->sprite.texture,
+            (Rectangle){.height=16,.width=16,.x=0,.y=0},
+            (Rectangle){.height=16,.width=16,.x=npcEntityList[i].position.x,.y=npcEntityList[i].position.y},
+            (Vector2){0,0},
+            0.0,
+            WHITE
         );
 
     }
@@ -185,168 +202,50 @@ void DrawNpcs(Npc *npcList,int numberOfNpcs){
     Calcula a distancia do npc para o player e checa se ele é menor que o raio
     de detecção
 */
-void UpdateNpcProximity(Npc *npc,Object object, float detectionRange) {
-    float dist = GetDistance(npc->position, object.position);
-    npc->isPlayerNearby = (dist <= detectionRange);
+  void UpdateNpcProximity(NpcEntity *npcEntity,Object object, float detectionRange) {
+    float dist = GetDistance(npcEntity->position, object.position);
+    npcEntity->isPlayerNearby = (dist <= detectionRange);
 
 }
 
-
-/*
-    Atualiza a poximidade de todos os npcs
-    Recebendo a lista de npcs, passa npc por npc para a função UpdateNpcProximity
+ /*
+     Atualiza a poximidade de todos os npcs
+     Recebendo a lista de npcs, passa npc por npc para a função UpdateNpcProximity
 */
-void CheckAllNpcProximities(Npc *npcList,Player player,GameManager gameManager){
-    for (int i = 0; i < gameManager.numberOfNpcs; i++) {
-        UpdateNpcProximity(&npcList[i], player.object, 60);
-
+void CheckAllNpcProximities(NpcEntity *npcEntityList,Player player,GameManager gameManager){
+    for (int i = 0; i < gameManager.numberOfNpcEntitys; i++) {
+        UpdateNpcProximity(&npcEntityList[i], player.object, 60);
     }
 }
 
 /*
-    Função para atualizar os valores do npc ativo no Gerenciador do jogo
-    Recebendo o npc, o index do dialogo ativo, e o gerenciador do jogo,
-    atualiza o gerenciador para dizer qual o npc ativo, inicializando as variaveis do seu dialogo.
+     Função para checar se o npc tem dialogos.
+     Recebendo o npc e o gerenciador do jogo, checa se o npc passado tem dialogos
+     e se tiver chama a função StartNpcDialogue para iniciar o primeiro dialogo. 
 */
-void StartNpcDialogue(Npc *npc,int dialogueIndex,GameManager *gameManager){
-    if(!npc) return;
+void TalkToNpc(NpcEntity *npcEntity,GameManager *gameManager){
+    if(!npcEntity) return;
+
+    Npc *npc = GetNpcById(npcEntity->npcId);
+    Quest *quest = GetQuestById(npc->questId);
 
     gameManager->activeNpc = npc;
-    gameManager->activeDialogueindex = dialogueIndex;
-    gameManager->justPressedInteract = true;
 
-    Dialogue *activeDialogue = &(gameManager->activeNpc->dialogues[gameManager->activeDialogueindex]);
-    activeDialogue->visibleChars = 0;
-    activeDialogue->activate = true;
-    
-}
-
-
-/*
-    Função para checar se o npc tem dialogos.
-    Recebendo o npc e o gerenciador do jogo, checa se o npc passado tem dialogos
-    e se tiver chama a função StartNpcDialogue para iniciar o primeiro dialogo. 
-*/
-void TalkToNpc(Npc *npc,GameManager *game){
-    if(!npc) return;
-
-    if (npc->dialogueCount > 0){
-        StartNpcDialogue(npc,0,game);
-    }
-    
-}
-
-/*
-    Termina o dialogo com o npc definindo que o valor do npc ativo no gerenciado jogo
-    é NULL.
-*/
-void StopNpcDialogue(GameManager *gameManager){
-    Dialogue *activeDialogue = &(gameManager->activeNpc->dialogues[gameManager->activeDialogueindex]);
-
-    activeDialogue->activate = false;
-    activeDialogue->visibleChars = 0;
-
-    gameManager->activeDialogueindex = 0;
-    gameManager->activeNpc = NULL;
-
-}
-
-/*
-    Função para checar o dialogo ativo.
-    Recebendo o Gerenciador do jogo, checa se o dialogo do npc ativo esta realmente ativo, se estiver
-    retorna true, se não estiver ativo, define que o npc ativo é NULL e retorna false.
-*/
-bool CheckActiveDialogue(GameManager *gameManager){
-
-    Dialogue *activeDialogue = &(gameManager->activeNpc->dialogues[gameManager->activeDialogueindex]);
-
-    if(activeDialogue->activate){
-        return true; //se o dialogo ativo estiver realmente ativo, retorna true;
-    }
-
-    gameManager->activeNpc = NULL; //se o dialogo ativo não estiver realmente ativo, retina o npc de npc ativo e retorna falso
-    return false;
-}
-
-/*
-    Função para passar para o proximo dialogo.
-    Recebendo o gerenciador do jogo e o Dialogo ativo, Checa se o numero de letras
-    a mostra do dialogo ativo é maior ou igual ao tamanho do texto e se a tecla de 
-    interação foi pressionada, então checa se esta no ultimo dialogo para fechar o 
-    dialogo ou se para o proximo dialogo.
-*/
-void GoToNextDialogue(GameManager *gameManager,Dialogue *activeDialogue){
-
-    int textLen = strlen(activeDialogue->text);
-
-    if(activeDialogue->visibleChars >= textLen && IsKeyPressed(KEY_E)){
-        if(gameManager->activeDialogueindex + 1 < gameManager->activeNpc->dialogueCount){
-            activeDialogue->activate = false;
-            StartNpcDialogue(gameManager->activeNpc,gameManager->activeDialogueindex +1,gameManager); //atualiza os valores do dialogo do npc
-            return;
+    if(npc->type == QUEST_GIVER){
         
-        } else {
-            StopNpcDialogue(gameManager);
-            return;
-
+        switch (quest->status)
+        {
+        case NOT_STARTED:
+            StartDialogue(&npcEntity->requestDialogue,gameManager,CHOICE);
+            break;
+        case IN_PROGRESS:
+            StartDialogue(&npcEntity->normalDialogue,gameManager,NONE);
+            break;
+        case COMPLETED:
+            StartDialogue(&npcEntity->thanksDialogue,gameManager,NONE);
+            break;
         }
-    
-    }   
-}
-
-/*
-    Função para pular um dialogo.
-    Checa se o numero de caracteres amostra de um dialogo é menor
-    que o tamanho do dialogo, se for e o player apertar o botão de interação
-    ele iguala o numero de caracteres visiveis ao tamanho do texto
-*/
-void JumpDialogue(Dialogue *activeDialogue){
-    int textLen = strlen(activeDialogue->text);
-
-    if(activeDialogue->visibleChars < textLen && IsKeyPressed(KEY_E)){
-        activeDialogue->visibleChars = textLen;
-    }    
-}
-
-/*
-    Função para atualizar o dialogo ativo.
-    Função para checar se existe um dialogo ativo e se existir
-    chamar as outras funções.
-*/
-void UpdateActiveDialogue(GameManager *gameManager){
-    if(!gameManager->activeNpc) return; //Caso não tenha nenhum npc ativo ele não atualiza
-
-    if(CheckJustInteract(gameManager)) return; //Se ele tiver acabado de interagir não atualiza o dialogo
-
-    if(!CheckActiveDialogue(gameManager)) return; //Se o dialogo ativo não estiver realmente ativo retorna
-
-    Dialogue *activeDialogue = &(gameManager->activeNpc->dialogues[gameManager->activeDialogueindex]);
-    
-    UpdateVisibleChars(activeDialogue->text,&(activeDialogue->visibleChars),0.05);
-
-    GoToNextDialogue(gameManager,activeDialogue);
-
-    JumpDialogue(activeDialogue);
-}
-
-/*
-    Fução para desenhar o dialogo ativo.
-    Recebendo o gerenciado do jogo, Checa se existe um npc ativo e se existir,
-    desenha na tela, tanto a caixa preta do dialogo, quanto o dialogo em si.
-*/
-void DrawActiveDialogue(GameManager *gameManager){    
-    if(!gameManager->activeNpc) return;
-
-    if(!CheckActiveDialogue(gameManager)) return; //Caso o dialogo não esteja ativo a função não faz nada
-
-    Dialogue *activeDialogue = &(gameManager->activeNpc->dialogues[gameManager->activeDialogueindex]);
-
-    DrawRectangle(50,400,700,150,Fade(BLACK,0.8));
-
-    char buffer[MAX_DIALOGUE_LENGTH];
-    strncpy(buffer,activeDialogue->text,activeDialogue->visibleChars);
-    buffer[activeDialogue->visibleChars] = '\0';
-
-    DrawText(buffer,70, 420, 20, WHITE);
-
+    }else{
+        StartDialogue(&npcEntity->normalDialogue,gameManager,NONE);
+    }  
 }

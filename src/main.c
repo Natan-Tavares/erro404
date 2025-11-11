@@ -13,6 +13,10 @@
 #include <tilemap.h>
 #include <npc.h>
 #include <item.h>
+#include <menu.h>
+#include <dialogue.h>
+#include <quest.h>
+#include <utils.h>
 
 int main()
 {
@@ -34,10 +38,11 @@ int main()
         .activeNpc = NULL,
         .activeDialogueindex = 0,
         .isDialogueActive = false,
+        .justInteract = false,
 
     };
 
-    Npc *npcList = LoadNpcs("resources/npcs.txt",&game.numberOfNpcs);
+    NpcEntity *npcEntityList = LoadNpcs("resources/npcs.txt",&game.numberOfNpcEntitys);
     ItemEntity *ItemEntitylist = LoadItems("resources/items.txt",&game.numberOfItemEntitys);
 
     animation idle = {
@@ -82,6 +87,8 @@ int main()
         }else if (game.currentScreen == GAME) {
             if (IsKeyPressed(KEY_C)) game.currentScreen = MENU;
 
+            InteractWithNpc(npcEntityList,&game);
+
 			MovePlayer(&player);
 
 			applyVelX(&(player.object));
@@ -100,11 +107,11 @@ int main()
 
 			if(GetDistance(camera.target,player.object.position) > 25) UpdateCamera2D(&camera,player.object.position);
 
-            CheckAllNpcProximities(npcList,player,game);
+            CheckAllNpcProximities(npcEntityList,player,game);
 
-            InteractWithNpc(npcList,&game);
+            UpdateQuestChoice(&game);
 
-            UpdateActiveDialogue(&game);
+            UpdateDialogue(&game);
 
 		}else if (game.currentScreen == EXIT) {
             break;
@@ -123,14 +130,17 @@ int main()
 
 				    DrawPlayer(&player);
 
-                    DrawNpcs(npcList,game.numberOfNpcs);
+                    DrawNpcs(npcEntityList,game.numberOfNpcEntitys);
 
                     DrawItemEntityList(ItemEntitylist,game.numberOfItemEntitys);
+                    
 
 			    EndMode2D();
 
-                DrawActiveDialogue(&game);
-		
+                DrawDialogue(&game);
+
+                DrawQuestChoice(&game);
+
                 DrawInventory(&player.inventory,(Vector2){100,100});
             }
 
@@ -139,7 +149,8 @@ int main()
 
     UnloadTexture(player.sprite.texture);
     free(map);
-    free(npcList);
+    free(npcEntityList);
+    FreeNpcCatalog( );
     FreeItemCatalog();
     free(ItemEntitylist);
     CloseWindow();

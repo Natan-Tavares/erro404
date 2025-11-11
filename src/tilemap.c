@@ -6,6 +6,7 @@
 #include <raylib.h>
 #include <object.h>
 #include <game.h>
+#include <utils.h>
 
 #include <sprite.h>
 

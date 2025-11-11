@@ -10,6 +10,7 @@
 #include <animation.h>
 #include <object.h>
 #include <game.h>
+#include <utils.h>
 
 Item *GetItemCatalog(){
     static Item itemCatalog[NUMBER_OF_ITEMS];

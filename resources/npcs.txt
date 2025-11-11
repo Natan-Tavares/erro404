@@ -3,30 +3,25 @@
 id:0
 position:32,32
 dialogue:Pedrinhooooo inteligente amo todos os dialogos que ele\nescreve que homem <3!
-dialogue:peace!
-npcType:quest_giver
-questId:0
-questName:quest de teste
-questDescription:Essa é uma quest para testar o sistema de quests
-questItemId:0
-questQuantityItem:3
+requestDialogue:pufavo!!
+thanksDialogue:vlw fiii!!
 
 #
-id:1
+id:0
 position:100,100
 
 #
-id:2
+id:0
 position:200,200
 dialogue:eu amo\nmulheres
 dialogue:amo todas elas
 dialogue:que medo
 
 #
-id:3
+id:0
 position:500,500
 
 #
-id:4
+id:
 position:200,400
 

@@ -1,9 +1,7 @@
 
 #include "camera.h"
 #include <raylib.h>
-#include <sprite.h>
-#include <game.h>   
-#include <math.h>
+#include <utils.h>
 
 /*
     Função para aproximar o target da camera a um valor especifico usando interpolação

@@ -28,6 +28,6 @@ void SetPlayerAnimation(animation *self,state state);
 void PlayerStatemachine(Player *self);
 
 //Função de interagir com o Npc
-void InteractWithNpc(Npc *npcList,GameManager *gameManager);
+void InteractWithNpc(NpcEntity *npcEntityList,GameManager *gameManager);
 
 #endif
