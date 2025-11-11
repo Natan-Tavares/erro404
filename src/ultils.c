@@ -63,18 +63,6 @@ bool CheckFile(FILE *file){
 }
 
 /*
-	Função para checar se o player acabou de interagir com alguma coisa.
-*/
-bool CheckJustInteract(GameManager *self){
-    if(self->justInteract){
-        self->justInteract = false;
-        return true;
-    }
-    return false;
-}
-
-
-/*
     Atualiza os caracteres ativos do dialogo passado de acordo com o delay
     de cada letra.
     *Nota: Faz a animação de letras aparecendo na tela.
@@ -89,4 +77,13 @@ void UpdateVisibleChars(char *text,int *visibleChars,float lettersDelay){
         timer = 0;
 
     }
+}
+
+/*
+    Transforma um valor false em um valor true
+*/
+void UpdateBoolValue(bool *value){
+    if(!*value){
+        *value = true;
+    }    
 }

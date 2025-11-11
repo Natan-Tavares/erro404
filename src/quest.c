@@ -5,6 +5,7 @@
 #include <game.h>
 #include <string.h>
 #include <stdio.h>
+#include <utils.h>
 
 Quest *GetQuestCatalog(){
     static Quest catalog[NUMBER_OF_QUESTS];
@@ -31,25 +32,30 @@ Quest *GetQuestById(int id){
 }
 
 void UpdateQuestChoice(GameManager *gameManager){
-
     DialogueStatus *dialogueStatus = &gameManager->dialogueStatus;
     if(*dialogueStatus != RESPONSE ) return; 
     Quest *quest = GetQuestById(gameManager->activeNpc->questId);
     if(quest->status == IN_PROGRESS) return;
 
+    static bool canInteract = false;
 
     if(IsKeyPressed(KEY_UP)) gameManager->selectedOption = (gameManager->selectedOption+1) %2; 
     if(IsKeyPressed(KEY_DOWN)) gameManager->selectedOption = (gameManager->selectedOption+1) %2;
 
-    if(IsKeyPressed(KEY_E)){
+    if(IsKeyPressed(KEY_E) && canInteract){
         if (gameManager->selectedOption == 0)
         {
             quest->status = IN_PROGRESS;
             quest->isActive = true;
         }
         gameManager->dialogueStatus = NONE;
-
+        gameManager->canInteract = false;
+        canInteract = false;    
+        return;
     }
+    
+    UpdateBoolValue(&canInteract);
+    gameManager->canInteract = false;
 
 }
 

@@ -19,7 +19,7 @@ void UpdateVisibleChars(char *text,int *visibleChars,float lettersDelay);
     //Função para checar se um arquivo é valido
 bool CheckFile(FILE *file);
 
-    //Função para checar se o player acabou de interagir com algo
-bool CheckJustInteract(GameManager *self);
+    //Transforma um valor false em true
+void UpdateBoolValue(bool *value);
 
 #endif

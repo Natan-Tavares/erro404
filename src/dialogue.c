@@ -20,19 +20,25 @@ void UpdateDialogue(GameManager *gameManager){
     Dialogue *dialogue = gameManager->activeDialogue;
     if(!dialogue) return;
 
+    static bool canInteract = false;
+
+    static float timer = 0;
+    const float delay = 0.2;
+    timer += GetFrameTime();
     int textLen = strlen(dialogue->text);
 
-    UpdateVisibleChars(dialogue->text,&dialogue->visibleChars,0.05);
-    
-    DialogueStatus *status = &gameManager->dialogueStatus; 
+    if(dialogue->visibleChars < textLen){
+        UpdateVisibleChars(dialogue->text,&dialogue->visibleChars,0.05);
 
-    if(dialogue->visibleChars < textLen && IsKeyPressed(KEY_E) && !gameManager->dialogueInputConsumed){
-        dialogue->visibleChars = textLen;   
-        gameManager->dialogueInputConsumed;
+        if(IsKeyPressed(KEY_E) && canInteract){
+            dialogue->visibleChars = textLen;   
+            canInteract = false;
+            return;
+        }
+        UpdateBoolValue(&canInteract);
         return;
-    }
-
-    if(dialogue->visibleChars >= textLen && IsKeyPressed(KEY_E)){
+    }else if(IsKeyPressed(KEY_E) && canInteract){
+        DialogueStatus *status = &gameManager->dialogueStatus;
 
         gameManager->activeDialogue = NULL;
 
@@ -42,16 +48,17 @@ void UpdateDialogue(GameManager *gameManager){
                 break;
         
             case CHOICE:
-                *status = RESPONSE;
+                gameManager->dialogueStatus = RESPONSE;
                 break;
 
             case RESPONSE:
                 break;
         }
-
-        gameManager->dialogueInputConsumed = true;
-
+        dialogue->visibleChars = 0;
+        canInteract = false;
+        return;
     }
+    UpdateBoolValue(&canInteract);
 
 }
 

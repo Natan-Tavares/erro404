@@ -36,9 +36,7 @@ int main()
 
         },
         .activeNpc = NULL,
-        .activeDialogueindex = 0,
-        .isDialogueActive = false,
-        .justInteract = false,
+        .canInteract = true,
 
     };
 
@@ -87,8 +85,6 @@ int main()
         }else if (game.currentScreen == GAME) {
             if (IsKeyPressed(KEY_C)) game.currentScreen = MENU;
 
-            InteractWithNpc(npcEntityList,&game);
-
 			MovePlayer(&player);
 
 			applyVelX(&(player.object));
@@ -109,9 +105,11 @@ int main()
 
             CheckAllNpcProximities(npcEntityList,player,game);
 
-            UpdateQuestChoice(&game);
+            InteractWithNpc(npcEntityList,&game);
 
             UpdateDialogue(&game);
+
+            UpdateQuestChoice(&game);
 
 		}else if (game.currentScreen == EXIT) {
             break;

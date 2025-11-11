@@ -118,16 +118,16 @@ void PlayerStatemachine(Player *self){
 // */
 void InteractWithNpc(NpcEntity *npcEntityList,GameManager *gameManager){
 
+    static float timer = 0;
+    const float delay = 0.1;
+
     for(int i = 0;i < gameManager->numberOfNpcEntitys;i++){
 
-        if(npcEntityList[i].isPlayerNearby && IsKeyPressed(KEY_E) && !gameManager->justInteract){
+        if(npcEntityList[i].isPlayerNearby && IsKeyPressed(KEY_E) && gameManager->canInteract){
             TalkToNpc(&npcEntityList[i],gameManager);
-            gameManager->justInteract = true;
-            gameManager->dialogueInputConsumed = true;
         }
     }
-    if(!IsKeyDown(KEY_E)){
-        gameManager->justInteract = false;
-        gameManager->dialogueInputConsumed = false;
-    }
- }
+
+    gameManager->canInteract = true;
+
+}

@@ -28,14 +28,9 @@ typedef struct GameManager
     Npc *activeNpc; //Componente que armazena qual npc esta ativo 
     Dialogue *activeDialogue;
     DialogueStatus dialogueStatus;
-    bool dialogueInputConsumed;
+    bool canInteract;
 
     int selectedOption;
-
-    int activeDialogueindex; //Componente que armazena qual dialogo do npc ativo esta ativo
-    bool isDialogueActive; //Componente que armazena se o dialogo esta ativo
-
-    bool justInteract; //Componente que armazena se o play acabou de pressionar para interagir
 
 }GameManager;
 
