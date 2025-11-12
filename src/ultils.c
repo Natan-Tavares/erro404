@@ -87,3 +87,12 @@ void UpdateBoolValue(bool *value){
         *value = true;
     }    
 }
+
+int FindIntIndex(int searchInt,int *intList,int listSize){
+    for(int i = 0;i < listSize;i++){
+        if(intList[i] == searchInt){
+            return i;
+        }
+    }
+    return -1;
+}

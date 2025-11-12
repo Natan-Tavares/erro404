@@ -4,7 +4,6 @@
 #include <sprite.h>
 #include <inventory.h>
 #include <object.h>
-#include <npc.h>
 
 typedef struct Player
 {
@@ -14,6 +13,7 @@ typedef struct Player
 
 }Player;
 
+typedef struct NpcEntity NpcEntity; 
 
 //Função para mover o player
 void MovePlayer(Player *self);
@@ -28,6 +28,6 @@ void SetPlayerAnimation(animation *self,state state);
 void PlayerStatemachine(Player *self);
 
 //Função de interagir com o Npc
-void InteractWithNpc(NpcEntity *npcEntityList,GameManager *gameManager);
+void InteractWithNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager);
 
 #endif

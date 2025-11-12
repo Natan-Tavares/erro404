@@ -23,8 +23,12 @@ typedef struct
 
 void InitInventory(Inventory *self);
 
-bool AddItemToInventory(Inventory *self, ItemEntity itemEntity, int quantity);
+bool AddItemToInventory(Inventory *self, int itemId, int quantity);
 
 void DrawInventory(Inventory *inv, Vector2 position);
+
+bool CheckInventoryHasItem(Inventory self,int itemId,int quantityOfItem);
+
+void RemoveItem(Inventory *self,int itemId,int quantityToRemove);
 
 #endif

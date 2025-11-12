@@ -2,6 +2,7 @@
 #define QUEST_H
 
 #include <raylib.h>
+#include <player.h>
 
 #define NUMBER_OF_QUESTS 4
 
@@ -21,16 +22,17 @@ typedef struct Quest
     char description[128];
     int requiredItemId;
     int numberOfRequiredItem;
+    int giftItemId;
     bool isActive;
     QuestStatus status;
-    
+
 }Quest;
 
 typedef struct GameManager GameManager;
 
 Quest *GetQuestById(int id);
 
-void UpdateQuestChoice(GameManager *gameManager);
+void UpdateQuestChoice(Player *player,GameManager *gameManager);
 
 void DrawQuestChoice(GameManager *gameManager);
 

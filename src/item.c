@@ -20,8 +20,13 @@ Item *GetItemCatalog(){
         itemCatalog[0] = (Item){.id = 0,.nome="Moeda",.sprite= (Sprite)
             {
                 .texture=LoadTexture("resources/textures/coin.png"),
-                .animation = (animation){.first = 0 ,.last = 6,.durationLeft = 0.1,.speed=0.1,.state = IDLE }
+                .animation = (animation){.first = 0 ,.last = 6,.durationLeft = 0.1,.numFramesPerAxle={6,1},.speed=0.1,.state = IDLE}
             }};
+        itemCatalog[1] = (Item){.id = 1,.nome="chave",.sprite= (Sprite){
+                .texture = LoadTexture("resources/textures/Key.png"),
+                .animation = (animation){.numFramesPerAxle={1,1},.state = IDLE}
+            }};
+
         initialized = true;
     }
 
@@ -42,6 +47,9 @@ Item *GetItemById(int id){
             return &itemCatalog[i];
         }
     }
+
+    printf("[GetItemById] Item ID %d não encontrado!\n", id);
+    return NULL;
 
 }
 
@@ -115,8 +123,6 @@ Rectangle GetItemHitbox(ItemEntity *itemEntity){
 }
 
 void CheckCollect(ItemEntity *itemEntity,Player *player){
-    Item *item = GetItemById(itemEntity->itemId);
-
     Rectangle itemHitbox = GetItemHitbox(itemEntity);
     Rectangle playerHitbox = GetObjectHitbox(player->object,20,25);
 
@@ -125,7 +131,7 @@ void CheckCollect(ItemEntity *itemEntity,Player *player){
 
         Inventory *inventory = &player->inventory;
 
-        AddItemToInventory(&player->inventory,*itemEntity,1);
+        AddItemToInventory(&player->inventory,itemEntity->itemId,1);
         
     }
 
@@ -133,9 +139,10 @@ void CheckCollect(ItemEntity *itemEntity,Player *player){
 
 void DrawItem(ItemEntity *itemEntity,Vector2 position){
     Item *item = GetItemById(itemEntity->itemId);
+    if(!item) return;
 
-    Rectangle animationFrame = GetAnimationFrame(item->sprite,(Vector2){6,1});
-    Rectangle dest = GetAnimationFrame(item->sprite,(Vector2){6,1});
+    Rectangle animationFrame = GetAnimationFrame(item->sprite,item->sprite.animation.numFramesPerAxle);
+    Rectangle dest = GetAnimationFrame(item->sprite,item->sprite.animation.numFramesPerAxle);
     dest.x = position.x;
     dest.y = position.y;
 

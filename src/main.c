@@ -35,6 +35,7 @@ int main()
             .totalOptions = 2,
 
         },
+        .activeQuestsCount = 0,
         .activeNpc = NULL,
         .canInteract = true,
 
@@ -105,11 +106,11 @@ int main()
 
             CheckAllNpcProximities(npcEntityList,player,game);
 
-            InteractWithNpc(npcEntityList,&game);
+            InteractWithNpc(&player,npcEntityList,&game);
 
             UpdateDialogue(&game);
 
-            UpdateQuestChoice(&game);
+            UpdateQuestChoice(&player,&game);
 
 		}else if (game.currentScreen == EXIT) {
             break;

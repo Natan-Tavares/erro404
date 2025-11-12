@@ -1,28 +1,7 @@
 
 #
 id:0
-position:32,32
-dialogue:Pedrinhooooo inteligente amo todos os dialogos que ele\nescreve que homem <3!
-requestDialogue:pufavooooooooooooooo Pedrinhooooo!!
-thanksDialogue:vlw fiii!!
-
-#
-id:0
-position:100,100
-
-#
-id:0
-position:200,200
-requestDialogue:testando!!
-dialogue:eu amo\nmulheres
-dialogue:amo todas elas
-dialogue:que medo
-
-#
-id:0
-position:500,500
-
-#
-id:
-position:200,400
-
+position:100,100    
+dialogue:Va logo, eu vi algumas por ai
+requestDialogue:Porfavor encontre 3 moedas para mim.
+thanksDialogue:Obrigado amigo

@@ -22,4 +22,6 @@ bool CheckFile(FILE *file);
     //Transforma um valor false em true
 void UpdateBoolValue(bool *value);
 
+int FindIntIndex(int searchInt,int *intList,int listSize);
+
 #endif

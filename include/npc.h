@@ -71,15 +71,6 @@ void DrawNpcs(NpcEntity *npcEntityList,int numberOfNpcs);
  //Checa as proximidades de todos os npcs na lista passada na função
 void CheckAllNpcProximities(NpcEntity *npcEntityList,Player player,GameManager gameManager);
 
-void TalkToNpc(NpcEntity *npcEntity,GameManager *gameManager);
-
-// //Função para checar se o npc tem dialogos
-// void TalkToNpc(Npc *npc,GameManager *game);
-
-// //Função para atualizar os dialogos do npc ativo
-// void UpdateActiveDialogue(GameManager *game);
-
-// //Função para desenhar os dialogos do npc ativo
-// void DrawActiveDialogue(GameManager *game);
+void TalkToNpc(Player *player,NpcEntity *npcEntity,GameManager *gameManager);
 
 #endif

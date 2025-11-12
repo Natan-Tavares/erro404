@@ -116,7 +116,7 @@ void PlayerStatemachine(Player *self){
 //     checa se ele ja esta interagindo com esse npc que ele esta proximo, e executa 
 //     ou não a função de falar com o npc. 
 // */
-void InteractWithNpc(NpcEntity *npcEntityList,GameManager *gameManager){
+void InteractWithNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager){
 
     static float timer = 0;
     const float delay = 0.1;
@@ -124,7 +124,7 @@ void InteractWithNpc(NpcEntity *npcEntityList,GameManager *gameManager){
     for(int i = 0;i < gameManager->numberOfNpcEntitys;i++){
 
         if(npcEntityList[i].isPlayerNearby && IsKeyPressed(KEY_E) && gameManager->canInteract){
-            TalkToNpc(&npcEntityList[i],gameManager);
+            TalkToNpc(player,&npcEntityList[i],gameManager);
         }
     }
 

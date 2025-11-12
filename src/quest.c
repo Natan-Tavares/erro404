@@ -5,6 +5,7 @@
 #include <game.h>
 #include <string.h>
 #include <stdio.h>
+#include <inventory.h>
 #include <utils.h>
 
 Quest *GetQuestCatalog(){
@@ -13,7 +14,7 @@ Quest *GetQuestCatalog(){
 
     if(!isInitialized){
         memset(catalog,0,sizeof(catalog));
-        catalog[0] = (Quest){.id=0,.requiredItemId=0,.numberOfRequiredItem=3,.status=NOT_STARTED};
+        catalog[0] = (Quest){.id=0,.requiredItemId=0,.numberOfRequiredItem=3,.giftItemId=1,};
         
         isInitialized = true;
     }
@@ -31,41 +32,58 @@ Quest *GetQuestById(int id){
     return NULL;
 }
 
-void UpdateQuestChoice(GameManager *gameManager){
+void UpdateQuestChoice(Player *player,GameManager *gameManager){
     DialogueStatus *dialogueStatus = &gameManager->dialogueStatus;
-    if(*dialogueStatus != RESPONSE ) return; 
+    if(*dialogueStatus == NONE || *dialogueStatus == CHOICE || *dialogueStatus == GIVE) return; 
     Quest *quest = GetQuestById(gameManager->activeNpc->questId);
-    if(quest->status == IN_PROGRESS) return;
+    if(quest->status == COMPLETED) return;
 
-    static bool canInteract = false;
+    static bool localCanInteract = false;
 
     if(IsKeyPressed(KEY_UP)) gameManager->selectedOption = (gameManager->selectedOption+1) %2; 
     if(IsKeyPressed(KEY_DOWN)) gameManager->selectedOption = (gameManager->selectedOption+1) %2;
 
-    if(IsKeyPressed(KEY_E) && canInteract){
+    if(IsKeyPressed(KEY_E) && quest->status == NOT_STARTED && localCanInteract){
         if (gameManager->selectedOption == 0)
         {
             quest->status = IN_PROGRESS;
             quest->isActive = true;
+            gameManager->activeQuestsId[gameManager->activeQuestsCount];
+            gameManager->activeQuestsCount++;
         }
         gameManager->dialogueStatus = NONE;
         gameManager->canInteract = false;
-        canInteract = false;    
+        localCanInteract = false;
+        return;
+    }else if(IsKeyPressed(KEY_E) && quest->status == IN_PROGRESS && localCanInteract){
+        if (gameManager->selectedOption == 0){
+            quest->status = COMPLETED;
+            quest->isActive = false;
+            RemoveItem(&player->inventory,quest->requiredItemId,quest->numberOfRequiredItem);
+            bool teste = AddItemToInventory(&player->inventory,quest->giftItemId,1);
+        }
+        gameManager->interactingQuestIndex = quest->id;
+        gameManager->dialogueStatus = NONE;
+        gameManager->canInteract = false;
+        localCanInteract = false;
         return;
     }
     
-    UpdateBoolValue(&canInteract);
+    UpdateBoolValue(&localCanInteract);
     gameManager->canInteract = false;
 
 }
 
 void DrawQuestChoice(GameManager *gameManager){
-    if(gameManager->dialogueStatus != RESPONSE) return;
+    DialogueStatus *dialogueStatus = &gameManager->dialogueStatus;    
+    if(*dialogueStatus == NONE || *dialogueStatus == CHOICE || *dialogueStatus == GIVE) return; 
     
-    DialogueStatus *dialogueStatus = &gameManager->dialogueStatus;
-
     DrawRectangle(100,600,400,120,Fade(BLACK,0.7));
-    DrawText("Aceitar Missão?",120,620,20,WHITE);
+    if(*dialogueStatus == GIVE_CHOICE){
+        DrawText("Entregar itens?",120,620,20,WHITE);        
+    }else{
+        DrawText("Aceitar Missão?",120,620,20,WHITE);
+    }
 
     const char *options[] = {"Sim","Não"};
     for(int i = 0;i < 2;i++){

@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include <npc.h>
 #include <dialogue.h>
+#include <quest.h>
 #include <menu.h>
 
 #define WINDOW_WIDTH 1200 //Tamanho da largura da Janela do Jogo
@@ -27,9 +28,12 @@ typedef struct GameManager
 
     Npc *activeNpc; //Componente que armazena qual npc esta ativo 
     Dialogue *activeDialogue;
+    int activeQuestsId[NUMBER_OF_QUESTS];
+    int activeQuestsCount;
+    int interactingQuestIndex;
     DialogueStatus dialogueStatus;
-    bool canInteract;
 
+    bool canInteract;
     int selectedOption;
 
 }GameManager;

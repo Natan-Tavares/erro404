@@ -9,6 +9,8 @@ typedef enum DialogueStatus{
     NONE,
     CHOICE,
     RESPONSE,
+    GIVE,
+    GIVE_CHOICE,
 
 }DialogueStatus;
 

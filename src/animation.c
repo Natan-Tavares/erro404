@@ -8,7 +8,7 @@
     que falta para o proximo frame da animação e quando chegar a 
     0, passa para o proximo frame ate resetar os frames.
 */
-void UpdateAnimation(animation *animation){
+void UpdateAnimation(animation *animation){    
     float durationTime = GetFrameTime();
     animation->durationLeft -= durationTime;
 

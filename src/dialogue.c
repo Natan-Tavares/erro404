@@ -6,7 +6,7 @@
 #include <npc.h>
 
 void StartDialogue(Dialogue *dialogue,GameManager *gameManager,DialogueStatus status){
-    if(strlen(dialogue->text) == 0) return;
+    if(strlen(dialogue->text) == 0) return; //evita caso um npc não tenha dialogos, de aparecer vazio o espaço do dialogo
 
     gameManager->activeDialogue = dialogue;
 
@@ -20,24 +20,20 @@ void UpdateDialogue(GameManager *gameManager){
     Dialogue *dialogue = gameManager->activeDialogue;
     if(!dialogue) return;
 
-    static bool canInteract = false;
+    static bool localCanInteract = false;
 
-    static float timer = 0;
-    const float delay = 0.2;
-    timer += GetFrameTime();
     int textLen = strlen(dialogue->text);
 
     if(dialogue->visibleChars < textLen){
         UpdateVisibleChars(dialogue->text,&dialogue->visibleChars,0.05);
 
-        if(IsKeyPressed(KEY_E) && canInteract){
+        if(IsKeyPressed(KEY_E) && localCanInteract){
             dialogue->visibleChars = textLen;   
-            canInteract = false;
+            localCanInteract = false;
             return;
         }
-        UpdateBoolValue(&canInteract);
-        return;
-    }else if(IsKeyPressed(KEY_E) && canInteract){
+
+    }else if(IsKeyPressed(KEY_E) && localCanInteract){
         DialogueStatus *status = &gameManager->dialogueStatus;
 
         gameManager->activeDialogue = NULL;
@@ -48,17 +44,19 @@ void UpdateDialogue(GameManager *gameManager){
                 break;
         
             case CHOICE:
-                gameManager->dialogueStatus = RESPONSE;
+                *status = RESPONSE;
                 break;
-
-            case RESPONSE:
+            case GIVE:
+                *status = GIVE_CHOICE;
+                break;                
+            default:
                 break;
         }
         dialogue->visibleChars = 0;
-        canInteract = false;
+        localCanInteract = false;
         return;
     }
-    UpdateBoolValue(&canInteract);
+    UpdateBoolValue(&localCanInteract);
 
 }
 

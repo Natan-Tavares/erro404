@@ -8,6 +8,7 @@
 #include <string.h>
 #include <raylib.h>
 #include <player.h>
+#include <inventory.h>
 #include <utils.h>
 
 Npc *GetNpcCatalog(){
@@ -218,12 +219,16 @@ void CheckAllNpcProximities(NpcEntity *npcEntityList,Player player,GameManager g
     }
 }
 
+void GiveToNpc(){
+
+}
+
 /*
      Função para checar se o npc tem dialogos.
      Recebendo o npc e o gerenciador do jogo, checa se o npc passado tem dialogos
      e se tiver chama a função StartNpcDialogue para iniciar o primeiro dialogo. 
 */
-void TalkToNpc(NpcEntity *npcEntity,GameManager *gameManager){
+void TalkToNpc(Player *player,NpcEntity *npcEntity,GameManager *gameManager){
     if(!npcEntity) return;
 
     Npc *npc = GetNpcById(npcEntity->npcId);
@@ -231,7 +236,7 @@ void TalkToNpc(NpcEntity *npcEntity,GameManager *gameManager){
 
     gameManager->activeNpc = npc;
 
-    if(npc->type == QUEST_GIVER){
+    if(npc->type == QUEST_GIVER && !GetQuestById(npc->questId)->isActive){
         
         switch (quest->status)
         {
@@ -245,7 +250,15 @@ void TalkToNpc(NpcEntity *npcEntity,GameManager *gameManager){
             StartDialogue(&npcEntity->thanksDialogue,gameManager,NONE);
             break;
         }
+    }else if(npc->type == QUEST_GIVER && GetQuestById(npc->questId)->isActive){
+        if (CheckInventoryHasItem(player->inventory,quest->requiredItemId,quest->numberOfRequiredItem))
+        {
+            StartDialogue(&npcEntity->normalDialogue,gameManager,GIVE);
+        }else{
+            StartDialogue(&npcEntity->normalDialogue,gameManager,NONE);
+        }
     }else{
         StartDialogue(&npcEntity->normalDialogue,gameManager,NONE);
-    }  
+    }
+    
 }

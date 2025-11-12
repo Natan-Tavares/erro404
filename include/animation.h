@@ -23,6 +23,8 @@ typedef struct animation
     int current; //index do frame atual
     float speed; //tempo que leva ate o proximo frame(quanto menor mais rapido)
 
+    Vector2 numFramesPerAxle;
+
     float durationLeft; //duração ate o proximo frame(inicialize = speed)
 
     state state; // animação em execução
