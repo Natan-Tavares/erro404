@@ -12,7 +12,11 @@ typedef struct Object
 
     float speed;
 
+    bool isPushable;
+
 }Object;
+
+typedef struct Player Player;
 
 Rectangle GetObjectHitbox(Object self,float width,float height);
 
@@ -23,5 +27,11 @@ void applyVelY(Object *self);
 float CheckCollisionX(Rectangle hitbox,Rectangle collisionRectangle);
 
 float CheckCollisionY(Rectangle hitbox,Rectangle collisionRectangle);
+
+void DrawObject(Object *object);
+
+void PushObjectX(Object *object,Player *player, unsigned char *map);
+
+void PushObjectY(Object *object, Player *player, unsigned char *map);
 
 #endif

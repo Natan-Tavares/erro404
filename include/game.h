@@ -7,8 +7,8 @@
 #include <quest.h>
 #include <menu.h>
 
-#define WINDOW_WIDTH 1200 //Tamanho da largura da Janela do Jogo
-#define WINDOW_HEIGHT 900 //Tamanho da altura da Janela do Jogo
+#define WINDOW_WIDTH 800 //Tamanho da largura da Janela do Jogo
+#define WINDOW_HEIGHT 700 //Tamanho da altura da Janela do Jogo
 
 typedef enum GameScreen {
     MENU,

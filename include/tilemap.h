@@ -46,4 +46,10 @@ void CheckTilesCollisionY(Object *object, unsigned char *map);
 //Função para gerar colisão no X dos tiles colisiveis 
 void CheckTilesCollisionX(Object *object, unsigned char *map);
 
+Tile GetTileById(unsigned char id);
+
+TileBounds GetTileBounds(Rectangle hitbox);
+
+Rectangle CreateTileRectangle(Vector2 position);
+
 #endif 

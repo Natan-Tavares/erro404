@@ -73,7 +73,10 @@ int main()
         .zoom = 3.0,
     };
 
-    WriteMap("resources/maps/map.bin");
+    Object caixa = (Object){
+        .isPushable = true,
+        .position = {300,300},
+    };
 
     InitInventory(&player.inventory);
 
@@ -89,10 +92,12 @@ int main()
 			MovePlayer(&player);
 
 			applyVelX(&(player.object));
-			CheckTilesCollisionX(&(player.object),map);        
+			CheckTilesCollisionX(&(player.object),map);      
+            PushObjectX(&caixa,&player,map);
 
 			applyVelY(&(player.object));
 			CheckTilesCollisionY(&(player.object),map);
+            PushObjectY(&caixa,&player,map);
 
 			PlayerStatemachine(&player);
 
@@ -104,13 +109,8 @@ int main()
 
 			if(GetDistance(camera.target,player.object.position) > 25) UpdateCamera2D(&camera,player.object.position);
 
-            CheckAllNpcProximities(npcEntityList,player,game);
+            UpdateNpc(&player,npcEntityList,&game);
 
-            InteractWithNpc(&player,npcEntityList,&game);
-
-            UpdateDialogue(&game);
-
-            UpdateQuestChoice(&player,&game);
 
 		}else if (game.currentScreen == EXIT) {
             break;
@@ -133,6 +133,7 @@ int main()
 
                     DrawItemEntityList(ItemEntitylist,game.numberOfItemEntitys);
                     
+                    DrawObject(&caixa);
 
 			    EndMode2D();
 

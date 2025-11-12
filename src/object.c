@@ -1,6 +1,9 @@
 #include "object.h"
 
 #include <raylib.h>
+#include <player.h>
+#include <math.h>
+#include <tilemap.h>
 
 /*
     Função para pegar a hitbox do sprite
@@ -72,5 +75,122 @@ float CheckCollisionX(Rectangle hitbox,Rectangle collisionRectangle){
     }
 
     return 0;
+
+}
+
+bool correctObjectCollisionX(Object *object,Object *collisionObject){
+    float totalPush = 0;
+
+    Rectangle collisionRectangle = GetObjectHitbox(*collisionObject,16,16);
+    Rectangle objectHitbox = GetObjectHitbox(*object,20,25);
+
+    float push = CheckCollisionX(objectHitbox,collisionRectangle);
+
+    if (fabs(push) > fabs(totalPush)) totalPush = push;
+
+    object->position.x += totalPush;
+
+}
+
+bool correctObjectCollisionY(Object *object,Object *collisionObject){
+    float totalPush = 0;
+
+    Rectangle collisionRectangle = GetObjectHitbox(*collisionObject,16,16);
+    Rectangle objectHitbox = GetObjectHitbox(*object,20,25);
+
+    float push = CheckCollisionY(objectHitbox,collisionRectangle);
+
+    if (fabs(push) > fabs(totalPush)) totalPush = push;
+
+    object->position.y += totalPush;
+
+}
+bool ObjectWillCollideWithTilesX(Object *object, unsigned char *map, float deltaX) {
+    Rectangle hitbox = GetObjectHitbox(*object, 16, 16);
+    hitbox.x += deltaX;
+
+    TileBounds tiles = GetTileBounds(hitbox);
+
+    for (int y = tiles.top; y <= tiles.bottom; y++) {
+        for (int x = tiles.left; x <= tiles.right; x++) {
+            if (GetTileById(map[y * MAP_COLS + x]).isSolid) return true;
+        }
+    }
+    return false;
+}
+
+bool ObjectWillCollideWithTilesY(Object *object, unsigned char *map, float deltaY) {
+    Rectangle hitbox = GetObjectHitbox(*object, 16, 16);
+    hitbox.y += deltaY;  
+
+    TileBounds tiles = GetTileBounds(hitbox);
+
+    for (int y = tiles.top; y <= tiles.bottom; y++) {
+        for (int x = tiles.left; x <= tiles.right; x++) {
+            if (GetTileById(map[y * MAP_COLS + x]).isSolid) return true;
+        }
+    }
+    return false;
+}
+
+void PushObjectX(Object *object, Player *player, unsigned char *map) {
+    if (!object->isPushable) return;
+
+    correctObjectCollisionX(object, &player->object);
+
+    Rectangle objHitbox = GetObjectHitbox(*object, 16, 16);
+    TileBounds tiles = GetTileBounds(objHitbox);
+    float totalPush = 0;
+
+    for(int y = tiles.top; y <= tiles.bottom; y++){
+        for(int x = tiles.left; x <= tiles.right; x++){
+            Tile tile = GetTileById(map[y * MAP_COLS + x]);
+            if (tile.isSolid) {
+                Rectangle tileRect = CreateTileRectangle((Vector2){x, y});
+                float push = CheckCollisionX(objHitbox, tileRect);
+                if (fabs(push) > fabs(totalPush)) totalPush = push;
+            }
+        }
+    }
+
+    if(totalPush != 0){
+        object->position.x += totalPush;         
+        player->object.position.x += totalPush;  
+        player->object.velocity.x = 0;           
+    }
+}
+
+void PushObjectY(Object *object, Player *player, unsigned char *map) {
+    if (!object->isPushable) return;
+
+    correctObjectCollisionY(object, &player->object);
+
+    Rectangle objHitbox = GetObjectHitbox(*object, 16, 16);
+    TileBounds tiles = GetTileBounds(objHitbox);
+    float totalPush = 0;
+
+    for(int y = tiles.top; y <= tiles.bottom; y++){
+        for(int x = tiles.left; x <= tiles.right; x++){
+            Tile tile = GetTileById(map[y * MAP_COLS + x]);
+            if (tile.isSolid) {
+                Rectangle tileRect = CreateTileRectangle((Vector2){x, y});
+                float push = CheckCollisionY(objHitbox, tileRect);
+                if (fabs(push) > fabs(totalPush)) totalPush = push;
+            }
+        }
+    }
+
+    if(totalPush != 0){
+        object->position.y += totalPush;         
+        player->object.position.y += totalPush;  
+        player->object.velocity.y = 0;
+    }
+}
+
+void DrawObject(Object *object){
+
+    Rectangle objectHitbox = GetObjectHitbox(*object,16,16);
+
+    DrawRectangleRec(objectHitbox,GREEN);
 
 }

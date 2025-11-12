@@ -73,4 +73,6 @@ void CheckAllNpcProximities(NpcEntity *npcEntityList,Player player,GameManager g
 
 void TalkToNpc(Player *player,NpcEntity *npcEntity,GameManager *gameManager);
 
+void UpdateNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager);
+
 #endif

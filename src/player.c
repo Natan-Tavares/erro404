@@ -99,23 +99,6 @@ void PlayerStatemachine(Player *self){
 
 }
 
-// /*
-//     Função que checa se o local na memoria que o npc passado esta, é o mesmo em que o 
-//     npc ativo do jogo esta. 
-// */
-// bool CheckActiveNpc(Npc *npcToCheck,GameManager gameManager){
-
-//     if(npcToCheck != gameManager.activeNpc) return false;
-
-//     return true;
-
-// }
-// /*
-//     Função que faz o player interagir com os npcs, ele passa por toda lista de npcs
-//     checando cada um, o player estiver perto do npc e apertar o botão de interação,
-//     checa se ele ja esta interagindo com esse npc que ele esta proximo, e executa 
-//     ou não a função de falar com o npc. 
-// */
 void InteractWithNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager){
 
     static float timer = 0;

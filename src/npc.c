@@ -17,7 +17,7 @@ Npc *GetNpcCatalog(){
     
     if(!isInitialized){
         memset(catalog,0,sizeof(catalog));
-        catalog[0] = (Npc){.id=0,.name="Coisa amarela",.type=QUEST_GIVER,.questId=0,.sprite = (Sprite){.texture=LoadTexture("resources/textures/the_thing.png")}};
+        catalog[0] = (Npc){.id=0,.name="!!!!@$$W!(YR&*(U&R))",.type=QUEST_GIVER,.questId=0,.sprite = (Sprite){.texture=LoadTexture("resources/textures/the_thing.png")}};
 
         isInitialized = true;
     }
@@ -219,10 +219,6 @@ void CheckAllNpcProximities(NpcEntity *npcEntityList,Player player,GameManager g
     }
 }
 
-void GiveToNpc(){
-
-}
-
 /*
      Função para checar se o npc tem dialogos.
      Recebendo o npc e o gerenciador do jogo, checa se o npc passado tem dialogos
@@ -261,4 +257,14 @@ void TalkToNpc(Player *player,NpcEntity *npcEntity,GameManager *gameManager){
         StartDialogue(&npcEntity->normalDialogue,gameManager,NONE);
     }
     
+}
+
+void UpdateNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager){
+    CheckAllNpcProximities(npcEntityList,*player,*gameManager);
+
+    InteractWithNpc(player,npcEntityList,gameManager);
+
+    UpdateDialogue(gameManager);
+
+    UpdateQuestChoice(player,gameManager);    
 }
