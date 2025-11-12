@@ -1,6 +1,14 @@
 # erro404
 (PLACE HOLDER)
 ## Descrição
+“Erro: 404” é uma experiência narrativa sobre a memória, o abandono e o silêncio digital.
+
+O jogador explora um mundo incompleto — um jogo que parece ter sido esquecido por seu próprio criador.
+
+À medida que avança, descobre ambientes inacabados, personagens que repetem falas quebradas e arquivos de desenvolvimento deixados para trás.
+
+No fim, a verdade emerge: o jogo foi interrompido por um motivo trágico, e o protagonista passa a compreender que ele próprio é parte desse projeto inacabado — um fragmento da mente de alguém que não está mais aqui.
+
 Jogo narrativo que explora glitches, memórias corrompidas e a sensação de estar perdido num jogo esquecido.
 
 ---
