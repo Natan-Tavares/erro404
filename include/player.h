@@ -8,7 +8,7 @@
 typedef struct Player
 {
     Sprite sprite;
-    Object object;
+    ObjectEntity object;
     Inventory inventory;
 
 }Player;

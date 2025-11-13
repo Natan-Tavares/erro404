@@ -1,0 +1,15 @@
+
+#
+id:0
+position:30,30
+pushable:sim
+
+#
+id:0
+position:50,50
+pushable:sim
+
+#
+id:0
+position:80,80
+pushable:

@@ -41,10 +41,10 @@ unsigned char *ReadMap(const char *fileName);
 void DrawMap(unsigned char *self);
 
 //Função para gerar colisão no Y dos tiles colisiveis 
-void CheckTilesCollisionY(Object *object, unsigned char *map);
+void CheckTilesCollisionY(ObjectEntity *object, unsigned char *map);
 
 //Função para gerar colisão no X dos tiles colisiveis 
-void CheckTilesCollisionX(Object *object, unsigned char *map);
+void CheckTilesCollisionX(ObjectEntity *object, unsigned char *map);
 
 Tile GetTileById(unsigned char id);
 

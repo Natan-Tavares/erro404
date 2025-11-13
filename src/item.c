@@ -119,7 +119,7 @@ ItemEntity *LoadItems(const char* filename,int *numberOfItems){
 }
 
 Rectangle GetItemHitbox(ItemEntity *itemEntity){
-    return GetObjectHitbox((Object){.position = itemEntity->position},20,20);
+    return GetObjectHitbox((ObjectEntity){.position = itemEntity->position},20,20);
 }
 
 void CheckCollect(ItemEntity *itemEntity,Player *player){

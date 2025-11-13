@@ -203,7 +203,7 @@ void DrawNpcs(NpcEntity *npcEntityList,int numberOfNpcs){
     Calcula a distancia do npc para o player e checa se ele é menor que o raio
     de detecção
 */
-  void UpdateNpcProximity(NpcEntity *npcEntity,Object object, float detectionRange) {
+  void UpdateNpcProximity(NpcEntity *npcEntity,ObjectEntity object, float detectionRange) {
     float dist = GetDistance(npcEntity->position, object.position);
     npcEntity->isPlayerNearby = (dist <= detectionRange);
 

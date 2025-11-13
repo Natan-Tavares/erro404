@@ -8,7 +8,6 @@
 #include <dialogue.h>
 #include <quest.h>
 
-#define MAX_LINE_LENGTH 512 //Numero maximo de caracteres numa linha de arquivo de npcs
 #define MAX_DIALOGUE 10 //Numero maximo de dialogos que um npc pode ter
 
 #define NUMBER_OF_NPCS 4

@@ -43,6 +43,7 @@ int main()
 
     NpcEntity *npcEntityList = LoadNpcs("resources/npcs.txt",&game.numberOfNpcEntitys);
     ItemEntity *ItemEntitylist = LoadItems("resources/items.txt",&game.numberOfItemEntitys);
+    ObjectEntity *objectEntityList = LoadObjects("resources/objects.txt",&game.numberOfObjectEntitys);
 
     animation idle = {
         .first = 0,
@@ -54,7 +55,7 @@ int main()
     };
 
     Player player = (Player){
-        .object = (Object){
+        .object = (ObjectEntity){
             .position = (Vector2){0,0},
             .direction = (Vector2){1,1},
             .speed = 2.0,
@@ -73,7 +74,7 @@ int main()
         .zoom = 3.0,
     };
 
-    Object caixa = (Object){
+    ObjectEntity caixa = (ObjectEntity){
         .isPushable = true,
         .position = {300,300},
     };
@@ -88,16 +89,19 @@ int main()
 
         }else if (game.currentScreen == GAME) {
             if (IsKeyPressed(KEY_C)) game.currentScreen = MENU;
+            
+            MovePlayer(&player);
 
-			MovePlayer(&player);
+            applyVelX(&(player.object));
+            CheckTilesCollisionX(&(player.object), map);
 
-			applyVelX(&(player.object));
-			CheckTilesCollisionX(&(player.object),map);      
-            PushObjectX(&caixa,&player,map);
+            ResolvePlayerVsObjects(&player, objectEntityList,map, game.numberOfObjectEntitys);
 
-			applyVelY(&(player.object));
-			CheckTilesCollisionY(&(player.object),map);
-            PushObjectY(&caixa,&player,map);
+
+            applyVelY(&(player.object));
+            CheckTilesCollisionY(&(player.object), map);
+
+            ResolvePlayerVsObjects(&player, objectEntityList,map, game.numberOfObjectEntitys);
 
 			PlayerStatemachine(&player);
 
@@ -133,7 +137,7 @@ int main()
 
                     DrawItemEntityList(ItemEntitylist,game.numberOfItemEntitys);
                     
-                    DrawObject(&caixa);
+                    DrawObjects(objectEntityList,game);
 
 			    EndMode2D();
 
@@ -150,9 +154,11 @@ int main()
     UnloadTexture(player.sprite.texture);
     free(map);
     free(npcEntityList);
+    free(ItemEntitylist);
+    free(objectEntityList);
     FreeNpcCatalog( );
     FreeItemCatalog();
-    free(ItemEntitylist);
+    FreeObjectCatalog();
     CloseWindow();
     return 0;
 }

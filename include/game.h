@@ -7,8 +7,12 @@
 #include <quest.h>
 #include <menu.h>
 
+#define NUMBER_OF_OBJECTS 1
+
 #define WINDOW_WIDTH 800 //Tamanho da largura da Janela do Jogo
 #define WINDOW_HEIGHT 700 //Tamanho da altura da Janela do Jogo
+
+#define MAX_LINE_LENGTH 512 //Numero maximo de caracteres numa linha de arquivo de npcs
 
 typedef enum GameScreen {
     MENU,
@@ -25,12 +29,15 @@ typedef struct GameManager
 
     int numberOfNpcEntitys; //Componente que armazena a quantidade de npcs no mapa
     int numberOfItemEntitys; //Componente que armazena a quantidade de entidades de items no mapa
+    int numberOfObjectEntitys;
 
     Npc *activeNpc; //Componente que armazena qual npc esta ativo 
     Dialogue *activeDialogue;
+    //
     int activeQuestsId[NUMBER_OF_QUESTS];
     int activeQuestsCount;
     int interactingQuestIndex;
+    //
     DialogueStatus dialogueStatus;
 
     bool canInteract;

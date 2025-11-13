@@ -137,7 +137,7 @@ void DrawMap(unsigned char *self) {
     *Nota: função suscetível a mudança quando os tiles forem definidos,
     para mudar a forma de checar os tiles colisiveis.
 */
-void CheckTilesCollisionX(Object *object, unsigned char *map) {
+void CheckTilesCollisionX(ObjectEntity *object, unsigned char *map) {
 
     Rectangle hitbox = GetObjectHitbox(*object,20,25);
     TileBounds tiles = GetTileBounds(hitbox);
@@ -170,7 +170,7 @@ void CheckTilesCollisionX(Object *object, unsigned char *map) {
     *Nota: função suscetível a mudança quando os tiles forem definidos,
     para mudar a forma de checar os tiles colisiveis 
 */
-void CheckTilesCollisionY(Object *object, unsigned char *map) {
+void CheckTilesCollisionY(ObjectEntity *object, unsigned char *map) {
 
     Rectangle hitbox = GetObjectHitbox(*object,20,25);
     TileBounds tiles = GetTileBounds(hitbox);
