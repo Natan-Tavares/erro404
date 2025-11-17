@@ -207,228 +207,100 @@ void DrawObjects(ObjectEntity *objectList,GameManager gameManager){
     }
 }
 
-static inline bool IsValidTile(int x, int y) {
-    return (x >= 0 && x < MAP_COLS && y >= 0 && y < MAP_ROWS);
-}
+bool TryMoveObjectChain(ObjectEntity *objects,unsigned char *map,int count,int index,float pushX,float pushY) {
+    ObjectEntity *b = &objects[index];
 
-static inline void ApplyPushX(ObjectEntity *a, ObjectEntity *b, float push) {
-    if (a->isPushable && b->isPushable) {
-        a->position.x += push * 0.5f;
-        b->position.x -= push * 0.5f;
-    } else if (a->isPushable) {
-        a->position.x += push;
-    } else if (b->isPushable) {
-        b->position.x -= push;
-    }
-    a->velocity.x = 0;
-    b->velocity.x = 0;
-}
+    float prevX = b->position.x;
+    float prevY = b->position.y;
 
-static inline void ApplyPushY(ObjectEntity *a, ObjectEntity *b, float push) {
-    if (a->isPushable && b->isPushable) {
-        a->position.y += push * 0.5f;
-        b->position.y -= push * 0.5f;
-    } else if (a->isPushable) {
-        a->position.y += push;
-    } else if (b->isPushable) {
-        b->position.y -= push;
-    }
-    a->velocity.y = 0;
-    b->velocity.y = 0;
-}
+    b->position.x += pushX;
+    b->position.y += pushY;
 
-static void ResolveObjectVsObject(ObjectEntity *a, ObjectEntity *b) {
-    Rectangle hitA = GetObjectHitbox(*a, 16, 16);
-    Rectangle hitB = GetObjectHitbox(*b, 16, 16);
+    Rectangle hit = GetObjectHitbox(*b, 16, 16);
 
-    if (!CheckCollisionRecs(hitA, hitB)) return;
+    TileBounds tiles = GetTileBounds(hit);
+    for (int ty = tiles.top; ty <= tiles.bottom; ty++) {
+        for (int tx = tiles.left; tx <= tiles.right; tx++) {
 
-    float pushX = CheckCollisionX(hitA, hitB);
-    float pushY = CheckCollisionY(hitA, hitB);
-
-    if (fabsf(pushX) < fabsf(pushY)) {
-        ApplyPushX(a, b, pushX);
-    } else {
-        ApplyPushY(a, b, pushY);
-    }
-}
-
-static void ResolveAllObjects(ObjectEntity *objects, int count) {
-    for (int i = 0; i < count - 1; i++) {
-        for (int j = i + 1; j < count; j++) {
-            ResolveObjectVsObject(&objects[i], &objects[j]);
-        }
-    }
-}
-
-static void ResolveObjectVsMap(ObjectEntity *obj, unsigned char *map) {
-    if (!obj || !map) return;
-
-    Rectangle hit = GetObjectHitbox(*obj, 16, 16);
-    TileBounds bounds = GetTileBounds(hit);
-
-    float totalPushX = 0;
-    float totalPushY = 0;
-
-    for (int y = bounds.top; y <= bounds.bottom; y++) {
-        for (int x = bounds.left; x <= bounds.right; x++) {
-            if (!IsValidTile(x, y)) continue;
-
-            Tile tile = GetTileById(map[y * MAP_COLS + x]);
-            if (!tile.isSolid) continue;
-
-            Rectangle tileRect = CreateTileRectangle((Vector2){x, y});
-
-            if (CheckCollisionRecs(hit, tileRect)) {
-                float pushX = CheckCollisionX(hit, tileRect);
-                float pushY = CheckCollisionY(hit, tileRect);
-
-                if (fabsf(pushX) < fabsf(pushY)) {
-                    totalPushX = pushX;
-                    obj->position.x += totalPushX;
-                    obj->velocity.x = 0;
-                    hit = GetObjectHitbox(*obj, 16, 16);
-                } else {
-                    totalPushY = pushY;
-                    obj->position.y += totalPushY;
-                    obj->velocity.y = 0;
-                    hit = GetObjectHitbox(*obj, 16, 16);
-                }
+            if (GetTileById(map[ty * MAP_COLS + tx]).isSolid == true) {
+                b->position.x = prevX;
+                b->position.y = prevY;
+                return false;
             }
         }
     }
+
+    for (int j = 0; j < count; j++) {
+        if (j == index) continue;
+
+        Rectangle other = GetObjectHitbox(objects[j], 16, 16);
+
+        if (CheckCollisionRecs(hit, other)) {
+
+            if (objects[j].isPushable) {
+
+                if (!TryMoveObjectChain(objects, map, count, j, pushX, pushY)) {
+                    b->position.x = prevX;
+                    b->position.y = prevY;
+                    return false;
+                }
+
+            } else {
+                b->position.x = prevX;
+                b->position.y = prevY;
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
-void ResolvePlayerVsObjects(Player *player, ObjectEntity *objects,unsigned char *map, int count) {
-    ObjectEntity *a = &player->object;
+void ResolvePlayerVsObjectsX(Player *player, ObjectEntity *objects, unsigned char *map, int count) {
+    ObjectEntity *p = &player->object;
 
     for (int i = 0; i < count; i++) {
         ObjectEntity *b = &objects[i];
 
-        Rectangle hitA = GetObjectHitbox(*a, 16, 16);
-        Rectangle hitB = GetObjectHitbox(*b, 16, 16);
+        Rectangle ph = GetObjectHitbox(*p, 16, 16);
+        Rectangle oh = GetObjectHitbox(*b, 16, 16);
 
-        if (!CheckCollisionRecs(hitA, hitB)) continue;
+        if (!CheckCollisionRecs(ph, oh)) continue;
 
-        float pushX = CheckCollisionX(hitA, hitB);
-        float pushY = CheckCollisionY(hitA, hitB);
+        float push = CheckCollisionX(ph, oh);
 
-        bool resolveX = fabsf(pushX) < fabsf(pushY);
-
-        // --- EIXO X ---
-        if (resolveX) {
-            if (!b->isPushable) {
-                // objeto fixo → player é bloqueado completamente
-                a->position.x += pushX;
-                a->velocity.x = 0;
-            } else {
-                // tenta mover o objeto empurrável
-                float prevX = b->position.x;
-                b->position.x -= pushX;
-
-                // rechecagem para evitar empurrar dentro de outro obstáculo
-                Rectangle newHitB = GetObjectHitbox(*b, 16, 16);
-                bool stillColliding = false;
-
-                for (int j = 0; j < count; j++) {
-                    if (j == i) continue;
-                    Rectangle other = GetObjectHitbox(objects[j], 16, 16);
-                    if (CheckCollisionRecs(newHitB, other)) {
-                        stillColliding = true;
-                        break;
-                    }
-                }
-
-                TileBounds tiles = GetTileBounds(newHitB);
-            
-                for(int y = tiles.top; y <= tiles.bottom; y++){
-                    for(int x = tiles.left; x <= tiles.right; x++){
-
-                        if(GetTileById(map[y * MAP_COLS + x]).isSolid == true){
-
-                           Rectangle tileRectangle = CreateTileRectangle((Vector2){x,y});
-                            if (CheckCollisionRecs(newHitB, tileRectangle)) {
-                                stillColliding = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (stillColliding) {
-                    // caixa não pode se mover → player é bloqueado
-                    b->position.x = prevX;
-                    a->position.x += pushX;
-                    a->velocity.x = 0;
-                } else {
-                    // caixa se move normalmente
-                    b->velocity.x = 0;
-                }
-            }
+        if (!b->isPushable) {
+            p->position.x += push;
+            continue;
         }
 
-        // --- EIXO Y ---
-        else {
-            if (!b->isPushable) {
-                a->position.y += pushY;
-                a->velocity.y = 0;
-            } else {
-                float prevY = b->position.y;
-                b->position.y -= pushY;
-
-                Rectangle newHitB = GetObjectHitbox(*b, 16, 16);
-                bool stillColliding = false;
-
-                for (int j = 0; j < count; j++) {
-                    if (j == i) continue;
-                    Rectangle other = GetObjectHitbox(objects[j], 16, 16);
-                    if (CheckCollisionRecs(newHitB, other)) {
-                        stillColliding = true;
-                        break;
-                    }
-                }
-                TileBounds tiles = GetTileBounds(newHitB);
-            
-                for(int y = tiles.top; y <= tiles.bottom; y++){
-                    for(int x = tiles.left; x <= tiles.right; x++){
-
-                        if(GetTileById(map[y * MAP_COLS + x]).isSolid == true){
-
-                           Rectangle tileRectangle = CreateTileRectangle((Vector2){x,y});
-                            if (CheckCollisionRecs(newHitB, tileRectangle)) {
-                                stillColliding = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (stillColliding) {
-                    b->position.y = prevY;
-                    a->position.y += pushY;
-                    a->velocity.y = 0;
-                } else {
-                    a->velocity.y = 0;
-                    b->velocity.y = 0;
-                }
-            }
+        if (!TryMoveObjectChain(objects, map, count, i, -push, 0)) {
+            p->position.x += push;
         }
     }
 }
 
-void UpdateObjectsPhysics(ObjectEntity *objects, int count, unsigned char *map) {
-    if (!objects || count <= 0 || !map) return;
+void ResolvePlayerVsObjectsY(Player *player, ObjectEntity *objects, unsigned char *map, int count) {
+    ObjectEntity *p = &player->object;
 
-    // Atualiza movimento e colisão de cada objeto
     for (int i = 0; i < count; i++) {
-        // 1️⃣ aplica velocidade
-        applyVelX(&objects[i]);
-        applyVelY(&objects[i]);
+        ObjectEntity *b = &objects[i];
 
-        // 2️⃣ resolve colisão com o mapa
-        ResolveObjectVsMap(&objects[i], map);
+        Rectangle ph = GetObjectHitbox(*p, 16, 16);
+        Rectangle oh = GetObjectHitbox(*b, 16, 16);
+
+        if (!CheckCollisionRecs(ph, oh)) continue;
+
+        float push = CheckCollisionY(ph, oh);
+
+        // OBJETO SÓLIDO
+        if (!b->isPushable) {
+            p->position.y += push;
+            continue;
+        }
+
+        if (!TryMoveObjectChain(objects, map, count, i, 0, -push)) {
+            p->position.y += push;
+        }
     }
-
-    // 3️⃣ resolve colisões entre objetos
-    ResolveAllObjects(objects, count);
 }

@@ -95,13 +95,12 @@ int main()
             applyVelX(&(player.object));
             CheckTilesCollisionX(&(player.object), map);
 
-            ResolvePlayerVsObjects(&player, objectEntityList,map, game.numberOfObjectEntitys);
-
+            ResolvePlayerVsObjectsX(&player, objectEntityList,map, game.numberOfObjectEntitys);
 
             applyVelY(&(player.object));
             CheckTilesCollisionY(&(player.object), map);
 
-            ResolvePlayerVsObjects(&player, objectEntityList,map, game.numberOfObjectEntitys);
+            ResolvePlayerVsObjectsY(&player, objectEntityList,map, game.numberOfObjectEntitys);
 
 			PlayerStatemachine(&player);
 

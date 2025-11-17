@@ -46,14 +46,7 @@ ObjectEntity *LoadObjects(const char *filename,int *numberOfObjects);
 
 void FreeObjectCatalog();
 
-void PushObjectX(ObjectEntity *object,Player *player, unsigned char *map);
+void ResolvePlayerVsObjectsY(Player *player, ObjectEntity *objects,unsigned char *map, int count);
+void ResolvePlayerVsObjectsX(Player *player, ObjectEntity *objects,unsigned char *map, int count);
 
-void PushObjectY(ObjectEntity *object, Player *player, unsigned char *map);
-
-void PushAllObjectsX(ObjectEntity *objectList,Player *player,GameManager gameManager, unsigned char *map);
-
-void PushAllObjectsY(ObjectEntity *objectList,Player *player,GameManager gameManager, unsigned char *map);
-
-void UpdateObjectsPhysics(ObjectEntity *objects, int count, unsigned char *map);
-void ResolvePlayerVsObjects(Player *player, ObjectEntity *objects,unsigned char *map, int count);
 #endif
