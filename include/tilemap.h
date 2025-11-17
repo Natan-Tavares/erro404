@@ -9,7 +9,7 @@
 
 #define HEIGHT 1024 //altura do mapa(recomendado que seja divisivel pelo tamanho do tile)
 #define WIDTH 1536 // largura do mapa(recomendado que seja divisivel pelo tamanho do tile)
-#define TILE_SIZE 16 //tamanho dos tiles(recomando que seja divisivel por 8)
+#define TILE_SIZE 16 //tamanho dos tiles(recomendado que seja divisivel por 8)
 
 #define MAP_ROWS (HEIGHT / TILE_SIZE) //Quantidade de linhas dos mapas
 #define MAP_COLS (WIDTH / TILE_SIZE) //Quantidade de colunas dos mapas
