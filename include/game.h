@@ -7,8 +7,6 @@
 #include <quest.h>
 #include <menu.h>
 
-#define NUMBER_OF_OBJECTS 1
-
 #define WINDOW_WIDTH 800 //Tamanho da largura da Janela do Jogo
 #define WINDOW_HEIGHT 700 //Tamanho da altura da Janela do Jogo
 
@@ -32,6 +30,7 @@ typedef struct GameManager
     int numberOfObjectEntitys;
 
     Npc *activeNpc; //Componente que armazena qual npc esta ativo 
+    ObjectEntity *activeObject;
     Dialogue *activeDialogue;
     //
     int activeQuestsId[NUMBER_OF_QUESTS];

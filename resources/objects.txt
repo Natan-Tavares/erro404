@@ -2,7 +2,8 @@
 #
 id:0
 position:30,30
-pushable:sim
+solid:sim
+pushable:
 
 #
 id:0
@@ -12,4 +13,21 @@ pushable:sim
 #
 id:0
 position:80,80
-pushable:
+pushable:sim
+
+#
+id:0
+position:100,80
+pushable:sim
+
+#
+id:0
+position:130,80
+pushable:sim
+
+#
+id:1
+position:150,80
+solid:sim
+locked:sim
+required item:0

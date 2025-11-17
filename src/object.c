@@ -15,9 +15,14 @@ Object *GetObjectCatalog(){
 
     static bool isInitialized = false;
     if(!isInitialized){
-        catalog[0] = (Object){.id = 0,.sprite= (Sprite){
+        memset(catalog,0,sizeof(catalog));
+        catalog[0] = (Object){.id = 0,.sprite = (Sprite){
                 .texture = LoadTexture("resources/textures/box.png"),
                 .animation = (animation){.numFramesPerAxle={1,1},.state = IDLE}
+            }};
+        catalog[1] = (Object){.id = 1,.sprite = (Sprite){
+            .texture = LoadTexture("resources/textures/door.png"),
+            .animation = (animation){.numFramesPerAxle={1,1},.state = IDLE}
             }};
         isInitialized = true;
     }
@@ -136,13 +141,28 @@ void FillObjectValue(ObjectEntity *object,char *line){
     
     if(!strncmp(line,"id:",3)){
         object->ObjectId = atoi(line+3);
+        object->isSolid = true;
     }else if(!strncmp(line,"position:", 9)){
         sscanf(line+9,"%f,%f",&(object->position.x),&(object->position.y));
+    }else if(!strncmp(line,"required item:", 14)){
+        object->requiredItemId = atoi(line+14);
+    }else if(!strncmp(line,"solid:",6)){
+        if(!(strncmp(line+6,"sim",3))){
+            object->isSolid=true;
+        }else{
+            object->isSolid=false;
+        }
     }else if(!strncmp(line,"pushable:",9)){
         if(!(strncmp(line+9,"sim",3))){
             object->isPushable=true;
         }else{
             object->isPushable=false;
+        }
+    }else if(!strncmp(line,"locked:",7)){
+        if(!(strncmp(line+7,"sim",3))){
+            object->isLocked=true;
+        }else{
+            object->isLocked=false;
         }
     }
 
@@ -270,7 +290,7 @@ void ResolvePlayerVsObjectsX(Player *player, ObjectEntity *objects, unsigned cha
         float push = CheckCollisionX(ph, oh);
 
         if (!b->isPushable) {
-            p->position.x += push;
+            if(b->isSolid) p->position.x += push;
             continue;
         }
 
@@ -293,9 +313,8 @@ void ResolvePlayerVsObjectsY(Player *player, ObjectEntity *objects, unsigned cha
 
         float push = CheckCollisionY(ph, oh);
 
-        // OBJETO SÓLIDO
         if (!b->isPushable) {
-            p->position.y += push;
+            if(b->isSolid) p->position.y += push;
             continue;
         }
 
@@ -303,4 +322,71 @@ void ResolvePlayerVsObjectsY(Player *player, ObjectEntity *objects, unsigned cha
             p->position.y += push;
         }
     }
+}
+
+void CheckObjectProximity(ObjectEntity *objectEntityList,Player player,GameManager *gameManager){
+    for(int i = 0;i< gameManager->numberOfObjectEntitys;i++){
+        if(!objectEntityList[i].isLocked) continue;
+
+        if(GetDistance(player.object.position,objectEntityList[i].position) < 25){
+            objectEntityList[i].isPlayerNearby = true;
+        }else{
+            objectEntityList[i].isPlayerNearby = false;
+        }
+
+    }
+
+}
+
+void InteractWithObject(ObjectEntity *objectEntityList,Player *player,GameManager *gameManager){
+    for(int i = 0;i< gameManager->numberOfObjectEntitys;i++){
+        ObjectEntity *object = &objectEntityList[i];
+        if(!object->isLocked || !object->isSolid) continue;
+
+        if(object->isPlayerNearby && IsKeyPressed(KEY_E) && gameManager->canInteract){
+            gameManager->activeObject = object;
+        }
+
+    }
+}
+
+void UpdateObjectInteract(GameManager *gameManager,Player *player){
+    if(!gameManager->activeObject) return;
+
+    ObjectEntity *object = gameManager->activeObject;
+
+    static bool localCanInteract = false;
+
+    if(IsKeyPressed(KEY_UP)) gameManager->selectedOption = (gameManager->selectedOption+1) %2; 
+    if(IsKeyPressed(KEY_DOWN)) gameManager->selectedOption = (gameManager->selectedOption+1) %2;
+
+    if(IsKeyPressed(KEY_E) && localCanInteract){
+        if(gameManager->selectedOption == 0){
+            if(CheckInventoryHasItem(player->inventory, object->requiredItemId, 1)){
+                RemoveItem(&player->inventory, object->requiredItemId, 1);
+                object->isSolid = false;
+            }
+        }
+        gameManager->activeObject = NULL;
+        localCanInteract = false;
+        gameManager->canInteract = false;
+        return;
+    }
+    UpdateBoolValue(&localCanInteract);
+    gameManager->canInteract = false;
+
+}
+
+void DrawObjectInteract(ObjectEntity *objectEntityList,GameManager gameManager){
+    if(!gameManager.activeObject) return;
+
+    DrawRectangle(100,600,400,120,Fade(BLACK,0.7));
+        DrawText("Tentar abrir?",120,620,20,WHITE);        
+
+    const char *options[] = {"Sim","Não"};
+    for(int i = 0;i < 2;i++){
+        Color color = (i == gameManager.selectedOption ) ? YELLOW : WHITE;
+        DrawText(options[i],140,650 + i * 25,20,color);
+    }
+
 }

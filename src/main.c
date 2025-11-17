@@ -56,7 +56,7 @@ int main()
 
     Player player = (Player){
         .object = (ObjectEntity){
-            .position = (Vector2){0,0},
+            .position = (Vector2){400,400},
             .direction = (Vector2){1,1},
             .speed = 2.0,
         },
@@ -102,6 +102,8 @@ int main()
 
             ResolvePlayerVsObjectsY(&player, objectEntityList,map, game.numberOfObjectEntitys);
 
+            InteractWithObject(objectEntityList,&player,&game);
+
 			PlayerStatemachine(&player);
 
 			UpdateAnimation(&(player.sprite.animation));
@@ -114,6 +116,9 @@ int main()
 
             UpdateNpc(&player,npcEntityList,&game);
 
+            UpdateObjectInteract(&game,&player);
+
+            CheckObjectProximity(objectEntityList,player,&game);
 
 		}else if (game.currentScreen == EXIT) {
             break;
@@ -143,6 +148,8 @@ int main()
                 DrawDialogue(&game);
 
                 DrawQuestChoice(&game);
+
+                DrawObjectInteract(objectEntityList,game);
 
                 DrawInventory(&player.inventory,(Vector2){100,100});
             }

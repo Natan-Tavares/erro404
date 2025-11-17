@@ -5,6 +5,8 @@
 #include <sprite.h>
 #include <animation.h>
 
+#define NUMBER_OF_OBJECTS 2
+
 typedef struct Object
 {
     int id;
@@ -23,7 +25,13 @@ typedef struct ObjectEntity
 
     float speed;
 
+    bool isPlayerNearby;
+
+    bool isSolid;
     bool isPushable;
+    bool isLocked;
+
+    int requiredItemId;
 
 }ObjectEntity;
 
@@ -48,5 +56,13 @@ void FreeObjectCatalog();
 
 void ResolvePlayerVsObjectsY(Player *player, ObjectEntity *objects,unsigned char *map, int count);
 void ResolvePlayerVsObjectsX(Player *player, ObjectEntity *objects,unsigned char *map, int count);
+
+void CheckObjectProximity(ObjectEntity *objectEntityList,Player player,GameManager *gameManager);
+
+void InteractWithObject(ObjectEntity *objectEntityList,Player *player,GameManager *gameManager);
+
+void UpdateObjectInteract(GameManager *gameManager,Player *player);
+
+void DrawObjectInteract(ObjectEntity *objectEntityList,GameManager gameManager);
 
 #endif

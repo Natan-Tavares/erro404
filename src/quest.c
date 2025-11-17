@@ -60,7 +60,7 @@ void UpdateQuestChoice(Player *player,GameManager *gameManager){
             quest->status = COMPLETED;
             quest->isActive = false;
             RemoveItem(&player->inventory,quest->requiredItemId,quest->numberOfRequiredItem);
-            bool teste = AddItemToInventory(&player->inventory,quest->giftItemId,1);
+            AddItemToInventory(&player->inventory,quest->giftItemId,1);
         }
         gameManager->interactingQuestIndex = quest->id;
         gameManager->dialogueStatus = NONE;

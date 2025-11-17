@@ -215,7 +215,7 @@ void DrawNpcs(NpcEntity *npcEntityList,int numberOfNpcs){
 */
 void CheckAllNpcProximities(NpcEntity *npcEntityList,Player player,GameManager gameManager){
     for (int i = 0; i < gameManager.numberOfNpcEntitys; i++) {
-        UpdateNpcProximity(&npcEntityList[i], player.object, 60);
+        UpdateNpcProximity(&npcEntityList[i], player.object, 25);
     }
 }
 
