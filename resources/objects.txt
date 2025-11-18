@@ -1,33 +1,6 @@
 
 #
-id:0
-position:30,30
-solid:sim
-pushable:
-
-#
-id:0
-position:50,50
-pushable:sim
-
-#
-id:0
-position:80,80
-pushable:sim
-
-#
-id:0
-position:100,80
-pushable:sim
-
-#
-id:0
-position:130,80
-pushable:sim
-
-#
 id:1
-position:150,80
-solid:sim
+position:312,184
 locked:sim
 required item:0

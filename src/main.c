@@ -56,12 +56,12 @@ int main()
 
     Player player = (Player){
         .object = (ObjectEntity){
-            .position = (Vector2){400,400},
+            .position = (Vector2){96,256},
             .direction = (Vector2){1,1},
             .speed = 2.0,
         },
         .sprite = (Sprite){
-            .texture = LoadTexture("resources/textures/Soldier.png"),
+            .texture = LoadTexture("resources/textures/player.png"),
             .animation = idle,        
         },
 

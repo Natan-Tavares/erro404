@@ -43,10 +43,10 @@ void GetPlayerDirection(Player *self){
 void DrawPlayer(Player *self){
     GetPlayerDirection(self);
 
-    Rectangle animationFrame = GetAnimationFrame(self->sprite,(Vector2){9,7}); 
+    Rectangle animationFrame = GetAnimationFrame(self->sprite,(Vector2){8,2}); 
     animationFrame.width *= self->object.direction.x;
 
-    Rectangle dest = GetAnimationFrame(self->sprite,(Vector2){9,7});
+    Rectangle dest = GetAnimationFrame(self->sprite,(Vector2){8,2});
     dest.x = self->object.position.x;
     dest.y = self->object.position.y;
 
@@ -58,6 +58,7 @@ void DrawPlayer(Player *self){
 		0,
 		WHITE
     );
+
 
 }
 

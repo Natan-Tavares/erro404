@@ -1,12 +1,12 @@
 
 #
 id:0
-position:32,32
+position:150,150
 
 #
 id:0
-position:64,64
+position:200,200
 
 #
 id:0
-position:100,100
+position:250,250

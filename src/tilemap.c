@@ -16,8 +16,8 @@ Tile *GetTileCatalog(){
     static bool initialized = false;
 
     if(!initialized){
-        catalog[0] = (Tile){1,false,(Sprite){.texture=LoadTexture("resources/textures/grass.png")}};
-        catalog[1] = (Tile){2,true,(Sprite){.texture=LoadTexture("resources/textures/brick.png")}};
+        catalog[1] = (Tile){1,false,(Sprite){.texture=LoadTexture("resources/textures/grass.png")}};
+        catalog[2] = (Tile){2,true,(Sprite){.texture=LoadTexture("resources/textures/brick.png")}};
         
         initialized = true;
     }
@@ -139,7 +139,7 @@ void DrawMap(unsigned char *self) {
 */
 void CheckTilesCollisionX(ObjectEntity *object, unsigned char *map) {
 
-    Rectangle hitbox = GetObjectHitbox(*object,20,25);
+    Rectangle hitbox = GetObjectHitbox(*object,16,16);
     TileBounds tiles = GetTileBounds(hitbox);
 
     float totalPush = 0;
@@ -172,7 +172,7 @@ void CheckTilesCollisionX(ObjectEntity *object, unsigned char *map) {
 */
 void CheckTilesCollisionY(ObjectEntity *object, unsigned char *map) {
 
-    Rectangle hitbox = GetObjectHitbox(*object,20,25);
+    Rectangle hitbox = GetObjectHitbox(*object,16,16);
     TileBounds tiles = GetTileBounds(hitbox);
 
     float totalPush = 0;
