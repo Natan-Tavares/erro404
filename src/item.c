@@ -145,6 +145,8 @@ void DrawItem(ItemEntity *itemEntity,Vector2 position){
     Rectangle dest = GetAnimationFrame(item->sprite,item->sprite.animation.numFramesPerAxle);
     dest.x = position.x;
     dest.y = position.y;
+    dest.width *= 0.5;
+    dest.height *= 0.5;
 
     DrawTexturePro(
         item->sprite.texture,
