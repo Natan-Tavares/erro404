@@ -5,7 +5,7 @@
 #include <sprite.h>
 #include <animation.h>
 
-#define NUMBER_OF_OBJECTS 2
+#define NUMBER_OF_OBJECTS 3
 
 typedef struct Object
 {

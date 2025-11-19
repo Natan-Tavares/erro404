@@ -22,7 +22,11 @@ Object *GetObjectCatalog(){
             }};
         catalog[1] = (Object){.id = 1,.sprite = (Sprite){
             .texture = LoadTexture("resources/textures/door.png"),
-            .animation = (animation){.numFramesPerAxle={1,1},.state = IDLE}
+            .animation = (animation){.numFramesPerAxle={2,1},.state = IDLE}
+            }};
+        catalog[2] = (Object){.id = 2,.sprite = (Sprite){
+            .texture = LoadTexture("resources/textures/door.png"),
+            .animation = (animation){.current=1,.numFramesPerAxle={2,1},.state = IDLE}
             }};
         isInitialized = true;
     }
@@ -365,6 +369,7 @@ void UpdateObjectInteract(GameManager *gameManager,Player *player){
             if(CheckInventoryHasItem(player->inventory, object->requiredItemId, 1)){
                 RemoveItem(&player->inventory, object->requiredItemId, 1);
                 object->isSolid = false;
+                object->ObjectId = 2;
             }
         }
         gameManager->activeObject = NULL;
