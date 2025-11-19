@@ -47,8 +47,7 @@ void DrawPlayer(Player *self){
     animationFrame.width *= self->object.direction.x;
 
     Rectangle dest = GetAnimationFrame(self->sprite,(Vector2){8,2});
-    dest.x = self->object.position.x;
-    dest.y = self->object.position.y;
+    dest = (Rectangle){.x=self->object.position.x,.y=self->object.position.y,.height = dest.height-10,.width = dest.width};
 
     DrawTexturePro(
 	    self->sprite.texture,
@@ -58,7 +57,6 @@ void DrawPlayer(Player *self){
 		0,
 		WHITE
     );
-
 
 }
 

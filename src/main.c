@@ -49,7 +49,7 @@ int main()
         .first = 0,
         .last = 6,
         .current = 0,
-        .speed = 0.1,
+        .speed = 0.15,
         .durationLeft = 0.1,
         .state = IDLE
     };
@@ -71,7 +71,7 @@ int main()
         .offset = (Vector2){WINDOW_WIDTH/2,WINDOW_HEIGHT/2},
         .rotation = 0.0,
         .target = player.object.position,
-        .zoom = 3.0,
+        .zoom = 4.0,
     };
 
     ObjectEntity caixa = (ObjectEntity){
@@ -135,13 +135,13 @@ int main()
 
 			    	DrawMap(map);
 
-				    DrawPlayer(&player);
-
                     DrawNpcs(npcEntityList,game.numberOfNpcEntitys);
 
                     DrawItemEntityList(ItemEntitylist,game.numberOfItemEntitys);
                     
                     DrawObjects(objectEntityList,game);
+
+                    DrawPlayer(&player);
 
 			    EndMode2D();
 
