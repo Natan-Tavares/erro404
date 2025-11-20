@@ -18,6 +18,7 @@ Tile *GetTileCatalog(){
     if(!initialized){
         catalog[1] = (Tile){1,false,(Sprite){.texture=LoadTexture("resources/textures/grass.png")}};
         catalog[2] = (Tile){2,true,(Sprite){.texture=LoadTexture("resources/textures/brick.png")}};
+        catalog[3] = (Tile){3,true,(Sprite){}};
         
         initialized = true;
     }
@@ -29,6 +30,15 @@ Tile GetTileById(unsigned char id){
 
     for(int i = 0; i < NUMBER_OF_TILES;i++){
         if(catalog[i].id == id) return catalog[i];
+    }
+
+}
+
+void FreeTileCatalog(){
+    Tile *catalog = GetTileCatalog();
+
+    for(int i = 0;i < NUMBER_OF_TILES;i++){
+        if(catalog[i].sprite.texture.id != 0) UnloadTexture(catalog[i].sprite.texture);
     }
 
 }

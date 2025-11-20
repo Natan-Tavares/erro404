@@ -25,7 +25,7 @@ Object *GetObjectCatalog(){
             .animation = (animation){.numFramesPerAxle={2,1},.state = IDLE}
             }};
         catalog[2] = (Object){.id = 2,.sprite = (Sprite){
-            .texture = LoadTexture("resources/textures/door.png"),
+            .texture = catalog[1].sprite.texture,
             .animation = (animation){.current=1,.numFramesPerAxle={2,1},.state = IDLE}
             }};
         isInitialized = true;

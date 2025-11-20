@@ -1,6 +1,6 @@
 
 #
 id:1
-position:312,184
+position:248,184
 locked:sim
 required item:0

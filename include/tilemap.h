@@ -48,6 +48,8 @@ void CheckTilesCollisionX(ObjectEntity *object, unsigned char *map);
 
 Tile GetTileById(unsigned char id);
 
+void FreeTileCatalog();
+
 TileBounds GetTileBounds(Rectangle hitbox);
 
 Rectangle CreateTileRectangle(Vector2 position);

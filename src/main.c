@@ -152,6 +152,7 @@ int main()
                 DrawObjectInteract(objectEntityList,game);
 
                 DrawInventory(&player.inventory,(Vector2){100,100});
+
             }
 
 		EndDrawing();
@@ -164,6 +165,7 @@ int main()
     free(objectEntityList);
     FreeNpcCatalog( );
     FreeItemCatalog();
+    FreeTileCatalog();
     FreeObjectCatalog();
     CloseWindow();
     return 0;
