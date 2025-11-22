@@ -96,7 +96,7 @@ int main()
             CheckTilesCollisionX(&(player.object), map);
 
             ResolvePlayerVsObjectsX(&player, objectEntityList,map, game.numberOfObjectEntitys);
-
+            
             applyVelY(&(player.object));
             CheckTilesCollisionY(&(player.object), map);
 
@@ -115,6 +115,8 @@ int main()
 			if(GetDistance(camera.target,player.object.position) > 25) UpdateCamera2D(&camera,player.object.position);
 
             UpdateNpc(&player,npcEntityList,&game);
+
+            UpdateNpcAnimation();
 
             UpdateObjectInteract(&game,&player);
 

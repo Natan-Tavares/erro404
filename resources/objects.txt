@@ -1,6 +1,11 @@
 
+
+#
+id:0
+pushable:sim
+position:400,300
 #
 id:1
 position:248,184
 locked:sim
-required item:0
+required item:1

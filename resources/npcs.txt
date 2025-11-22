@@ -1,7 +1,7 @@
 
 #
 id:0
-position:300,300    
+position:150,200    
 dialogue:Va logo, eu vi algumas por ai
 requestDialogue:Porfavor encontre 3 moedas para mim.
 thanksDialogue:Obrigado amigo

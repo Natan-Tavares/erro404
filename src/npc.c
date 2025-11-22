@@ -17,7 +17,10 @@ Npc *GetNpcCatalog(){
     
     if(!isInitialized){
         memset(catalog,0,sizeof(catalog));
-        catalog[0] = (Npc){.id=0,.name="!!!!@$$W!(YR&*(U&R))",.type=QUEST_GIVER,.questId=0,.sprite = (Sprite){.texture=LoadTexture("resources/textures/the_thing.png")}};
+        catalog[0] = (Npc){.id=0,.name="!!!!@$$W!(YR&*(U&R))",.type=QUEST_GIVER,.questId=0,
+            .sprite = (Sprite){.texture=LoadTexture("resources/textures/the_thing.png"),
+            .animation = (animation){.numFramesPerAxle=(Vector2){2,1},.first = 0 ,.last = 2,.durationLeft = 0.1,.speed=0.5,.state = IDLE}
+            }};
 
         isInitialized = true;
     }
@@ -171,6 +174,13 @@ NpcEntity *LoadNpcs(const char* filename,int *numberOfNpcs){
     return npcs;
 }
 
+void UpdateNpcAnimation(){
+    for(int i = 0;i < NUMBER_OF_NPCS;i++){
+        Npc *npc = GetNpcById(i);
+        if(npc) UpdateAnimation(&npc->sprite.animation);
+    }
+
+}
 
 /*
     Função para Desenhar os npcs no mapa.
@@ -185,9 +195,11 @@ void DrawNpcs(NpcEntity *npcEntityList,int numberOfNpcs){
 
         if (!npc) continue;
 
+        Rectangle animationFrame = GetAnimationFrame(npc->sprite,npc->sprite.animation.numFramesPerAxle);
+
         DrawTexturePro(
             npc->sprite.texture,
-            (Rectangle){.height=16,.width=16,.x=0,.y=0},
+            animationFrame,
             (Rectangle){.height=16,.width=16,.x=npcEntityList[i].position.x,.y=npcEntityList[i].position.y},
             (Vector2){0,0},
             0.0,

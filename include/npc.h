@@ -29,7 +29,6 @@ typedef struct Npc
     int id; //componente que armazena o id no npc
     char name[32];
     Sprite sprite;
-    animation animation; //Componente que armazena animação do npc
 
     NpcType type;
     int questId;
@@ -63,6 +62,8 @@ NpcEntity *LoadNpcs(const char* filename,int *numberOfNpcs);
 Npc *GetNpcById(int id);
 
 void FreeNpcCatalog();
+
+void UpdateNpcAnimation();
 
 //Desenha os npcs da lista passada 
 void DrawNpcs(NpcEntity *npcEntityList,int numberOfNpcs);
