@@ -1,6 +1,7 @@
 # erro404
-(PLACE HOLDER)
-## Descrição
+
+**Descrição:**
+----
 “Erro: 404” é uma experiência narrativa sobre a memória, o abandono e o silêncio digital.
 
 O jogador explora um mundo incompleto — um jogo que parece ter sido esquecido por seu próprio criador.
@@ -12,18 +13,90 @@ No fim, a verdade emerge: o jogo foi interrompido por um motivo trágico, e o pr
 Jogo narrativo que explora glitches, memórias corrompidas e a sensação de estar perdido num jogo esquecido.
 
 ---
-#### Como compilar:
 
-1. Baixe o setup do [raylib](https://www.raylib.com/) no site oficial e baixe no seu computador.
+**Dependencias**:
+---
 
-2. No local de instalação vá ate `instalação/raylib/w64devkit/bin`, copie o caminho e adicione no seu PATH do windows.
+* ## **Linux:**
+    1. gcc
+    2. make
+    3. raylib
 
-3. No local de instalação vá ate `instalação/raylib/raylib/src`, então rode:
+* ## **Windows:**
+    1. [wdevkit](https://github.com/skeeto/w64devkit/releases)
 
-```bash
- make PLATFORM=PLATFORM_DESKTOP 
- ```
+* ### Como Baixar: 
+    
+    * **Windows:**
+        Abra o repositorio oficial do [wdevkit](https://github.com/skeeto/w64devkit/releases) e baixe o exe correspondente.
 
-4. Copie o arquivo `libraylib.a` para dentro da pasta lib do projeto
+    * **Arch:**
+        ```bash
+            sudo pacman -S gcc make raylib
+        ```
+    
+    * **Ubuntu:**
+        ```bash
+            sudo apt install gcc make libraylib-dev
+        ```
 
-5. Na pasta raiz do projeto rode `make`, e então você tera compilado o projeto para um arquivo main.exe
+**Como compilar:**
+---
+
+* ### **Linux:**
+    1. Clone o repositorio do [raylib](https://github.com/raysan5/raylib):
+
+    ```bash
+        git clone https://github.com/raysan5/raylib.git
+    ```
+
+    2. abra o repositorio do **raylib** na pasta src:`raylib/w64devkit/src`, e faça o make:
+
+    ```bash
+        make PLATFORM=PLATFORM_DESKTOP 
+    ```
+
+    3. copie o arquivo criado, `libraly.a`
+
+    4. Clone o repositorio do projeto:
+
+    ```bash
+        git clone https://github.com/Natan-Tavares/erro404.git
+    ```
+
+    5. Abra a pasta `lib` na pasta do projeto e cole o arquivo `libraly.a`
+
+    6. Na pasta raiz do projeto faça o `make`:
+    
+    ```bash
+        make
+    ```
+
+    7. Rode o projeto:
+
+    ```bash
+        ./main
+    ```
+* ### **Windows**:
+    1. Baixe o [raylib](https://www.raylib.com/) do site oficial.
+
+    2. Abra a pasta `src` dentro da pasta do `raylib`: `raylib/raylib/src`.
+
+    3. Copie o arquivo `libraly.a`da pasta src.
+
+    4. Clone o repositorio do projeto: 
+    ```bash
+        git clone https://github.com/Natan-Tavares/erro404.git
+    ```
+
+    5. Abra a pasta `lib` na pasta do projeto e cole o arquivo `libraly.a`.
+
+    6. Na pasta raiz do projeto, compile-o:
+    ```bash
+        make
+    ```
+
+    7. Rode o projeto:
+    ```bash
+        main.exe
+    ```
