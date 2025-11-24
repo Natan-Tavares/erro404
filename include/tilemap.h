@@ -5,7 +5,7 @@
 #include <sprite.h>
 #include <object.h>
 
-#define NUMBER_OF_TILES 4
+#define NUMBER_OF_TILES 5
 
 #define HEIGHT 1024 //altura do mapa(recomendado que seja divisivel pelo tamanho do tile)
 #define WIDTH 1536 // largura do mapa(recomendado que seja divisivel pelo tamanho do tile)

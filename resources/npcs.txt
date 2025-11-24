@@ -2,6 +2,13 @@
 #
 id:0
 position:150,200    
-dialogue:Va logo, eu vi algumas por ai
 requestDialogue:Porfavor encontre 3 moedas para mim.
-thanksDialogue:Obrigado amigo
+dialogue:Va logo, eu vi algumas por ai
+thanksDialogue:Obrigado amigo\nfiquei sabendo de uma menina precisando de ajuda\nlogo a baixo de nos 
+
+#
+id:1
+position:592,824
+requestDialogue:Porfavor, encontre meu rato de estimação.\neu sinto tanta falta dele.\nCuidado, o porão é tão bagunçado.
+dialogue:traga ele ate mim.
+thanksDialogue:Muito obrigado!!

@@ -9,4 +9,8 @@ position:200,200
 
 #
 id:0
-position:250,200
+position:220,120
+
+#
+id:2
+position:352,744

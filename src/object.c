@@ -168,6 +168,10 @@ void FillObjectValue(ObjectEntity *object,char *line){
         }else{
             object->isLocked=false;
         }
+    }else if(!strncmp(line,"isSolid:",8)){
+        if(!strncmp(line+8,"não",3)){
+            object->isSolid = false;
+        }
     }
 
 }

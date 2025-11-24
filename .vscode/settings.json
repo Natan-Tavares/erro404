@@ -10,6 +10,7 @@
         "string.h": "c",
         "sprite.h": "c",
         "npc.h": "c",
-        "object.h": "c"
+        "object.h": "c",
+        "dialogue.h": "c"
     }
 }

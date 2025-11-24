@@ -15,6 +15,7 @@ Quest *GetQuestCatalog(){
     if(!isInitialized){
         memset(catalog,0,sizeof(catalog));
         catalog[0] = (Quest){.id=0,.requiredItemId=0,.numberOfRequiredItem=3,.giftItemId=1,};
+        catalog[1] = (Quest){.id=1,.requiredItemId=2,.numberOfRequiredItem=1,.giftItemId=0};
         
         isInitialized = true;
     }

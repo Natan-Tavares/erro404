@@ -21,6 +21,10 @@ Npc *GetNpcCatalog(){
             .sprite = (Sprite){.texture=LoadTexture("resources/textures/the_thing.png"),
             .animation = (animation){.numFramesPerAxle=(Vector2){2,1},.first = 0 ,.last = 2,.durationLeft = 0.1,.speed=0.5,.state = IDLE}
             }};
+        catalog[1] = (Npc){.id=1,.name="criança",.type=QUEST_GIVER,.questId=1,
+            .sprite = (Sprite){.texture=LoadTexture("resources/textures/crianca.png"),
+            .animation = (animation){.numFramesPerAxle=(Vector2){1,1},.first = 0 ,.last = 1,.durationLeft = 0.1,.speed=0.5,.state = IDLE}
+            }};
 
         isInitialized = true;
     }

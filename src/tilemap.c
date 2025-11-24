@@ -19,6 +19,7 @@ Tile *GetTileCatalog(){
         catalog[1] = (Tile){1,false,(Sprite){.texture=LoadTexture("resources/textures/grass.png")}};
         catalog[2] = (Tile){2,true,(Sprite){.texture=LoadTexture("resources/textures/brick.png")}};
         catalog[3] = (Tile){3,true,(Sprite){}};
+        catalog[4] = (Tile){4,false,(Sprite){.texture=LoadTexture("resources/textures/floor.png")}};
         
         initialized = true;
     }

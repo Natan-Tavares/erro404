@@ -13,24 +13,28 @@
 #include <utils.h>
 
 Item *GetItemCatalog(){
-    static Item itemCatalog[NUMBER_OF_ITEMS];
+    static Item catalog[NUMBER_OF_ITEMS];
 
     static bool initialized = false;
     if(!initialized){
-        itemCatalog[0] = (Item){.id = 0,.nome="Moeda",.sprite= (Sprite)
+        catalog[0] = (Item){.id = 0,.nome="Moeda",.sprite= (Sprite)
             {
                 .texture=LoadTexture("resources/textures/coin.png"),
                 .animation = (animation){.first = 0 ,.last = 6,.durationLeft = 0.1,.numFramesPerAxle={6,1},.speed=0.1,.state = IDLE}
             }};
-        itemCatalog[1] = (Item){.id = 1,.nome="chave",.sprite= (Sprite){
+        catalog[1] = (Item){.id = 1,.nome="chave",.sprite= (Sprite){
                 .texture = LoadTexture("resources/textures/Key.png"),
                 .animation = (animation){.numFramesPerAxle={1,1},.state = IDLE}
             }};
+        catalog[2] = (Item){.id=2,.nome="rato",.sprite= (Sprite){
+            .texture = LoadTexture("resources/textures/rat.png"),
+            .animation = (animation){.first=0,.last=2,.numFramesPerAxle={2,1},.speed=0.5,.state=0}
+        }};
 
         initialized = true;
     }
 
-    return itemCatalog;
+    return catalog;
 }
 
 void FreeItemCatalog(){
