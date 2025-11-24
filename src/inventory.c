@@ -15,22 +15,27 @@ void InitInventory(Inventory *self) {
 bool AddItemToInventory(Inventory *self, int itemId, int quantity){
     if(!quantity) return false;
     for (int i = 0; i < NUMBER_OF_SLOTS; i++) {
-        if(self->slots[i].itemId == itemId && self->slots[i].quantity + quantity < MAX_ITEMS){
+        if(self->slots[i].itemId == itemId && self->slots[i].quantity + quantity <= MAX_ITEMS){
             self->slots[i].quantity += quantity;
             return true;
         }else if(self->slots[i].itemId == itemId){
-            int overquantity = self->slots[i].quantity + quantity - MAX_ITEMS;
+            int overQuantity = self->slots[i].quantity + quantity - MAX_ITEMS;
             self->slots[i].quantity = MAX_ITEMS;
-            quantity = overquantity;
+            quantity = overQuantity;
         }
     }
 
     for (int i = 0; i < NUMBER_OF_SLOTS; i++) {
-        if (self->slots[i].itemId == -1){
+        if (self->slots[i].itemId == -1 && self->slots[i].quantity + quantity <= MAX_ITEMS){
             self->slots[i].itemId = itemId;
             self->slots[i].quantity = quantity;
             self->numberOfOcuppiedSlots++;
             return true;
+        }else if(self->slots[i].itemId == -1){
+            self->slots[i].itemId = itemId;
+            int overQuantity = quantity - MAX_ITEMS;
+            self->slots[i].quantity = MAX_ITEMS;
+            quantity = overQuantity;
         }
     }
 

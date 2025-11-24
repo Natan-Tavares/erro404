@@ -11,4 +11,4 @@ id:1
 position:592,824
 requestDialogue:Porfavor, encontre meu rato de estimação.\neu sinto tanta falta dele.\nCuidado, o porão é tão bagunçado.
 dialogue:traga ele ate mim.
-thanksDialogue:Muito obrigado!!
+thanksDialogue:Muito obrigado!!\nAqui estão todas as moedas que a mamae tem no armario

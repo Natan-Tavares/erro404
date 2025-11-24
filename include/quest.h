@@ -23,6 +23,7 @@ typedef struct Quest
     int requiredItemId;
     int numberOfRequiredItem;
     int giftItemId;
+    int numberOfGiftItem;
     bool isActive;
     QuestStatus status;
 
