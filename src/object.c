@@ -28,6 +28,14 @@ Object *GetObjectCatalog(){
             .texture = catalog[1].sprite.texture,
             .animation = (animation){.current=1,.numFramesPerAxle={2,1},.state = IDLE}
             }};
+        catalog[3] = (Object){.id = 3,.sprite = (Sprite){
+            .texture = LoadTexture("resources/textures/chest.png"),
+            .animation = (animation){.numFramesPerAxle={2,1},.state = IDLE}
+            }};
+        catalog[4] = (Object){.id = 4,.sprite = (Sprite){
+            .texture = catalog[3].sprite.texture,
+            .animation = (animation){.current=1,.numFramesPerAxle={2,1},.state = IDLE}
+            }};
         isInitialized = true;
     }
 
@@ -146,6 +154,7 @@ void FillObjectValue(ObjectEntity *object,char *line){
     if(!strncmp(line,"id:",3)){
         object->ObjectId = atoi(line+3);
         object->isSolid = true;
+        object->giftItemId = -1;
     }else if(!strncmp(line,"position:", 9)){
         sscanf(line+9,"%f,%f",&(object->position.x),&(object->position.y));
     }else if(!strncmp(line,"required item:", 14)){
@@ -172,8 +181,13 @@ void FillObjectValue(ObjectEntity *object,char *line){
         if(!strncmp(line+8,"não",3)){
             object->isSolid = false;
         }
+    }else if(!strncmp(line,"isDoor:",7)){
+        if(!strncmp(line+7,"sim",3)){
+            object->isDoor = true;
+        }
+    }else if(!strncmp(line,"GiftItemId:",11)){
+        object->giftItemId = atoi(line+11);
     }
-
 }
 
 void ReadObjects(ObjectEntity *ObjectEntitys,FILE *file){
@@ -372,8 +386,10 @@ void UpdateObjectInteract(GameManager *gameManager,Player *player){
         if(gameManager->selectedOption == 0){
             if(CheckInventoryHasItem(player->inventory, object->requiredItemId, 1)){
                 RemoveItem(&player->inventory, object->requiredItemId, 1);
-                object->isSolid = false;
-                object->ObjectId = 2;
+                if(object->isDoor) object->isSolid = false;
+                if(object->giftItemId != -1) AddItemToInventory(&player->inventory,object->giftItemId,1);
+                object->isLocked = false;
+                object->ObjectId = object->ObjectId+1;
             }
         }
         gameManager->activeObject = NULL;

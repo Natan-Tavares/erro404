@@ -5,7 +5,7 @@
 #include <sprite.h>
 #include <animation.h>
 
-#define NUMBER_OF_OBJECTS 3
+#define NUMBER_OF_OBJECTS 5
 
 typedef struct Object
 {
@@ -30,8 +30,10 @@ typedef struct ObjectEntity
     bool isSolid;
     bool isPushable;
     bool isLocked;
+    bool isDoor;
 
     int requiredItemId;
+    int giftItemId;
 
 }ObjectEntity;
 

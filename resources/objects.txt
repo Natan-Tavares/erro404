@@ -1,79 +1,107 @@
 
 
-#
+#caixa
 id:0
 pushable:sim
 position:400,300
 
-#
+#porta
 id:1
 position:248,184
 locked:sim
+isDoor:sim
 required item:1
 
-#
+#porta
 id:2
 isSolid:não
 position:616,888
 
-#
+#caixa
 id:0
 pushable:sim
 position:440,872
 
-#
+#caixa
 id:0
 position:488,888
 
-#
+#caixa
 id:0
 position:488,840
 
-#
+#caixa
 id:0
 pushable:sim
 position:456,792
 
-#
+#caixa
 id:0
 pushable:sim
 position:456,872
 
-#
+#caixa
 id:0
 pushable:sim
 position:472,872
 
-#
+#caixa
 id:0
 position:408,744
 
-#
+#caixa
 id:0
 pushable:sim
 position:424,760
 
-#
+#caixa
 id:0
 pushable:sim
 position:392,824    
 
-#
+#caixa
 id:0
 pushable:sim
 position:408,824   
 
-#
+#caixa
 id:0
 pushable:sim
 position:392,840
 
-#
+#caixa
 id:0
 pushable:sim
 position:392,856
 
-#
+#caixa
 id:0
 pushable:sim
 position:392,904
+
+#porta
+id:2
+isSolid:não
+position:920,184
+
+#caixa
+id:0
+position:936,120
+
+#caixa
+id:0
+position:936,216
+
+#caixa
+id:0
+position:952,216
+
+#caixa
+id:0
+position:936,200
+
+#bau 
+id:3
+position:1032,120
+locked:sim
+GiftItemId:1
