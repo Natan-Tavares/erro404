@@ -33,6 +33,7 @@ typedef struct ObjectEntity
     bool isDoor;
 
     int requiredItemId;
+    int numberOfRequiredItem;
     int giftItemId;
 
 }ObjectEntity;

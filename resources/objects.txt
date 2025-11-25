@@ -104,4 +104,35 @@ position:936,200
 id:3
 position:1032,120
 locked:sim
-GiftItemId:1
+required item:2
+GiftItemId:3
+
+#porta
+id:2
+isSolid:não
+position:776,824
+
+#porta
+id:2
+isSolid:não
+position:1032,936
+
+#caixa
+id:0
+position:1048,872
+
+#caixa
+id:0
+position:1048,888
+
+#caixa
+id:0
+position:1064,872
+
+#bau
+id:3
+position:1064,872
+locked:sim
+required item:0
+numberOfRequiredItem:10
+GiftItemId:3

@@ -155,6 +155,7 @@ void FillObjectValue(ObjectEntity *object,char *line){
         object->ObjectId = atoi(line+3);
         object->isSolid = true;
         object->giftItemId = -1;
+        object->numberOfRequiredItem = 1;
     }else if(!strncmp(line,"position:", 9)){
         sscanf(line+9,"%f,%f",&(object->position.x),&(object->position.y));
     }else if(!strncmp(line,"required item:", 14)){
@@ -187,6 +188,8 @@ void FillObjectValue(ObjectEntity *object,char *line){
         }
     }else if(!strncmp(line,"GiftItemId:",11)){
         object->giftItemId = atoi(line+11);
+    }else if(!strncmp(line,"numberOfRequiredItem:",21)){
+        object->numberOfRequiredItem = atoi(line+21);
     }
 }
 
@@ -384,8 +387,8 @@ void UpdateObjectInteract(GameManager *gameManager,Player *player){
 
     if(IsKeyPressed(KEY_E) && localCanInteract){
         if(gameManager->selectedOption == 0){
-            if(CheckInventoryHasItem(player->inventory, object->requiredItemId, 1)){
-                RemoveItem(&player->inventory, object->requiredItemId, 1);
+            if(CheckInventoryHasItem(player->inventory, object->requiredItemId, object->numberOfRequiredItem)){
+                RemoveItem(&player->inventory, object->requiredItemId, object->numberOfRequiredItem);
                 if(object->isDoor) object->isSolid = false;
                 if(object->giftItemId != -1) AddItemToInventory(&player->inventory,object->giftItemId,1);
                 object->isLocked = false;

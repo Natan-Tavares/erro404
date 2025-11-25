@@ -19,8 +19,8 @@ Item *GetItemCatalog(){
     if(!initialized){
         catalog[0] = (Item){.id = 0,.nome="Moeda",.sprite= (Sprite)
             {
-                .texture=LoadTexture("resources/textures/coin.png"),
-                .animation = (animation){.first = 0 ,.last = 6,.durationLeft = 0.1,.numFramesPerAxle={6,1},.speed=0.1,.state = IDLE}
+            .texture=LoadTexture("resources/textures/coin.png"),
+            .animation = (animation){.first = 0 ,.last = 6,.durationLeft = 0.1,.numFramesPerAxle={6,1},.speed=0.1,.state = IDLE}
             }};
         catalog[1] = (Item){.id = 1,.nome="chave",.sprite= (Sprite){
                 .texture = LoadTexture("resources/textures/Key.png"),
@@ -32,16 +32,17 @@ Item *GetItemCatalog(){
             }};
         catalog[3] = (Item){.id=3,.nome="artefato_vermelho",.sprite= (Sprite){
             .texture = LoadTexture("resources/textures/artefato_vermelho.png"),
-            .animation = (animation){.first=0,.last=2,.numFramesPerAxle={2,1},.speed=0.5,.state=0}
+            .animation = (animation){.first=0,.last=1,.numFramesPerAxle={1,1},.speed=0.5,.state=0}
             }};
         catalog[4] = (Item){.id=4,.nome="artefato_verde",.sprite= (Sprite){
             .texture = LoadTexture("resources/textures/artefato_verde.png"),
-            .animation = (animation){.first=0,.last=2,.numFramesPerAxle={2,1},.speed=0.5,.state=0}
+            .animation = (animation){.first=0,.last=1,.numFramesPerAxle={1,1},.state=0}
             }};
         catalog[5] = (Item){.id=5,.nome="artefato_azul",.sprite= (Sprite){
             .texture = LoadTexture("resources/textures/artefato_azul.png"),
             .animation = (animation){.numFramesPerAxle={1,1},.state=0}
             }};
+
         initialized = true;
     }
 
