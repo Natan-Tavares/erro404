@@ -47,7 +47,7 @@
   git clone https://github.com/raysan5/raylib.git
   ```
 
-  2. abra o repositorio do **raylib** na pasta src:`raylib/w64devkit/src`, e faça o make:
+  2. Rode make na pasta src dentro do **raylib**: `raylib/raylib/src`
 
   ```bash
   make PLATFORM=PLATFORM_DESKTOP 
