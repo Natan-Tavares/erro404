@@ -47,7 +47,7 @@
   git clone https://github.com/raysan5/raylib.git
   ```
 
-  2. Rode make na pasta src dentro do **raylib**: `raylib/raylib/src`
+  2. Rode make na pasta src dentro do **raylib**: `raylib/src`
 
   ```bash
   make PLATFORM=PLATFORM_DESKTOP 
