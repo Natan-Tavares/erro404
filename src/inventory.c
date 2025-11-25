@@ -91,8 +91,8 @@ void RemoveItem(Inventory *self,int itemId,int quantityToRemove){
         if(slot->itemId == itemId){
             if(slot->quantity <= quantityToRemove){
                 slot->itemId = -1;
-                slot->quantity = 0;
                 quantityToRemove -= slot->quantity;
+                slot->quantity = 0;
             }else if(slot->quantity > quantityToRemove){
                 slot->quantity -= quantityToRemove;
                 quantityToRemove = 0;

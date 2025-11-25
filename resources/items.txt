@@ -18,3 +18,11 @@ position:448,784
 #
 id:2
 position:352,744
+
+#rato
+id:2
+position:884,677
+
+#chave
+id:1
+position:404,500

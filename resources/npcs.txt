@@ -18,6 +18,11 @@ id:2
 position:96,208
 dialogue:Ola!! eu sou O GUIA!\nseja bem vindo!
 
+#placa do armazem
+id:3
+position:512,368
+dialogue:armazem do mundo
+
 #placa artefato vermelho
 id:3
 position:1000,112
@@ -25,5 +30,10 @@ dialogue:Esse bau costuma gostar de ratos\nespecialmente os perdidos e indefesos
 
 #placa artefato verde
 id:3
-position:1048,904 
-dialogue:Esse bau costuma ser bem\nganancioso
+position:1072,864
+dialogue:Esse bau costuma ser bem ganancioso
+
+#placa do laribirinto
+id:3
+position:784,832
+dialogue:Labirinto pragmatico\n(com um rato no final)
