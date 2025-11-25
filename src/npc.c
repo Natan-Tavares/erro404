@@ -23,7 +23,15 @@ Npc *GetNpcCatalog(){
             }};
         catalog[1] = (Npc){.id=1,.name="criança",.type=QUEST_GIVER,.questId=1,
             .sprite = (Sprite){.texture=LoadTexture("resources/textures/crianca.png"),
-            .animation = (animation){.numFramesPerAxle=(Vector2){1,1},.first = 0 ,.last = 1,.durationLeft = 0.1,.speed=0.5,.state = IDLE}
+            .animation = (animation){.numFramesPerAxle=(Vector2){1,1},.first = 0,.last = 1,.durationLeft = 0.1,.speed=0.5,.state = IDLE}
+            }};
+        catalog[2] = (Npc){.id=2,.name="O guia",.type=NORMAL,
+            .sprite = (Sprite){.texture=LoadTexture("resources/textures/guia.png"),
+            .animation = (animation){.numFramesPerAxle={11,1},.first=0,.last=11,.speed=0.25,.state=IDLE}
+            }};
+        catalog[3] = (Npc){.id=3,.name="Placa",.type=NORMAL,
+            .sprite = (Sprite){.texture=LoadTexture("resources/textures/placa.png"),
+            .animation = (animation){.numFramesPerAxle={1,1},.first=0,.last=0,.state=IDLE}
             }};
 
         isInitialized = true;

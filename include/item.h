@@ -4,7 +4,7 @@
 #include <raylib.h>
 #include <sprite.h>
 
-#define NUMBER_OF_ITEMS 3 //numero de itens que o jogo tem
+#define NUMBER_OF_ITEMS 6 //numero de itens que o jogo tem
 
 typedef struct GameManager GameManager; //Definindo a struct do gerenciador do jogo que foi declarada em outro scopo 
 typedef struct Player Player;

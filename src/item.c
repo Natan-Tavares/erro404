@@ -29,8 +29,19 @@ Item *GetItemCatalog(){
         catalog[2] = (Item){.id=2,.nome="rato",.sprite= (Sprite){
             .texture = LoadTexture("resources/textures/rat.png"),
             .animation = (animation){.first=0,.last=2,.numFramesPerAxle={2,1},.speed=0.5,.state=0}
-        }};
-
+            }};
+        catalog[3] = (Item){.id=3,.nome="artefato_vermelho",.sprite= (Sprite){
+            .texture = LoadTexture("resources/textures/artefato_vermelho.png"),
+            .animation = (animation){.first=0,.last=2,.numFramesPerAxle={2,1},.speed=0.5,.state=0}
+            }};
+        catalog[4] = (Item){.id=4,.nome="artefato_verde",.sprite= (Sprite){
+            .texture = LoadTexture("resources/textures/artefato_verde.png"),
+            .animation = (animation){.first=0,.last=2,.numFramesPerAxle={2,1},.speed=0.5,.state=0}
+            }};
+        catalog[5] = (Item){.id=5,.nome="artefato_azul",.sprite= (Sprite){
+            .texture = LoadTexture("resources/textures/artefato_azul.png"),
+            .animation = (animation){.numFramesPerAxle={1,1},.state=0}
+            }};
         initialized = true;
     }
 
