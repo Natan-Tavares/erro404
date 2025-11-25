@@ -246,3 +246,15 @@ position:408,472
 #caixa
 id:0
 position:424,504
+
+#porta
+id:2
+isSolid:não
+position:936,376
+
+#bau 
+id:3
+position:968,344
+locked:sim
+required item:1
+GiftItemId:5

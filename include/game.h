@@ -15,6 +15,7 @@
 typedef enum GameScreen {
     MENU,
     GAME,
+    END,
     EXIT 
 
 }GameScreen;
@@ -45,3 +46,9 @@ typedef struct GameManager
 }GameManager;
 
 #endif
+
+void UpdateGame(Player player,GameManager *gameManager);
+
+void UpdateEndMenu(GameManager *gameManager);
+
+void DrawEndMenu(GameManager *gameManager);

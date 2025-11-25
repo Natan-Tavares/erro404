@@ -16,7 +16,7 @@ thanksDialogue:Muito obrigado!!\nAqui estão todas as moedas que a mamae tem no 
 #
 id:2
 position:96,208
-dialogue:Ola!! eu sou O GUIA!\nseja bem vindo!
+dialogue:Ola!! eu sou O GUIA!\nEncontre os 3 artefatos modeladores e SALVE\no mundo!
 
 #placa do armazem
 id:3
@@ -25,13 +25,19 @@ dialogue:armazem do mundo
 
 #placa artefato vermelho
 id:3
-position:1000,112
+position:992,112
 dialogue:Esse bau costuma gostar de ratos\nespecialmente os perdidos e indefesos!
 
 #placa artefato verde
 id:3
 position:1072,864
 dialogue:Esse bau costuma ser bem ganancioso
+
+#placa artefato azul
+id:3
+position:912,384
+dialogue:Esse bau é normal\nele so necessita uma chave mesmo
+
 
 #placa do laribirinto
 id:3

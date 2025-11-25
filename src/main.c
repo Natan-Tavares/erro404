@@ -122,7 +122,12 @@ int main()
 
             CheckObjectProximity(objectEntityList,player,&game);
 
-		}else if (game.currentScreen == EXIT) {
+            UpdateGame(player,&game);
+
+		}else if(game.currentScreen == END){
+            UpdateEndMenu(&game);
+
+        }else if (game.currentScreen == EXIT) {
             break;
         }
 
@@ -155,6 +160,8 @@ int main()
 
                 DrawInventory(&player.inventory,(Vector2){100,100});
 
+            }else if(game.currentScreen == END){
+                DrawEndMenu(&game);
             }
 
 		EndDrawing();
