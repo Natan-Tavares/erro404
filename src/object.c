@@ -252,40 +252,42 @@ void DrawObjects(ObjectEntity *objectList,GameManager gameManager){
     }
 }
 
-bool TryMoveObjectChain(ObjectEntity *objects, unsigned char *map, int count, int index, float pushX, float pushY) {
-    ObjectEntity *b = &objects[index];
+bool TryMoveObjectChain(ObjectEntity *objects, unsigned char *map, int numberOfObjectEntitys, ObjectEntity *currentObject, float pushX, float pushY) {
 
-    if (!b->isPushable) return false;
+    if (!currentObject->isPushable) return false;
 
-    Vector2 originalPositions[count];
-    for (int i = 0; i < count; i++) originalPositions[i] = objects[i].position;
+    Vector2 originalPositions[numberOfObjectEntitys];
+    for (int i = 0; i < numberOfObjectEntitys; i++) originalPositions[i] = objects[i].position;
 
-    b->position.x += pushX;
-    b->position.y += pushY;
+    currentObject->position.x += pushX;
+    currentObject->position.y += pushY;
 
-    Rectangle hit = GetObjectHitbox(*b, 16, 16);
-    TileBounds tiles = GetTileBounds(hit);
+    Rectangle currentObjectHitbox = GetObjectHitbox(*currentObject, 16, 16);
+    TileBounds tiles = GetTileBounds(currentObjectHitbox);
     for (int ty = tiles.top; ty <= tiles.bottom; ty++) {
         for (int tx = tiles.left; tx <= tiles.right; tx++) {
             if (GetTileById(map[ty * MAP_COLS + tx]).isSolid) {
-                for (int i = 0; i < count; i++) objects[i].position = originalPositions[i];
+                for (int i = 0; i < numberOfObjectEntitys; i++) objects[i].position = originalPositions[i];
                 return false;
             }
         }
     }
 
-    for (int j = 0; j < count; j++) {
-        if (j == index) continue;
+    for (int j = 0; j < numberOfObjectEntitys; j++) {
+        ObjectEntity *otherObject = &objects[j];
 
-        Rectangle other = GetObjectHitbox(objects[j], 16, 16);
-        if (CheckCollisionRecs(hit, other)) {
-            if (!objects[j].isPushable) {
-                for (int i = 0; i < count; i++) objects[i].position = originalPositions[i];
+        if (otherObject == currentObject) continue;
+
+        Rectangle otherObjectHitbox = GetObjectHitbox(objects[j], 16, 16);
+
+        if (CheckCollisionRecs(currentObjectHitbox, otherObjectHitbox)) {
+            if (!otherObject->isPushable) {
+                for (int i = 0; i < numberOfObjectEntitys; i++) objects[i].position = originalPositions[i];
                 return false;
             }
 
-            if (!TryMoveObjectChain(objects, map, count, j, pushX, pushY)) {
-                for (int i = 0; i < count; i++) objects[i].position = originalPositions[i];
+            if (!TryMoveObjectChain(objects, map, numberOfObjectEntitys, otherObject, pushX, pushY)) {
+                for (int i = 0; i < numberOfObjectEntitys; i++) objects[i].position = originalPositions[i];
                 return false;
             }
         }
@@ -294,26 +296,26 @@ bool TryMoveObjectChain(ObjectEntity *objects, unsigned char *map, int count, in
     return true;
 }
 
-void ResolvePlayerVsObjectsX(Player *player, ObjectEntity *objects, unsigned char *map, int count) {
-    ObjectEntity *p = &player->object;
+void ResolvePlayerVsObjectsX(Player *player, ObjectEntity *objects, unsigned char *map, int numberOfObjectEntitys) {
+    ObjectEntity *playerObject = &player->object;
+    Rectangle playerHitbox = GetObjectHitbox(*playerObject, 16, 16);
 
-    for (int i = 0; i < count; i++) {
-        ObjectEntity *b = &objects[i];
+    for (int i = 0; i < numberOfObjectEntitys; i++) {
+        ObjectEntity *object = &objects[i];
 
-        Rectangle ph = GetObjectHitbox(*p, 16, 16);
-        Rectangle oh = GetObjectHitbox(*b, 16, 16);
+        Rectangle objectHitbox = GetObjectHitbox(*object, 16, 16);
 
-        if (!CheckCollisionRecs(ph, oh)) continue;
+        if (!CheckCollisionRecs(playerHitbox, objectHitbox)) continue;
 
-        float push = CheckCollisionX(ph, oh);
+        float push = CheckCollisionX(playerHitbox,objectHitbox);
 
-        if (!b->isPushable) {
-            if(b->isSolid) p->position.x += push;
+        if (!object->isPushable) {
+            if(object->isSolid) playerObject->position.x += push;
             continue;
         }
 
-        if (!TryMoveObjectChain(objects, map, count, i, -push, 0)) {
-            p->position.x += push;
+        if (!TryMoveObjectChain(objects, map, numberOfObjectEntitys, object, -push, 0)) {
+            playerObject->position.x += push;
         }
     }
 }
