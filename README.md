@@ -72,3 +72,7 @@
   ```bash
   main.exe
   ```
+
+# Gameplay:
+
+https://youtu.be/Q5qUVkLBhOU
