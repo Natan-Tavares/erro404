@@ -298,11 +298,11 @@ bool TryMoveObjectChain(ObjectEntity *objects, unsigned char *map, int numberOfO
 
 void ResolvePlayerVsObjectsX(Player *player, ObjectEntity *objects, unsigned char *map, int numberOfObjectEntitys) {
     ObjectEntity *playerObject = &player->object;
-    Rectangle playerHitbox = GetObjectHitbox(*playerObject, 16, 16);
 
     for (int i = 0; i < numberOfObjectEntitys; i++) {
         ObjectEntity *object = &objects[i];
 
+        Rectangle playerHitbox = GetObjectHitbox(*playerObject, 16, 16);
         Rectangle objectHitbox = GetObjectHitbox(*object, 16, 16);
 
         if (!CheckCollisionRecs(playerHitbox, objectHitbox)) continue;
@@ -321,25 +321,25 @@ void ResolvePlayerVsObjectsX(Player *player, ObjectEntity *objects, unsigned cha
 }
 
 void ResolvePlayerVsObjectsY(Player *player, ObjectEntity *objects, unsigned char *map, int count) {
-    ObjectEntity *p = &player->object;
+    ObjectEntity *playerObject = &player->object;
 
     for (int i = 0; i < count; i++) {
-        ObjectEntity *b = &objects[i];
+        ObjectEntity *object = &objects[i];
 
-        Rectangle ph = GetObjectHitbox(*p, 16, 16);
-        Rectangle oh = GetObjectHitbox(*b, 16, 16);
+        Rectangle playerHitbox = GetObjectHitbox(*playerObject, 16, 16);
+        Rectangle objectHitbox = GetObjectHitbox(*object, 16, 16);
 
-        if (!CheckCollisionRecs(ph, oh)) continue;
+        if (!CheckCollisionRecs(playerHitbox, objectHitbox)) continue;
 
-        float push = CheckCollisionY(ph, oh);
+        float push = CheckCollisionY(playerHitbox, objectHitbox);
 
-        if (!b->isPushable) {
-            if(b->isSolid) p->position.y += push;
+        if (!object->isPushable) {
+            if(object->isSolid) playerObject->position.y += push;
             continue;
         }
 
-        if (!TryMoveObjectChain(objects, map, count, i, 0, -push)) {
-            p->position.y += push;
+        if (!TryMoveObjectChain(objects, map, count, object, 0, -push)) {
+            playerObject->position.y += push;
         }
     }
 }
