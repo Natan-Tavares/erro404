@@ -17,18 +17,17 @@
   ### Linux:
   - gcc
   - make
-  - raylib
 
   - #### instalação das dependencias:
 
     #### Arch: 
     ```bash
-    sudo pacman -S gcc make raylib
+    sudo pacman -S gcc make 
     ```
         
     #### Ubuntu:
     ```bash
-    sudo apt install gcc make libraylib-dev
+    sudo apt install gcc make 
     ```
 
   ### Windows:
@@ -41,60 +40,35 @@
 
   ### Linux:
 
-  1. Clone o repositorio do [raylib](https://github.com/raysan5/raylib):
-
-  ```bash
-  git clone https://github.com/raysan5/raylib.git
-  ```
-
-  2. Rode make na pasta src dentro do **raylib**: `raylib/src`
-
-  ```bash
-  make PLATFORM=PLATFORM_DESKTOP 
-  ```
-
-  3. copie o arquivo criado, `libraly.a`
-
-  4. Clone o repositorio do projeto:
+  1. Clone o repositorio do projeto:
 
   ```bash
   git clone https://github.com/Natan-Tavares/erro404.git
   ```
 
-  5. Abra a pasta `lib` na pasta do projeto e cole o arquivo `libraly.a`
-
-  6. Na pasta raiz do projeto faça o `make`:
+  2. Na pasta raiz do projeto faça o `make`:
     
   ```bash
   make
   ```
 
-  7. Rode o projeto:
+  3. Rode o projeto:
 
   ```bash
   ./main
   ```
   ### Windows:
 
-  1. Baixe o [raylib](https://www.raylib.com/) do site oficial.
-
-  2. Abra a pasta `src` dentro da pasta do `raylib`: `raylib/raylib/src`.
-
-  3. Copie o arquivo `libraly.a`da pasta src.
-
-  4. Clone o repositorio do projeto: 
+  1. Clone o repositorio do projeto: 
   ```bash
   git clone https://github.com/Natan-Tavares/erro404.git
   ```
 
-  5. Abra a pasta `lib` na pasta do projeto e cole o arquivo `libraly.a`.
-
-  6. Na pasta raiz do projeto, compile-o:
+  2. Na pasta raiz do projeto, compile-o:
   ```bash
   make
   ```
-
-  7. Rode o projeto:
+  3. Rode o projeto:
   ```bash
   main.exe
   ```
