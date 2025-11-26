@@ -1,4 +1,5 @@
-lib/libraylib.a
 main
 main.exe
+lib/libraylib.a
 raylib/
+.vscode
