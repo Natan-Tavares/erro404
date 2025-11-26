@@ -252,24 +252,23 @@ void DrawObjects(ObjectEntity *objectList,GameManager gameManager){
     }
 }
 
-bool TryMoveObjectChain(ObjectEntity *objects,unsigned char *map,int count,int index,float pushX,float pushY) {
+bool TryMoveObjectChain(ObjectEntity *objects, unsigned char *map, int count, int index, float pushX, float pushY) {
     ObjectEntity *b = &objects[index];
 
-    float prevX = b->position.x;
-    float prevY = b->position.y;
+    if (!b->isPushable) return false;
+
+    Vector2 originalPositions[count];
+    for (int i = 0; i < count; i++) originalPositions[i] = objects[i].position;
 
     b->position.x += pushX;
     b->position.y += pushY;
 
     Rectangle hit = GetObjectHitbox(*b, 16, 16);
-
     TileBounds tiles = GetTileBounds(hit);
     for (int ty = tiles.top; ty <= tiles.bottom; ty++) {
         for (int tx = tiles.left; tx <= tiles.right; tx++) {
-
-            if (GetTileById(map[ty * MAP_COLS + tx]).isSolid == true) {
-                b->position.x = prevX;
-                b->position.y = prevY;
+            if (GetTileById(map[ty * MAP_COLS + tx]).isSolid) {
+                for (int i = 0; i < count; i++) objects[i].position = originalPositions[i];
                 return false;
             }
         }
@@ -279,20 +278,14 @@ bool TryMoveObjectChain(ObjectEntity *objects,unsigned char *map,int count,int i
         if (j == index) continue;
 
         Rectangle other = GetObjectHitbox(objects[j], 16, 16);
-
         if (CheckCollisionRecs(hit, other)) {
+            if (!objects[j].isPushable) {
+                for (int i = 0; i < count; i++) objects[i].position = originalPositions[i];
+                return false;
+            }
 
-            if (objects[j].isPushable) {
-
-                if (!TryMoveObjectChain(objects, map, count, j, pushX, pushY)) {
-                    b->position.x = prevX;
-                    b->position.y = prevY;
-                    return false;
-                }
-
-            } else {
-                b->position.x = prevX;
-                b->position.y = prevY;
+            if (!TryMoveObjectChain(objects, map, count, j, pushX, pushY)) {
+                for (int i = 0; i < count; i++) objects[i].position = originalPositions[i];
                 return false;
             }
         }

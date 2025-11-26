@@ -1,10 +1,3 @@
-
-
-#caixa
-id:0
-pushable:sim
-position:400,300
-
 #porta
 id:1
 position:248,184
@@ -258,3 +251,16 @@ position:968,344
 locked:sim
 required item:1
 GiftItemId:5
+
+#caixa
+id:0
+pushable:sim
+position:400,300
+
+#caixa
+id:0
+position:432,332
+
+#caixa
+id:0
+position:448,348
