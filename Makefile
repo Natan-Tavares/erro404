@@ -16,12 +16,13 @@ RAYLIB_REPO = https://github.com/raysan5/raylib.git
 
 all: $(TARGET)
 
-$(RAYLIB_DIR):
-	git clone $(RAYLIB_REPO)
-
-$(STATIC): $(RAYLIB_DIR)
-	mkdir -p lib
-	cd $(RAYLIB_DIR)/src && make PLATFORM=PLATFORM_DESKTOP && mv libraylib.a ../../lib/
-
+$(STATIC):
+	@if [ ! -f $(STATIC) ]; then \
+		echo "Biblioteca estatica do raylib não encontrado, iniciando build."; \
+		git clone $(RAYLIB_REPO); \
+		mkdir -p lib; \
+		cd $(RAYLIB_DIR)/src && make PLATFORM=PLATFORM_DESKTOP && mv libraylib.a ../../lib/; \
+	fi
+	
 $(TARGET): $(STATIC) $(SRC)
 	gcc -o $(TARGET) src/*.c $(INCLUDE) $(LIBDIR) $(LIBS)
