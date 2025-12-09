@@ -4,8 +4,6 @@
 
 #include <raylib.h>
 
-typedef struct Sprite Sprite;
-
 //Definições de estados
 typedef enum state{
 
@@ -30,6 +28,8 @@ typedef struct animation
     state state; // animação em execução
 
 }animation;
+
+typedef struct Sprite Sprite;
 
 //Função para atualizar a animação
 void UpdateAnimation(animation *animation);

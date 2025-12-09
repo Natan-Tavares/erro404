@@ -16,7 +16,7 @@ void UpdateMenu(GameManager *gameManager){
 	if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) gameManager->menu.selected--;
     if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) gameManager->menu.selected++;
     if (gameManager->menu.selected < 0) gameManager->menu.selected = gameManager->menu.totalOptions - 1;
-    if (gameManager->menu.selected >= gameManager->menu.totalOptions) gameManager->menu.selected = 0;	
+    if (gameManager->menu.selected >= gameManager->menu.totalOptions) gameManager->menu.selected = 0;
 
     if (IsKeyPressed(KEY_ENTER)) {
         if (gameManager->menu.selected == 0) gameManager->currentScreen = GAME;

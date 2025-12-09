@@ -85,14 +85,29 @@ int CountItems(FILE *file){
 
 }
 
+void HandleItemId(ItemEntity *itemEntity,const char *value){
+    itemEntity->itemId = atoi(value);
+    itemEntity->colected = false;
+}
+
+void HandleItemPosition(ItemEntity *itemEntity,const char *value){
+    sscanf(value,"%f,%f",&(itemEntity->position.x),&(itemEntity->position.y));
+}
+
 void FillItemValues(ItemEntity *itemEntity, char *line) {
 
-    if (!strncmp(line, "id:", 3)) {
-        itemEntity->itemId = atoi(line + 3);
-        itemEntity->colected = false;
+    static const ItemFieldHandler itemHandlers[] = {
+        {"id:",HandleItemId},
+        {"position:",HandleItemPosition},
+    };
 
-    }else if(!strncmp(line,"position:",9)){
-        sscanf(line+9,"%f,%f",&(itemEntity->position.x),&(itemEntity->position.y));
+    static const int itemHandleCount = sizeof(itemHandlers) / sizeof(itemHandlers[0]);
+
+    for(int i = 0;i < itemHandleCount;i++){
+        if(!strncmp(line,itemHandlers[i].key,strlen(itemHandlers[i].key))){
+            itemHandlers[i].handle(itemEntity,line + strlen(itemHandlers[i].key));
+            return;
+        }
     }
 
 }
@@ -108,7 +123,7 @@ void ReadItems(ItemEntity *itemEntityList,FILE *file){
 
         if(line[0] == '#'){ 
             index++;
-          continue;  
+            continue;  
         } 
 
         line[strcspn(line, "\n")] = '\0';

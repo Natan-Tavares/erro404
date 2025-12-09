@@ -7,13 +7,8 @@
 
 #define NUMBER_OF_OBJECTS 5
 
-typedef struct Object
-{
-    int id;
-    Sprite sprite;
-    animation animation;
-
-}Object;
+typedef struct Player Player;
+typedef struct GameManager GameManager;
 
 typedef struct ObjectEntity
 {
@@ -26,26 +21,41 @@ typedef struct ObjectEntity
     float speed;
 
     bool isPlayerNearby;
-
-    bool isSolid;
     bool isPushable;
-    bool isLocked;
-    bool isDoor;
+    bool isSolid;
 
-    int requiredItemId;
-    int numberOfRequiredItem;
-    int giftItemId;
+    void *data;
 
 }ObjectEntity;
 
-typedef struct Player Player;
-typedef struct GameManager GameManager;
+typedef void (*ObjectValueHandler)(ObjectEntity *objectEntity,const char *value);
+
+typedef struct ObjectFieldHandler
+{
+
+    const char *key;
+    ObjectValueHandler handle;
+}ObjectFieldHandler;
+
+typedef struct Object
+{
+    int id;
+    Sprite sprite;
+    animation animation;
+
+    ObjectFieldHandler *(*Handlers)();
+    void (*OnUpdate)(ObjectEntity *self,Player *player,GameManager *gameManager);
+    void (*OnInit)(ObjectEntity *self);
+
+}Object;
 
 Rectangle GetObjectHitbox(ObjectEntity self,float width,float height);
 
 void applyVelX(ObjectEntity *self);
 
 void applyVelY(ObjectEntity *self);
+
+void FreeObjectCatalog();
 
 float CheckCollisionX(Rectangle hitbox,Rectangle collisionRectangle);
 
@@ -55,17 +65,13 @@ void DrawObjects(ObjectEntity *objectList,GameManager gameManager);
 
 ObjectEntity *LoadObjects(const char *filename,int *numberOfObjects);
 
-void FreeObjectCatalog();
-
 void ResolvePlayerVsObjectsY(Player *player, ObjectEntity *objects,unsigned char *map, int count);
 void ResolvePlayerVsObjectsX(Player *player, ObjectEntity *objects,unsigned char *map, int count);
 
-void CheckObjectProximity(ObjectEntity *objectEntityList,Player player,GameManager *gameManager);
-
-void InteractWithObject(ObjectEntity *objectEntityList,Player *player,GameManager *gameManager);
-
-void UpdateObjectInteract(GameManager *gameManager,Player *player);
+void UpdateObjectEntitys(ObjectEntity *objectEntitys,Player *player,GameManager *gameManager);
 
 void DrawObjectInteract(ObjectEntity *objectEntityList,GameManager gameManager);
+
+void FreeAllObjectEntitys(ObjectEntity *objectEntitys);
 
 #endif

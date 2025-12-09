@@ -4,6 +4,7 @@
 #include <sprite.h>
 #include <npc.h>
 #include <game.h>
+#include <tilemap.h>
 #include <utils.h>
 
 
@@ -109,4 +110,21 @@ void InteractWithNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameMa
 
     gameManager->canInteract = true;
 
+}
+
+
+void UpdatePlayer(Player *player,ObjectEntity *objectEntityList,unsigned char *map,GameManager game){
+    MovePlayer(player);
+    
+    applyVelX(&(player->object));    
+    CheckTilesCollisionX(&(player->object), map);
+    ResolvePlayerVsObjectsX(player, objectEntityList,map, game.numberOfObjectEntitys);
+            
+    applyVelY(&(player->object));
+    CheckTilesCollisionY(&(player->object), map);
+    ResolvePlayerVsObjectsY(player, objectEntityList,map, game.numberOfObjectEntitys);
+
+	PlayerStatemachine(player);
+
+	UpdateAnimation(&(player->sprite.animation));
 }

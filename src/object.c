@@ -4,6 +4,8 @@
 #include <raylib.h>
 #include <player.h>
 #include <math.h>
+#include <door.h>
+#include <chest.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <utils.h>
@@ -20,15 +22,15 @@ Object *GetObjectCatalog(){
                 .texture = LoadTexture("resources/textures/box.png"),
                 .animation = (animation){.numFramesPerAxle={1,1},.state = IDLE}
             }};
-        catalog[1] = (Object){.id = 1,.sprite = (Sprite){
+        catalog[1] = (Object){.id = 1,.Handlers=GetDoorHandlers,.OnInit=DoorInit,.OnUpdate=UpdateDoor,.sprite = (Sprite){
             .texture = LoadTexture("resources/textures/door.png"),
             .animation = (animation){.numFramesPerAxle={2,1},.state = IDLE}
             }};
-        catalog[2] = (Object){.id = 2,.sprite = (Sprite){
+        catalog[2] = (Object){.id = 2,.Handlers=GetDoorHandlers,.OnInit=DoorInit,.sprite = (Sprite){
             .texture = catalog[1].sprite.texture,
             .animation = (animation){.current=1,.numFramesPerAxle={2,1},.state = IDLE}
             }};
-        catalog[3] = (Object){.id = 3,.sprite = (Sprite){
+        catalog[3] = (Object){.id = 3,.Handlers=GetChestHandlers,.OnInit=ChestInit,.OnUpdate=UpdateChest,.sprite = (Sprite){
             .texture = LoadTexture("resources/textures/chest.png"),
             .animation = (animation){.numFramesPerAxle={2,1},.state = IDLE}
             }};
@@ -46,7 +48,8 @@ void FreeObjectCatalog(){
     Object *catalog = GetObjectCatalog();
 
     for(int i = 0;i < NUMBER_OF_OBJECTS;i++){
-        UnloadTexture(catalog[i].sprite.texture);
+        if(catalog[i].sprite.texture.id != 0)
+            UnloadTexture(catalog[i].sprite.texture);
     }
 }
 
@@ -149,48 +152,66 @@ int CountObjectEntitys(FILE *file){
     return count;
 }
 
-void FillObjectValue(ObjectEntity *object,char *line){
-    
-    if(!strncmp(line,"id:",3)){
-        object->ObjectId = atoi(line+3);
-        object->isSolid = true;
-        object->giftItemId = -1;
-        object->numberOfRequiredItem = 1;
-    }else if(!strncmp(line,"position:", 9)){
-        sscanf(line+9,"%f,%f",&(object->position.x),&(object->position.y));
-    }else if(!strncmp(line,"required item:", 14)){
-        object->requiredItemId = atoi(line+14);
-    }else if(!strncmp(line,"solid:",6)){
-        if(!(strncmp(line+6,"sim",3))){
-            object->isSolid=true;
-        }else{
-            object->isSolid=false;
-        }
-    }else if(!strncmp(line,"pushable:",9)){
-        if(!(strncmp(line+9,"sim",3))){
-            object->isPushable=true;
-        }else{
-            object->isPushable=false;
-        }
-    }else if(!strncmp(line,"locked:",7)){
-        if(!(strncmp(line+7,"sim",3))){
-            object->isLocked=true;
-        }else{
-            object->isLocked=false;
-        }
-    }else if(!strncmp(line,"isSolid:",8)){
-        if(!strncmp(line+8,"não",3)){
-            object->isSolid = false;
-        }
-    }else if(!strncmp(line,"isDoor:",7)){
-        if(!strncmp(line+7,"sim",3)){
-            object->isDoor = true;
-        }
-    }else if(!strncmp(line,"GiftItemId:",11)){
-        object->giftItemId = atoi(line+11);
-    }else if(!strncmp(line,"numberOfRequiredItem:",21)){
-        object->numberOfRequiredItem = atoi(line+21);
+void HandleObjectId(ObjectEntity *objectEntity,const char *value){
+    objectEntity->ObjectId = atoi(value);
+    objectEntity->isSolid = true;
+    Object *object = GetObjectById(objectEntity->ObjectId);
+    if(object->OnInit) object->OnInit(objectEntity);
+}
+
+void HandleObjectPosition(ObjectEntity *objectEntity,const char *value){
+    sscanf(value,"%f,%f",&(objectEntity->position.x),&(objectEntity->position.y));
+}
+
+void HandleObjectIsSolid(ObjectEntity *objectEntity,const char *value){
+    if(!strncmp(value,"sim",3)){
+        objectEntity->isSolid = true;
+        return;
     }
+
+    objectEntity->isSolid = false;
+
+}
+
+void HandleObjectIsPushable(ObjectEntity *objectEntity,const char *value){
+    if(!strncmp(value,"sim",3)){
+        objectEntity->isPushable = true;
+        return;
+    }
+
+    objectEntity->isPushable = false;
+
+}
+
+void FillObjectValue(ObjectEntity *objectEntity,char *line){
+
+    static ObjectFieldHandler defaultObjectHandlers[] = {
+        {"id:",HandleObjectId},
+        {"position:",HandleObjectPosition},
+        {"solid:",HandleObjectIsSolid},
+        {"pushable:",HandleObjectIsPushable},
+        {NULL,NULL},
+    };
+
+    for(int i = 0;defaultObjectHandlers[i].key != NULL;i++){
+        if(!strncmp(defaultObjectHandlers[i].key,line,strlen(defaultObjectHandlers[i].key))){
+            defaultObjectHandlers[i].handle(objectEntity,line+strlen(defaultObjectHandlers[i].key));        
+            return;
+        }
+    }
+
+    Object *object = GetObjectById(objectEntity->ObjectId);
+    if(object->Handlers){
+        ObjectFieldHandler *objectHandlers = object->Handlers();
+
+        for (int i = 0; objectHandlers[i].key != NULL;i++){
+            if(!strncmp(objectHandlers[i].key,line,strlen(objectHandlers[i].key))){
+                objectHandlers[i].handle(objectEntity, line + strlen(objectHandlers[i].key));
+                return;
+            }
+        }
+    }
+
 }
 
 void ReadObjects(ObjectEntity *ObjectEntitys,FILE *file){
@@ -344,62 +365,6 @@ void ResolvePlayerVsObjectsY(Player *player, ObjectEntity *objects, unsigned cha
     }
 }
 
-void CheckObjectProximity(ObjectEntity *objectEntityList,Player player,GameManager *gameManager){
-    for(int i = 0;i< gameManager->numberOfObjectEntitys;i++){
-        if(!objectEntityList[i].isLocked) continue;
-
-        if(GetDistance(player.object.position,objectEntityList[i].position) < 25){
-            objectEntityList[i].isPlayerNearby = true;
-        }else{
-            objectEntityList[i].isPlayerNearby = false;
-        }
-
-    }
-
-}
-
-void InteractWithObject(ObjectEntity *objectEntityList,Player *player,GameManager *gameManager){
-    for(int i = 0;i< gameManager->numberOfObjectEntitys;i++){
-        ObjectEntity *object = &objectEntityList[i];
-        if(!object->isLocked || !object->isSolid) continue;
-
-        if(object->isPlayerNearby && IsKeyPressed(KEY_E) && gameManager->canInteract){
-            gameManager->activeObject = object;
-        }
-
-    }
-}
-
-void UpdateObjectInteract(GameManager *gameManager,Player *player){
-    if(!gameManager->activeObject) return;
-
-    ObjectEntity *object = gameManager->activeObject;
-
-    static bool localCanInteract = false;
-
-    if(IsKeyPressed(KEY_UP)) gameManager->selectedOption = (gameManager->selectedOption+1) %2; 
-    if(IsKeyPressed(KEY_DOWN)) gameManager->selectedOption = (gameManager->selectedOption+1) %2;
-
-    if(IsKeyPressed(KEY_E) && localCanInteract){
-        if(gameManager->selectedOption == 0){
-            if(CheckInventoryHasItem(player->inventory, object->requiredItemId, object->numberOfRequiredItem)){
-                RemoveItem(&player->inventory, object->requiredItemId, object->numberOfRequiredItem);
-                if(object->isDoor) object->isSolid = false;
-                if(object->giftItemId != -1) AddItemToInventory(&player->inventory,object->giftItemId,1);
-                object->isLocked = false;
-                object->ObjectId = object->ObjectId+1;
-            }
-        }
-        gameManager->activeObject = NULL;
-        localCanInteract = false;
-        gameManager->canInteract = false;
-        return;
-    }
-    UpdateBoolValue(&localCanInteract);
-    gameManager->canInteract = false;
-
-}
-
 void DrawObjectInteract(ObjectEntity *objectEntityList,GameManager gameManager){
     if(!gameManager.activeObject) return;
 
@@ -412,4 +377,26 @@ void DrawObjectInteract(ObjectEntity *objectEntityList,GameManager gameManager){
         DrawText(options[i],140,650 + i * 25,20,color);
     }
 
+}
+
+void UpdateObjectEntitys(ObjectEntity *objectEntitys,Player *player,GameManager *gameManager){
+    for(int i = 0;i < gameManager->numberOfObjectEntitys ;i++){
+        Object *object = GetObjectById(objectEntitys[i].ObjectId);
+
+        if(object->OnUpdate){
+            object->OnUpdate(&(objectEntitys[i]),player,gameManager);
+        }
+
+    }
+}
+
+void FreeObjectEntity(ObjectEntity *object){
+    free(object->data);
+}
+
+void FreeAllObjectEntitys(ObjectEntity *objectEntitys){
+    int objectAmount = sizeof(objectEntitys) / sizeof(objectEntitys[0]); 
+    for(int i = 0;i < objectAmount;i++){
+        FreeObjectEntity(&(objectEntitys[i]));
+    }
 }

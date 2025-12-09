@@ -2,7 +2,6 @@
 #define ULTILS_H
 
 #include <raylib.h>
-#include <game.h>
 #include <stdio.h>
 
 void replaceEscapedNewlines(char *text);

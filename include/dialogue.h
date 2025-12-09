@@ -6,7 +6,7 @@
 #define MAX_DIALOGUE_LENGTH 512 //Numero maximo de caracteres que um dialogo de npc pode ter
 
 typedef enum DialogueStatus{
-    NONE,
+    NONE, //caso o dialogo não tenha
     CHOICE,
     RESPONSE,
     GIVE,
@@ -21,6 +21,8 @@ typedef struct Dialogue
     char text[MAX_DIALOGUE_LENGTH]; //Componente que armazena o texto do dialogo
     int visibleChars; // Componente que armazena a quantidade de caracteres visiveis do dialogo
     bool activate; //Componente que armazena se o dialogo esta ativo ou não
+
+    bool canSkip;
     
 }Dialogue;
 

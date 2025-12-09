@@ -81,7 +81,7 @@ void DrawQuestChoice(GameManager *gameManager){
     
     DrawRectangle(100,600,400,120,Fade(BLACK,0.7));
     if(*dialogueStatus == GIVE_CHOICE){
-        DrawText("Entregar itens?",120,620,20,WHITE);        
+        DrawText("Entregar itens?",120,620,20,WHITE);
     }else{
         DrawText("Aceitar Missão?",120,620,20,WHITE);
     }

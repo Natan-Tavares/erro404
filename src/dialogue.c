@@ -5,38 +5,60 @@
 #include <utils.h>
 #include <npc.h>
 
-void StartDialogue(Dialogue *dialogue,GameManager *gameManager,DialogueStatus status){
-    if(strlen(dialogue->text) == 0) return; //evita caso um npc não tenha dialogos, de aparecer vazio o espaço do dialogo
+void StartDialogue(Dialogue *dialogues,GameManager *gameManager,DialogueStatus status){
+    if(!dialogues || dialogues->text[0] == '\0') return; //evita (caso um npc não tenha dialogos) aparecer vazio o espaço do dialogo;
 
-    gameManager->activeDialogue = dialogue;
-
+    gameManager->activeDialogues = dialogues;
     gameManager->dialogueStatus = status;
     gameManager->selectedOption = 0;
+}
 
-    
+void SkipDialogue(Dialogue *dialogue){
+    dialogue->visibleChars = strlen(dialogue->text);
+}
+
+bool TryToSkipDialogue(Dialogue *dialogue){
+    if(IsKeyPressed(KEY_E) && dialogue->canSkip){
+        SkipDialogue(dialogue);
+        dialogue->canSkip = false;
+        return true;
+    }
+    dialogue->canSkip = true;
+    return false;
+}
+
+bool PassthroughAllDialogues(Dialogue *dialogues,GameManager *gameManager){
+
+    Dialogue *activeDialogue = &dialogues[gameManager->activeDialogueIndex];
+
+    if(activeDialogue->text[0] == '\0'){
+        gameManager->activeDialogues = NULL;             
+        return true;
+    }
+
+    int textLen = strlen(activeDialogue->text);
+
+    if(activeDialogue->visibleChars < textLen){
+        UpdateVisibleChars(activeDialogue->text,&activeDialogue->visibleChars,0.05);
+
+        TryToSkipDialogue(activeDialogue);
+
+        return false;
+    }else if(IsKeyPressed(KEY_E) && gameManager->canInteract){
+        gameManager->activeDialogueIndex++;
+        activeDialogue->visibleChars = 0;
+        return false;
+    }
+
+    return false;
 }
 
 void UpdateDialogue(GameManager *gameManager){
-    Dialogue *dialogue = gameManager->activeDialogue;
-    if(!dialogue) return;
+    Dialogue *dialogues = gameManager->activeDialogues;
+    if(!dialogues) return;
 
-    static bool localCanInteract = false;
-
-    int textLen = strlen(dialogue->text);
-
-    if(dialogue->visibleChars < textLen){
-        UpdateVisibleChars(dialogue->text,&dialogue->visibleChars,0.05);
-
-        if(IsKeyPressed(KEY_E) && localCanInteract){
-            dialogue->visibleChars = textLen;   
-            localCanInteract = false;
-            return;
-        }
-
-    }else if(IsKeyPressed(KEY_E) && localCanInteract){
+    if(PassthroughAllDialogues(dialogues,gameManager)){
         DialogueStatus *status = &gameManager->dialogueStatus;
-
-        gameManager->activeDialogue = NULL;
 
         switch (*status)
         {
@@ -46,23 +68,24 @@ void UpdateDialogue(GameManager *gameManager){
             case CHOICE:
                 *status = RESPONSE;
                 break;
+
             case GIVE:
                 *status = GIVE_CHOICE;
-                break;                
+                break;
+
             default:
                 break;
         }
-        dialogue->visibleChars = 0;
-        localCanInteract = false;
+
+        gameManager->activeDialogueIndex = 0;
         return;
     }
-    UpdateBoolValue(&localCanInteract);
-
+    
 }
 
 void DrawDialogue(GameManager *gameManager) {
-    Dialogue *dialogue = gameManager->activeDialogue;
-    if (!dialogue) return;
+    Dialogue *dialogues = gameManager->activeDialogues;
+    if (!dialogues) return;
 
     int screenWidth = WINDOW_WIDTH;
     int screenHeight = WINDOW_HEIGHT;
@@ -81,13 +104,13 @@ void DrawDialogue(GameManager *gameManager) {
         DrawText(npc->name, boxX + 20, boxY + 10, 24, YELLOW);
     }
 
-    const char *visibleText = TextSubtext(dialogue->text, 0, dialogue->visibleChars);
+    const char *visibleText = TextSubtext(dialogues[gameManager->activeDialogueIndex].text, 0, dialogues[gameManager->activeDialogueIndex].visibleChars);
     DrawTextEx(GetFontDefault(), visibleText, 
             (Vector2){boxX + 20, boxY + 50}, 20, 2, WHITE);
 
 
-    int textLen = strlen(dialogue->text);
-    if (dialogue->visibleChars >= textLen) {
+    int textLen = strlen(dialogues[gameManager->activeDialogueIndex].text);
+    if (dialogues[gameManager->activeDialogueIndex].visibleChars >= textLen) {
         DrawText("Pressione [E] para continuar", boxX + boxWidth - 350, boxY + boxHeight - 30, 18, GRAY);
     }
 }

@@ -1,14 +1,15 @@
 #porta
 id:1
 position:248,184
+solid:sim
 locked:sim
-isDoor:sim
-required item:1
+required item id:1
+required item amount:1
 
 #porta
 id:2
-isSolid:não
 position:616,888
+solid:não
 
 #caixa
 id:0
@@ -74,7 +75,7 @@ position:392,904
 
 #porta
 id:2
-isSolid:não
+solid:não
 position:920,184
 
 #caixa
@@ -97,17 +98,18 @@ position:936,200
 id:3
 position:1032,120
 locked:sim
-required item:2
-GiftItemId:3
+required item id:2
+gift item id:3
+gift item amount:1
 
 #porta
 id:2
-isSolid:não
+solid:não
 position:776,824
 
 #porta
 id:2
-isSolid:não
+solid:não
 position:1032,936
 
 #caixa
@@ -126,13 +128,14 @@ position:1064,872
 id:3
 position:1112,872
 locked:sim
-required item:0
-numberOfRequiredItem:32
-GiftItemId:4
+required item id:0
+required item amount:32
+gift item id:4
+gift item amount:1
 
 #porta do armazem
 id:2
-isSolid:não
+solid:não
 position:536,392
 
 #caixa
@@ -242,15 +245,16 @@ position:424,504
 
 #porta
 id:2
-isSolid:não
+solid:não
 position:936,376
 
 #bau 
 id:3
 position:968,344
 locked:sim
-required item:1
-GiftItemId:5
+required item id:1
+gift item id:5
+gift item amount:1
 
 #caixa
 id:0

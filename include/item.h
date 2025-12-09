@@ -24,6 +24,15 @@ typedef struct ItemEntity
 
 }ItemEntity;
 
+typedef void (*ItemValueHandler)(ItemEntity *itemEntity, const char *value);
+
+typedef struct ItemFieldHandler
+{
+    const char *key;
+    ItemValueHandler handle;
+    
+}ItemFieldHandler;
+
 Item *GetItemById(int id);
 
 ItemEntity *LoadItems(const char* filename,int *numberOfItems);

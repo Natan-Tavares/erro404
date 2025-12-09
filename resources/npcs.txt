@@ -4,19 +4,22 @@ id:0
 position:150,200    
 requestDialogue:Porfavor encontre 3 moedas para mim.
 dialogue:Va logo, eu vi algumas por ai
-thanksDialogue:Obrigado amigo\nfiquei sabendo de uma menina precisando de ajuda\nlogo a baixo de nos 
+thanksDialogue:Obrigado amigo\n 
+thanksDialogue:Fiquei sabendo de uma menina precisando de ajuda\nlogo a baixo de nós!
 
 #
 id:1
 position:592,824
 requestDialogue:Porfavor, encontre meu rato de estimação.\neu sinto tanta falta dele.\nCuidado, o porão é tão bagunçado.
 dialogue:traga ele ate mim.
-thanksDialogue:Muito obrigado!!\nAqui estão todas as moedas que a mamae tem no armario
+thanksDialogue:Muito obrigado!!\n
+thanksDialogue:Aqui estão todas as moedas que a mamae tem no armario.
 
 #
 id:2
 position:96,208
-dialogue:Ola!! eu sou O GUIA!\nEncontre os 3 artefatos modeladores e SALVE\no mundo!
+dialogue:Ola!! eu sou O GUIA!\n
+dialogue:Encontre os 3 artefatos modeladores e SALVE\no mundo!\n
 
 #placa do armazem
 id:3

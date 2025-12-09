@@ -9,6 +9,7 @@
 #include <animation.h>
 #include <player.h>
 #include <sprite.h>
+#include <door.h>
 #include <camera.h>
 #include <tilemap.h>
 #include <npc.h>
@@ -38,7 +39,7 @@ int main()
         .activeQuestsCount = 0,
         .activeNpc = NULL,
         .canInteract = true,
-
+        .activeDialogueIndex = 0,
     };
 
     NpcEntity *npcEntityList = LoadNpcs("resources/npcs.txt",&game.numberOfNpcEntitys);
@@ -64,6 +65,7 @@ int main()
             .texture = LoadTexture("resources/textures/player.png"),
             .animation = idle,        
         },
+        .canInteract = true,
 
     };
 
@@ -90,23 +92,9 @@ int main()
         }else if (game.currentScreen == GAME) {
             if (IsKeyPressed(KEY_C)) game.currentScreen = MENU;
             
-            MovePlayer(&player);
+            UpdatePlayer(&player,objectEntityList,map,game);
 
-            applyVelX(&(player.object));
-            CheckTilesCollisionX(&(player.object), map);
-
-            ResolvePlayerVsObjectsX(&player, objectEntityList,map, game.numberOfObjectEntitys);
-            
-            applyVelY(&(player.object));
-            CheckTilesCollisionY(&(player.object), map);
-
-            ResolvePlayerVsObjectsY(&player, objectEntityList,map, game.numberOfObjectEntitys);
-
-            InteractWithObject(objectEntityList,&player,&game);
-
-			PlayerStatemachine(&player);
-
-			UpdateAnimation(&(player.sprite.animation));
+            UpdateObjectEntitys(objectEntityList,&player,&game);
 
             UpdateItemEntity(ItemEntitylist,game.numberOfItemEntitys,&player);
 
@@ -116,14 +104,14 @@ int main()
 
             UpdateNpc(&player,npcEntityList,&game);
 
-            UpdateNpcAnimation();
+            UpdateDialogue(&game);
 
-            UpdateObjectInteract(&game,&player);
-
-            CheckObjectProximity(objectEntityList,player,&game);
+            UpdateQuestChoice(&player,&game); 
 
             UpdateGame(player,&game);
 
+            player.canInteract = true;
+            
 		}else if(game.currentScreen == END){
             UpdateEndMenu(&game);
 
@@ -168,6 +156,7 @@ int main()
     }
 
     UnloadTexture(player.sprite.texture);
+    FreeAllObjectEntitys(objectEntityList);
     free(map);
     free(npcEntityList);
     free(ItemEntitylist);

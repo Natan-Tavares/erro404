@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <npc.h>
 #include <string.h>
 #include <raylib.h>
 #include <player.h>
@@ -83,27 +84,42 @@ int CountNpcEntitys(FILE *file){
 
 }
 
-void HandleId(NpcEntity *npcEntity,const char *value){
+void HandleNpcId(NpcEntity *npcEntity,const char *value){
     npcEntity->npcId = atoi(value);
+    npcEntity->normalDialogueCount = 0;
+    npcEntity->requestDialogueCount = 0;
+    npcEntity->thanksDialogueCount = 0;
 }
 
-void HandlePosition(NpcEntity *npc,const char *value){
+void HandleNpcPosition(NpcEntity *npc,const char *value){
     sscanf(value,"%f,%f",&npc->position.x,&npc->position.y);
 }
 
-void HandleDialogue(NpcEntity *npcEntity,const char *value){
-    strncpy(npcEntity->normalDialogue.text,value,MAX_DIALOGUE_LENGTH -1);
-    replaceEscapedNewlines(npcEntity->normalDialogue.text);
+void HandleNpcDialogue(NpcEntity *npcEntity,const char *value){
+    Dialogue *dialogue = &npcEntity->normalDialogues[npcEntity->normalDialogueCount];
+
+    strncpy(dialogue->text,value,MAX_DIALOGUE_LENGTH -1);
+    replaceEscapedNewlines(dialogue->text);
+    dialogue->canSkip = false;
+    npcEntity->normalDialogueCount++;
 }
 
-void HandleRequestDialogue(NpcEntity *npcEntity,const char *value){
-    strncpy(npcEntity->requestDialogue.text,value, MAX_DIALOGUE_LENGTH-1);
-    replaceEscapedNewlines(npcEntity->requestDialogue.text);
+void HandleNpcRequestDialogue(NpcEntity *npcEntity,const char *value){
+    Dialogue *dialogue = &npcEntity->requestDialogues[npcEntity->requestDialogueCount];
+
+    strncpy(dialogue->text,value, MAX_DIALOGUE_LENGTH-1);
+    replaceEscapedNewlines(dialogue->text);
+    dialogue->canSkip = false;
+    npcEntity->requestDialogueCount++;
 }
 
-void HandleThanksDialogue(NpcEntity *npcEntity,const char *value){
-    strncpy(npcEntity->thanksDialogue.text,value, MAX_DIALOGUE_LENGTH-1);
-    replaceEscapedNewlines(npcEntity->thanksDialogue.text);
+void HandleNpcThanksDialogue(NpcEntity *npcEntity,const char *value){
+    Dialogue *dialogue = &npcEntity->thanksDialogues[npcEntity->thanksDialogueCount];
+
+    strncpy(dialogue->text,value,MAX_DIALOGUE_LENGTH -1);
+    replaceEscapedNewlines(dialogue->text);
+    dialogue->canSkip = false;
+    npcEntity->thanksDialogueCount++;
 }
 
 /*
@@ -115,11 +131,11 @@ void HandleThanksDialogue(NpcEntity *npcEntity,const char *value){
 void fillNpcEntityValues(NpcEntity *NpcEntity,char *line){
 
     static const NpcFieldHandler npcHandlers[] = {
-        {"id:", HandleId},
-        {"position:", HandlePosition},
-        {"dialogue:", HandleDialogue},
-        {"requestDialogue:",HandleRequestDialogue},
-        {"thanksDialogue:",HandleThanksDialogue}
+        {"id:", HandleNpcId},
+        {"position:", HandleNpcPosition},
+        {"dialogue:", HandleNpcDialogue},
+        {"requestDialogue:",HandleNpcRequestDialogue},
+        {"thanksDialogue:",HandleNpcThanksDialogue}
     };
 
     static const int npcHandleCount = sizeof(npcHandlers) / sizeof(npcHandlers[0]);
@@ -127,6 +143,7 @@ void fillNpcEntityValues(NpcEntity *NpcEntity,char *line){
     for(int i = 0; i<npcHandleCount; i++){
         if(!strncmp(line, npcHandlers[i].key , strlen(npcHandlers[i].key) )){
             npcHandlers[i].handle(NpcEntity,line + strlen(npcHandlers[i].key));
+            return;
         }
     }
 
@@ -234,8 +251,8 @@ void DrawNpcs(NpcEntity *npcEntityList,int numberOfNpcs){
 }
 
  /*
-     Atualiza a poximidade de todos os npcs
-     Recebendo a lista de npcs, passa npc por npc para a função UpdateNpcProximity
+    Atualiza a poximidade de todos os npcs
+    Recebendo a lista de npcs, passa npc por npc para a função UpdateNpcProximity
 */
 void CheckAllNpcProximities(NpcEntity *npcEntityList,Player player,GameManager gameManager){
     for (int i = 0; i < gameManager.numberOfNpcEntitys; i++) {
@@ -261,24 +278,28 @@ void TalkToNpc(Player *player,NpcEntity *npcEntity,GameManager *gameManager){
         switch (quest->status)
         {
         case NOT_STARTED:
-            StartDialogue(&npcEntity->requestDialogue,gameManager,CHOICE);
+            StartDialogue(npcEntity->requestDialogues,gameManager,CHOICE);
             break;
         case IN_PROGRESS:
-            StartDialogue(&npcEntity->normalDialogue,gameManager,NONE);
+            StartDialogue(npcEntity->normalDialogues,gameManager,NONE);
             break;
         case COMPLETED:
-            StartDialogue(&npcEntity->thanksDialogue,gameManager,NONE);
+            StartDialogue(npcEntity->thanksDialogues,gameManager,NONE);
             break;
         }
+
     }else if(npc->type == QUEST_GIVER && GetQuestById(npc->questId)->isActive){
-        if (CheckInventoryHasItem(player->inventory,quest->requiredItemId,quest->numberOfRequiredItem))
+        
+        if(CheckInventoryHasItem(player->inventory,quest->requiredItemId,quest->numberOfRequiredItem))
         {
-            StartDialogue(&npcEntity->normalDialogue,gameManager,GIVE);
+            StartDialogue(npcEntity->normalDialogues,gameManager,GIVE);
         }else{
-            StartDialogue(&npcEntity->normalDialogue,gameManager,NONE);
+            StartDialogue(npcEntity->normalDialogues,gameManager,NONE);
         }
+
     }else{
-        StartDialogue(&npcEntity->normalDialogue,gameManager,NONE);
+
+        StartDialogue(npcEntity->normalDialogues,gameManager,NONE);
     }
     
 }
@@ -287,8 +308,6 @@ void UpdateNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager)
     CheckAllNpcProximities(npcEntityList,*player,*gameManager);
 
     InteractWithNpc(player,npcEntityList,gameManager);
-
-    UpdateDialogue(gameManager);
-
-    UpdateQuestChoice(player,gameManager);    
+    
+    UpdateNpcAnimation();
 }

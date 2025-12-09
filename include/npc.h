@@ -4,11 +4,9 @@
 
 #include <raylib.h>
 #include <sprite.h>
-#include <animation.h>
 #include <dialogue.h>
-#include <quest.h>
 
-#define MAX_DIALOGUE 10 //Numero maximo de dialogos que um npc pode ter
+#define MAX_DIALOGUES 10 //Numero maximo de dialogos que um npc pode ter
 
 #define NUMBER_OF_NPCS 4
 
@@ -41,9 +39,12 @@ typedef struct NpcEntity
     Vector2 position;
     bool isPlayerNearby;
 
-    Dialogue requestDialogue;
-    Dialogue thanksDialogue;
-    Dialogue normalDialogue;
+    Dialogue requestDialogues[MAX_DIALOGUES];
+    Dialogue thanksDialogues[MAX_DIALOGUES];
+    Dialogue normalDialogues[MAX_DIALOGUES];
+    int requestDialogueCount;
+    int thanksDialogueCount;
+    int normalDialogueCount;
 
 } NpcEntity;
 

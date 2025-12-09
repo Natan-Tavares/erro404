@@ -22,8 +22,7 @@ typedef struct Tile
     
 }Tile;
 
-
-typedef struct 
+typedef struct TileBounds
 {
     int left;
     int right;

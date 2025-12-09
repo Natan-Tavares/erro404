@@ -2,14 +2,13 @@
 #define GAME_H
 
 #include <raylib.h>
-#include <npc.h>
-#include <dialogue.h>
 #include <quest.h>
 #include <menu.h>
+#include <npc.h>
+#include <dialogue.h>
 
 #define WINDOW_WIDTH 800 //Tamanho da largura da Janela do Jogo
 #define WINDOW_HEIGHT 700 //Tamanho da altura da Janela do Jogo
-
 #define MAX_LINE_LENGTH 512 //Numero maximo de caracteres numa linha de arquivo de npcs
 
 typedef enum GameScreen {
@@ -19,6 +18,9 @@ typedef enum GameScreen {
     EXIT 
 
 }GameScreen;
+
+typedef struct ObjectEntity ObjectEntity;
+typedef struct Dialogue Dialogue;
 
 //Gerenciador do jogo, 8 componentes
 typedef struct GameManager
@@ -32,12 +34,14 @@ typedef struct GameManager
 
     Npc *activeNpc; //Componente que armazena qual npc esta ativo 
     ObjectEntity *activeObject;
-    Dialogue *activeDialogue;
-    //
+    Dialogue *activeDialogues;
+    
     int activeQuestsId[NUMBER_OF_QUESTS];
     int activeQuestsCount;
     int interactingQuestIndex;
-    //
+    
+    int activeDialogueIndex;
+
     DialogueStatus dialogueStatus;
 
     bool canInteract;
@@ -45,10 +49,10 @@ typedef struct GameManager
 
 }GameManager;
 
-#endif
-
 void UpdateGame(Player player,GameManager *gameManager);
 
 void UpdateEndMenu(GameManager *gameManager);
 
 void DrawEndMenu(GameManager *gameManager);
+
+#endif
