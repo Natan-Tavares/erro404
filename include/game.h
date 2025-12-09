@@ -20,6 +20,7 @@ typedef enum GameScreen {
 }GameScreen;
 
 typedef struct ObjectEntity ObjectEntity;
+typedef struct Popup Popup;
 typedef struct Dialogue Dialogue;
 
 //Gerenciador do jogo, 8 componentes
@@ -35,6 +36,7 @@ typedef struct GameManager
     Npc *activeNpc; //Componente que armazena qual npc esta ativo 
     ObjectEntity *activeObject;
     Dialogue *activeDialogues;
+    Popup *activePopup;
     
     int activeQuestsId[NUMBER_OF_QUESTS];
     int activeQuestsCount;

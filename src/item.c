@@ -10,6 +10,7 @@
 #include <animation.h>
 #include <object.h>
 #include <game.h>
+#include <popup.h>
 #include <utils.h>
 
 Item *GetItemCatalog(){
@@ -30,15 +31,15 @@ Item *GetItemCatalog(){
             .texture = LoadTexture("resources/textures/rat.png"),
             .animation = (animation){.first=0,.last=2,.numFramesPerAxle={2,1},.speed=0.5,.state=0}
             }};
-        catalog[3] = (Item){.id=3,.nome="artefato_vermelho",.sprite= (Sprite){
+        catalog[3] = (Item){.id=3,.nome="Artefato Vermelho",.sprite= (Sprite){
             .texture = LoadTexture("resources/textures/artefato_vermelho.png"),
             .animation = (animation){.first=0,.last=1,.numFramesPerAxle={1,1},.speed=0.5,.state=0}
             }};
-        catalog[4] = (Item){.id=4,.nome="artefato_verde",.sprite= (Sprite){
+        catalog[4] = (Item){.id=4,.nome="Artefato Verde",.sprite= (Sprite){
             .texture = LoadTexture("resources/textures/artefato_verde.png"),
             .animation = (animation){.first=0,.last=1,.numFramesPerAxle={1,1},.state=0}
             }};
-        catalog[5] = (Item){.id=5,.nome="artefato_azul",.sprite= (Sprite){
+        catalog[5] = (Item){.id=5,.nome="Artefato Azul",.sprite= (Sprite){
             .texture = LoadTexture("resources/textures/artefato_azul.png"),
             .animation = (animation){.numFramesPerAxle={1,1},.state=0}
             }};
@@ -153,17 +154,25 @@ Rectangle GetItemHitbox(ItemEntity *itemEntity){
     return GetObjectHitbox((ObjectEntity){.position = itemEntity->position},20,20);
 }
 
-void CheckCollect(ItemEntity *itemEntity,Player *player){
+void CollectItem(ItemEntity *itemEntity,Player *player,GameManager *gameManager){
+    itemEntity->colected = true;
+
+    Inventory *inventory = &player->inventory;
+
+    AddItemToInventory(&player->inventory,itemEntity->itemId,1);
+    PreDoneCollectItemPopup(itemEntity->itemId,&gameManager->activePopup);
+}
+
+
+
+void TryToCollect(ItemEntity *itemEntity,Player *player,GameManager *gameManager){
     Rectangle itemHitbox = GetItemHitbox(itemEntity);
     Rectangle playerHitbox = GetObjectHitbox(player->object,20,25);
 
     if (CheckCollisionRecs(playerHitbox,itemHitbox) && !itemEntity->colected){
-        itemEntity->colected = true;
-
-        Inventory *inventory = &player->inventory;
-
-        AddItemToInventory(&player->inventory,itemEntity->itemId,1);
         
+        CollectItem(itemEntity,player,gameManager);
+
     }
 
 }
@@ -199,11 +208,11 @@ void DrawItemEntityList(ItemEntity *ItemEntityList,int numberOfItemEntitys){
     }
 }
 
-void UpdateItemEntity(ItemEntity *ItemEntityList,int numberOfItemEntitys,Player *player){
-    for(int i = 0;i < numberOfItemEntitys;i++){
+void UpdateItemEntity(ItemEntity *ItemEntityList,GameManager *gameManager,Player *player){
+    for(int i = 0;i < gameManager->numberOfItemEntitys;i++){
         ItemEntity *itemEntity = &ItemEntityList[i];
 
-        if(!itemEntity->colected) CheckCollect(itemEntity,player);
+        if(!itemEntity->colected) TryToCollect(itemEntity,player,gameManager);
 
     }
 }

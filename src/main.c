@@ -14,6 +14,7 @@
 #include <tilemap.h>
 #include <npc.h>
 #include <item.h>
+#include <popup.h>
 #include <menu.h>
 #include <dialogue.h>
 #include <quest.h>
@@ -96,7 +97,7 @@ int main()
 
             UpdateObjectEntitys(objectEntityList,&player,&game);
 
-            UpdateItemEntity(ItemEntitylist,game.numberOfItemEntitys,&player);
+            UpdateItemEntity(ItemEntitylist,&game,&player);
 
             UpdateItemsAnimation();
 
@@ -111,7 +112,13 @@ int main()
             UpdateGame(player,&game);
 
             player.canInteract = true;
-            
+
+            if(IsKeyPressed(KEY_P)){
+                Popup popup = CreatePopup("Coletou:Moeda",0.2);
+                game.activePopup = &popup;
+            }
+            UpdatePopup(&game.activePopup);
+
 		}else if(game.currentScreen == END){
             UpdateEndMenu(&game);
 
@@ -147,6 +154,8 @@ int main()
                 DrawObjectInteract(objectEntityList,game);
 
                 DrawInventory(&player.inventory,(Vector2){100,100});
+
+                Drawpopup(game.activePopup);
 
             }else if(game.currentScreen == END){
                 DrawEndMenu(&game);

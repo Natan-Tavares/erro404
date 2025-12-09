@@ -43,7 +43,7 @@ Item *GetItemCatalog();
 
 void DrawItemEntityList(ItemEntity *ItemEntityList,int numberOfItemEntitys);
 
-void UpdateItemEntity(ItemEntity *ItemEntityList,int numberOfItemEntitys,Player *player);
+void UpdateItemEntity(ItemEntity *ItemEntityList,GameManager *gameManager,Player *player);
 
 void UpdateItemsAnimation();
 

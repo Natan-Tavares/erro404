@@ -5,6 +5,7 @@
 #include <game.h>
 #include <string.h>
 #include <stdio.h>
+#include <popup.h>
 #include <inventory.h>
 #include <utils.h>
 
@@ -62,6 +63,7 @@ void UpdateQuestChoice(Player *player,GameManager *gameManager){
             quest->isActive = false;
             RemoveItem(&player->inventory,quest->requiredItemId,quest->numberOfRequiredItem);
             AddItemToInventory(&player->inventory,quest->giftItemId,quest->numberOfGiftItem);
+            PreDoneCollectItemPopup(quest->giftItemId,&gameManager->activePopup);
         }
         gameManager->interactingQuestIndex = quest->id;
         gameManager->dialogueStatus = NONE;

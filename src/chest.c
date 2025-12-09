@@ -6,6 +6,7 @@
 #include <inventory.h>
 #include <utils.h>
 #include <string.h>
+#include <popup.h>
 #include <game.h>
 
 void HandleChestPosition(ObjectEntity *objectEntity,const char *value){
@@ -129,6 +130,7 @@ void UpdateChestInteraction(ObjectEntity *objectEntity,Player *player,GameManage
             RemoveItem(&(player->inventory),objectData->requiredItemId,objectData->requiredItemAmount);
             OpenChest(objectEntity);
             AddItemToInventory(&(player->inventory),objectData->giftItemId,objectData->giftItemAmount);
+            PreDoneCollectItemPopup(objectData->giftItemId,&gameManager->activePopup);
         }
         
         player->canInteract = false;
