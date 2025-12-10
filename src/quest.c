@@ -52,6 +52,7 @@ void UpdateQuestChoice(Player *player,GameManager *gameManager){
             quest->isActive = true;
             gameManager->activeQuestsId[gameManager->activeQuestsCount];
             gameManager->activeQuestsCount++;
+            PreDoneAcceptQuestPopUp("Missão Aceita",&gameManager->activePopup);
         }
         gameManager->dialogueStatus = NONE;
         gameManager->canInteract = false;

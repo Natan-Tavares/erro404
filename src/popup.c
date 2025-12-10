@@ -7,16 +7,27 @@
 #include <string.h>
 #include <utils.h>
 
-Popup CreatePopup(char *content,float speed){
+Popup CreatePopup(char *content,float moveSpeed){
 
-    float posX = WINDOW_WIDTH - (MeasureText(content,FONT_SIZE) + 20);
-    float posY = WINDOW_HEIGHT - (FONT_SIZE + 10);
+    int fontSize = 25;
 
-    Popup self = (Popup){.alpha = 1.0f,.speed=speed,.position = (Vector2){posX,posY}};
+    float posX = WINDOW_WIDTH - (MeasureText(content,fontSize) + 20);
+    float posY = WINDOW_HEIGHT - (fontSize + 10);
+
+    Popup self = (Popup){.alpha = 1.0f,.moveSpeed=moveSpeed,.fontSize=fontSize,.position = (Vector2){posX,posY}};
 
     strncpy(self.content, content, sizeof(self.content));
 
     return self;
+}
+
+Popup CreatePopupPro(char *content,float moveSpeed,int fontSize,Vector2 position,float initialAlpha){
+    Popup self = (Popup){.alpha=initialAlpha,.fontSize=fontSize,.moveSpeed=moveSpeed,.position=position};
+
+    strncpy(self.content,content,sizeof(self.content));
+
+    return self;
+
 }
 
 void DeletePopup(Popup **self){
@@ -27,7 +38,7 @@ void DeletePopup(Popup **self){
 void UpdatePopup(Popup **self){
     if(!(*self)) return;
 
-    (*self)->position.y -= (*self)->speed;
+    (*self)->position.y -= (*self)->moveSpeed;
 
     (*self)->alpha = lerp((*self)->alpha,0,0.01);
 
@@ -42,7 +53,7 @@ void Drawpopup(Popup *self){
 
     Color textColor = ColorAlpha(WHITE,self->alpha);
 
-    DrawText(self->content,self->position.x,self->position.y,FONT_SIZE,textColor);
+    DrawText(self->content,self->position.x,self->position.y,self->fontSize,textColor);
 
 }
 
@@ -60,3 +71,16 @@ void PreDoneCollectItemPopup(int collectedItemId,Popup **self){
 
 }
 
+void PreDoneAcceptQuestPopUp(char *message,Popup **self){
+    Popup *popup = malloc(sizeof(Popup));
+
+    int fontSize = 30;
+
+    float posX = (WINDOW_WIDTH/2) - (MeasureText(message,fontSize)/2);
+    float posY = (WINDOW_HEIGHT/2) - (fontSize/2);
+
+    *popup = CreatePopupPro(message,0,fontSize,(Vector2){posX,posY},1);
+
+    *self = popup;
+
+}
