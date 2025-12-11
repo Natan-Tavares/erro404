@@ -4,6 +4,8 @@
 #include <player.h>
 #include <inventory.h>
 #include <stdlib.h>
+#include <choice.h>
+#include <popup.h>
 #include <utils.h>
 #include <string.h>
 #include <game.h>
@@ -68,18 +70,6 @@ bool CheckDoorProximity(ObjectEntity *objectEntity,Player player){
 
 }
 
-bool TryToInteractWithDoor(ObjectEntity *objectEntity,Player *player,GameManager *gameManager){
-    if(gameManager->activeObject == objectEntity) return false;
-    DoorData *doorData = ((DoorData *)objectEntity->data);
-
-    if(CheckDoorProximity(objectEntity,*player) && player->canInteract && IsKeyPressed(KEY_E)){
-        gameManager->activeObject = objectEntity;
-        player->canInteract = false;
-        return true;
-    }
-    return false;
-}
-
 void OpenDoor(ObjectEntity *object){
     DoorData *objectData = ((DoorData *)object->data);
 
@@ -89,49 +79,51 @@ void OpenDoor(ObjectEntity *object){
 
 }
 
-bool CheckDoorInteraction(ObjectEntity *object,Player *player,int option){
-    DoorData *objectData = ((DoorData *)object->data);
-    player->canInteract = false;
+void TryToOpenDoor(void *context){
+    GameManager *gameManager = (GameManager *)context;
+    Player *player = gameManager->player;
+    DoorData *objectData = (DoorData *)gameManager->activeObject->data;
 
-    switch (option) {
-        
-        case 0:
-            return CheckInventoryHasItem(player->inventory,objectData->requiredItemId,objectData->requiredItemAmount);
-            break;
+    gameManager->choiceMenu->active = false;
+
+    if(CheckInventoryHasItem(gameManager->player->inventory,objectData->requiredItemId,objectData->requiredItemAmount)){
+        OpenDoor(gameManager->activeObject);
+        RemoveItem(&(player->inventory),objectData->requiredItemId,objectData->requiredItemAmount);
+        return;
     }
 
-    return false;
+    PreDoneWarningPopup("A Porta nem se meche",&gameManager->activePopup);
 
 }
 
-void UpdateDoorInteraction(ObjectEntity *objectEntity,Player *player,GameManager *gameManager){
-    if(gameManager->activeObject != objectEntity) return;
+void RejectOpenDoor(void *context){
+    GameManager *gameManager = (GameManager *)(context);
 
-    DoorData *objectData = ((DoorData *)objectEntity->data);
+    PreDoneWarningPopup("A Porta nem se mantem estatica",&gameManager->activePopup);
 
-    if(IsKeyPressed(KEY_UP)) gameManager->selectedOption = (gameManager->selectedOption+1) %2; 
-    if(IsKeyPressed(KEY_DOWN)) gameManager->selectedOption = (gameManager->selectedOption+1) %2;
+}
 
-    if(IsKeyPressed(KEY_E) && player->canInteract){
 
-        if(CheckDoorInteraction(gameManager->activeObject,player,gameManager->selectedOption)){
-            RemoveItem(&(player->inventory),objectData->requiredItemId,objectData->requiredItemAmount);
-            OpenDoor(objectEntity);
-        }
+bool TryToInteractWithDoor(ObjectEntity *objectEntity,Player *player,GameManager *gameManager){
+    DoorData *doorData = ((DoorData *)objectEntity->data);
+
+    ChoiceMenu *choiceMenu = gameManager->choiceMenu;
+
+    if(CheckDoorProximity(objectEntity,*player) && IsKeyPressed(KEY_E) && !choiceMenu->active){
+        choiceMenu->active = true;
+        choiceMenu->justOpened = true;
+
+        gameManager->activeObject = objectEntity;
         
-        player->canInteract = false;
-        gameManager->activeObject = NULL;
-        return;
+        strncpy(gameManager->choiceMenu->description,"Tentar abrir o porta?",sizeof(gameManager->choiceMenu->description));
+        FillCallbacks(gameManager->choiceMenu,TryToOpenDoor,gameManager,RejectOpenDoor,gameManager);
+        return true;
     }
-    UpdateBoolValue(&player->canInteract);
-    gameManager->canInteract = false;
-
+    return false;
 }
 
 void UpdateDoor(ObjectEntity *objectEntity,Player *player,GameManager *gameManager){
 
     TryToInteractWithDoor(objectEntity,player,gameManager);
-
-    UpdateDoorInteraction(objectEntity,player,gameManager);
 
 }

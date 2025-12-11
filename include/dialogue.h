@@ -3,37 +3,53 @@
 
 #include <raylib.h>
 
-#define MAX_DIALOGUE_LENGTH 512 //Numero maximo de caracteres que um dialogo de npc pode ter
+#define MAX_TEXT_LENGTH 512 //Numero maximo de caracteres que um dialogo de npc pode ter
+#define MAX_TEXT_AMOUNT 10
 
-typedef enum DialogueStatus{
-    NONE, //caso o dialogo não tenha
-    CHOICE,
-    RESPONSE,
-    GIVE,
-    GIVE_CHOICE,
+typedef void (*DialogueCallback)(void *context);
 
-}DialogueStatus;
+typedef enum DialogueType{
+    NORMAL, 
+    AWAITING_ITEM,
+    ASK,  
+    THANKS,
+
+}DialogueType;
 
 //Dialogo,3 componentes
-typedef struct Dialogue
+typedef struct TextLine
 {
 
-    char text[MAX_DIALOGUE_LENGTH]; //Componente que armazena o texto do dialogo
+    char content[MAX_TEXT_LENGTH]; //Componente que armazena o texto do dialogo
     int visibleChars; // Componente que armazena a quantidade de caracteres visiveis do dialogo
-    bool activate; //Componente que armazena se o dialogo esta ativo ou não
 
     bool canSkip;
     
+}TextLine;
+
+typedef struct Dialogue{
+
+    TextLine textlines[MAX_TEXT_AMOUNT];
+    int activeTextLineIndex;
+    int activeTextLineAmount;
+
+    DialogueType type;
+
+    DialogueCallback onComplete;
+    void *callbackContext;
+
 }Dialogue;
 
 typedef struct GameManager GameManager;
 
-void StartDialogue(Dialogue *dialogue,GameManager *gameManager,DialogueStatus status);
+Dialogue CreateBlankDialogue();
 
-void StopDialogue(GameManager *gameManager);
+Dialogue CreateDialogueAs(DialogueType type);
 
-void UpdateDialogue(GameManager *gameManager);
+void FillDialogue(Dialogue *self,const char *content);
 
-void DrawDialogue(GameManager *gameManager);
+void UpdateDialogue(Dialogue **self);
+
+void DrawDialogue(Dialogue *self);
 
 #endif

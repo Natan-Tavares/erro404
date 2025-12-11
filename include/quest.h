@@ -8,10 +8,9 @@
 
 typedef enum
 {
-
-    NOT_STARTED = 0, 
-    IN_PROGRESS = 1,
-    COMPLETED = 2,
+    NOT_STARTED, 
+    IN_PROGRESS,
+    COMPLETED,
 
 }QuestStatus;
 
@@ -20,22 +19,25 @@ typedef struct Quest
     int id;
     char name[32];
     char description[128];
+
     int requiredItemId;
-    int numberOfRequiredItem;
+    int requiredItemAmount;
     int giftItemId;
-    int numberOfGiftItem;
+    int giftItemAmount;
     
-    bool isActive;
     QuestStatus status;
 
 }Quest;
 
-typedef struct GameManager GameManager;
-
 Quest *GetQuestById(int id);
 
-void UpdateQuestChoice(Player *player,GameManager *gameManager);
+void StartQuestChoice(void *context);
 
-void DrawQuestChoice(GameManager *gameManager);
+void AcceptQuestCallback(void *context);
+
+void RejectCallback(void *context);
+
+void GiveQuestItemsCallback(void *context);
+
 
 #endif

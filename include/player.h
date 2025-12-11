@@ -12,6 +12,7 @@ typedef struct Player
     Inventory inventory;
 
     bool canInteract;
+    bool canTalk;
 
 }Player;
 
@@ -28,9 +29,6 @@ void SetPlayerAnimation(animation *self,state state);
 
 //Função que muda a animação do player de acordo com seu estado
 void PlayerStatemachine(Player *self);
-
-//Função de interagir com o Npc
-void InteractWithNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager);
 
 void UpdatePlayer(Player *player,ObjectEntity *objectEntityList,unsigned char *map,GameManager game);
 

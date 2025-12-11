@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <npc.h>
 #include <string.h>
+#include <quest.h>
 #include <raylib.h>
+#include <choice.h>
 #include <player.h>
 #include <inventory.h>
 #include <utils.h>
@@ -86,9 +88,13 @@ int CountNpcEntitys(FILE *file){
 
 void HandleNpcId(NpcEntity *npcEntity,const char *value){
     npcEntity->npcId = atoi(value);
-    npcEntity->normalDialogueCount = 0;
-    npcEntity->requestDialogueCount = 0;
-    npcEntity->thanksDialogueCount = 0;
+
+    Npc *npc = GetNpcById(npcEntity->npcId); 
+
+    npcEntity->normalDialogue = npc->type == QUEST_GIVER ? CreateDialogueAs(AWAITING_ITEM) : CreateDialogueAs(NORMAL);
+    npcEntity->requestDialogue = CreateDialogueAs(ASK);
+    npcEntity->thanksDialogue = CreateDialogueAs(THANKS);
+
 }
 
 void HandleNpcPosition(NpcEntity *npc,const char *value){
@@ -96,30 +102,21 @@ void HandleNpcPosition(NpcEntity *npc,const char *value){
 }
 
 void HandleNpcDialogue(NpcEntity *npcEntity,const char *value){
-    Dialogue *dialogue = &npcEntity->normalDialogues[npcEntity->normalDialogueCount];
+    Dialogue *dialogue = &npcEntity->normalDialogue;
 
-    strncpy(dialogue->text,value,MAX_DIALOGUE_LENGTH -1);
-    replaceEscapedNewlines(dialogue->text);
-    dialogue->canSkip = false;
-    npcEntity->normalDialogueCount++;
+    FillDialogue(dialogue,value);
 }
 
 void HandleNpcRequestDialogue(NpcEntity *npcEntity,const char *value){
-    Dialogue *dialogue = &npcEntity->requestDialogues[npcEntity->requestDialogueCount];
+    Dialogue *dialogue = &npcEntity->requestDialogue;
 
-    strncpy(dialogue->text,value, MAX_DIALOGUE_LENGTH-1);
-    replaceEscapedNewlines(dialogue->text);
-    dialogue->canSkip = false;
-    npcEntity->requestDialogueCount++;
+    FillDialogue(dialogue,value);
 }
 
 void HandleNpcThanksDialogue(NpcEntity *npcEntity,const char *value){
-    Dialogue *dialogue = &npcEntity->thanksDialogues[npcEntity->thanksDialogueCount];
+    Dialogue *dialogue = &npcEntity->thanksDialogue;
 
-    strncpy(dialogue->text,value,MAX_DIALOGUE_LENGTH -1);
-    replaceEscapedNewlines(dialogue->text);
-    dialogue->canSkip = false;
-    npcEntity->thanksDialogueCount++;
+    FillDialogue(dialogue,value);
 }
 
 /*
@@ -260,6 +257,17 @@ void CheckAllNpcProximities(NpcEntity *npcEntityList,Player player,GameManager g
     }
 }
 
+void InteractWithNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager){
+
+    for(int i = 0;i < gameManager->numberOfNpcEntitys;i++){
+
+        if(npcEntityList[i].isPlayerNearby && IsKeyPressed(KEY_E) && !gameManager->choiceMenu->active){
+            TalkToNpc(player,&npcEntityList[i],gameManager);
+        }
+    }
+
+}
+
 /*
      Função para checar se o npc tem dialogos.
      Recebendo o npc e o gerenciador do jogo, checa se o npc passado tem dialogos
@@ -273,35 +281,31 @@ void TalkToNpc(Player *player,NpcEntity *npcEntity,GameManager *gameManager){
 
     gameManager->activeNpc = npc;
 
-    if(npc->type == QUEST_GIVER && !GetQuestById(npc->questId)->isActive){
-        
+    if(npc->type == QUEST_GIVER){
+        gameManager->activeQuestId = npc->questId;
+
         switch (quest->status)
         {
         case NOT_STARTED:
-            StartDialogue(npcEntity->requestDialogues,gameManager,CHOICE);
+            gameManager->activeDialogue = &npcEntity->requestDialogue;
             break;
-        case IN_PROGRESS:
-            StartDialogue(npcEntity->normalDialogues,gameManager,NONE);
-            break;
-        case COMPLETED:
-            StartDialogue(npcEntity->thanksDialogues,gameManager,NONE);
-            break;
-        }
-
-    }else if(npc->type == QUEST_GIVER && GetQuestById(npc->questId)->isActive){
         
-        if(CheckInventoryHasItem(player->inventory,quest->requiredItemId,quest->numberOfRequiredItem))
-        {
-            StartDialogue(npcEntity->normalDialogues,gameManager,GIVE);
-        }else{
-            StartDialogue(npcEntity->normalDialogues,gameManager,NONE);
+        case IN_PROGRESS:
+            gameManager->activeDialogue = &npcEntity->normalDialogue;
+            break;
+
+        case COMPLETED:
+            gameManager->activeDialogue = &npcEntity->thanksDialogue;
+            break;
         }
 
     }else{
-
-        StartDialogue(npcEntity->normalDialogues,gameManager,NONE);
+        gameManager->activeDialogue = &npcEntity->normalDialogue;
     }
     
+    gameManager->activeDialogue->onComplete = StartQuestChoice;
+    gameManager->activeDialogue->callbackContext = gameManager;
+
 }
 
 void UpdateNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager){

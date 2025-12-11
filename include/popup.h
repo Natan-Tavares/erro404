@@ -13,6 +13,8 @@ char content[MAX_CONTENT_LENGTH];
 
 Vector2 position;
 
+Color color;
+
 int fontSize;
 
 float moveSpeed;
@@ -29,5 +31,7 @@ void Drawpopup(Popup *self);
 void PreDoneCollectItemPopup(int collectedItemId,Popup **self);
 
 void PreDoneAcceptQuestPopUp(char *message,Popup **self);
+
+void PreDoneWarningPopup(char *message,Popup **self);
 
 #endif

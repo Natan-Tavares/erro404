@@ -21,32 +21,32 @@ typedef enum GameScreen {
 
 typedef struct ObjectEntity ObjectEntity;
 typedef struct Popup Popup;
+typedef struct ChoiceMenu ChoiceMenu;
 typedef struct Dialogue Dialogue;
 
 //Gerenciador do jogo, 8 componentes
 typedef struct GameManager
 {
+    Player *player; //player do jogo
     GameScreen currentScreen; //Qual tela o jogo esta no momento
     Menu menu; //armazena os valores do menu do jogo
+    ChoiceMenu *choiceMenu;
 
     int numberOfNpcEntitys; //Componente que armazena a quantidade de npcs no mapa
     int numberOfItemEntitys; //Componente que armazena a quantidade de entidades de items no mapa
-    int numberOfObjectEntitys;
+    int numberOfObjectEntitys; //Componente que armazena a quantidade de objetos no mapa
 
     Npc *activeNpc; //Componente que armazena qual npc esta ativo 
     ObjectEntity *activeObject;
-    Dialogue *activeDialogues;
+    Dialogue *activeDialogue;
+    Quest activeQuest;
+
     Popup *activePopup;
     
-    int activeQuestsId[NUMBER_OF_QUESTS];
+    int activeQuestId;
     int activeQuestsCount;
     int interactingQuestIndex;
-    
-    int activeDialogueIndex;
 
-    DialogueStatus dialogueStatus;
-
-    bool canInteract;
     int selectedOption;
 
 }GameManager;

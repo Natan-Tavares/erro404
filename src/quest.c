@@ -4,6 +4,7 @@
 #include <dialogue.h>
 #include <game.h>
 #include <string.h>
+#include <choice.h>
 #include <stdio.h>
 #include <popup.h>
 #include <inventory.h>
@@ -15,8 +16,8 @@ Quest *GetQuestCatalog(){
 
     if(!isInitialized){
         memset(catalog,0,sizeof(catalog));
-        catalog[0] = (Quest){.id=0,.requiredItemId=0,.numberOfRequiredItem=3,.giftItemId=1,.numberOfGiftItem=1};
-        catalog[1] = (Quest){.id=1,.requiredItemId=2,.numberOfRequiredItem=1,.giftItemId=0,.numberOfGiftItem=32};
+        catalog[0] = (Quest){.id=0,.requiredItemId=0,.requiredItemAmount=3,.giftItemId=1,.giftItemAmount=1};
+        catalog[1] = (Quest){.id=1,.requiredItemId=2,.requiredItemAmount=1,.giftItemId=0,.giftItemAmount=32};
         
         isInitialized = true;
     }
@@ -34,64 +35,63 @@ Quest *GetQuestById(int id){
     return NULL;
 }
 
-void UpdateQuestChoice(Player *player,GameManager *gameManager){
-    DialogueStatus *dialogueStatus = &gameManager->dialogueStatus;
-    if(*dialogueStatus == NONE || *dialogueStatus == CHOICE || *dialogueStatus == GIVE) return; 
-    Quest *quest = GetQuestById(gameManager->activeNpc->questId);
-    if(quest->status == COMPLETED) return;
+void StartQuestChoice(void *context){
+    GameManager *game = (GameManager *)context;
 
-    static bool localCanInteract = false;
+    Dialogue *dialogue = game->activeDialogue;
 
-    if(IsKeyPressed(KEY_UP)) gameManager->selectedOption = (gameManager->selectedOption+1) %2; 
-    if(IsKeyPressed(KEY_DOWN)) gameManager->selectedOption = (gameManager->selectedOption+1) %2;
+    switch (dialogue->type)
+    {
+        case AWAITING_ITEM:
+            game->choiceMenu->active = true;
 
-    if(IsKeyPressed(KEY_E) && quest->status == NOT_STARTED && localCanInteract){
-        if (gameManager->selectedOption == 0)
-        {
-            quest->status = IN_PROGRESS;
-            quest->isActive = true;
-            gameManager->activeQuestsId[gameManager->activeQuestsCount];
-            gameManager->activeQuestsCount++;
-            PreDoneAcceptQuestPopUp("Missão Aceita",&gameManager->activePopup);
-        }
-        gameManager->dialogueStatus = NONE;
-        gameManager->canInteract = false;
-        localCanInteract = false;
-        return;
-    }else if(IsKeyPressed(KEY_E) && quest->status == IN_PROGRESS && localCanInteract){
-        if (gameManager->selectedOption == 0){
-            quest->status = COMPLETED;
-            quest->isActive = false;
-            RemoveItem(&player->inventory,quest->requiredItemId,quest->numberOfRequiredItem);
-            AddItemToInventory(&player->inventory,quest->giftItemId,quest->numberOfGiftItem);
-            PreDoneCollectItemPopup(quest->giftItemId,&gameManager->activePopup);
-        }
-        gameManager->interactingQuestIndex = quest->id;
-        gameManager->dialogueStatus = NONE;
-        gameManager->canInteract = false;
-        localCanInteract = false;
-        return;
+            strncpy(game->choiceMenu->description,"Entregar Itens?",sizeof(game->choiceMenu->description));
+            FillCallbacks(game->choiceMenu,GiveQuestItemsCallback,game,RejectCallback,game);
+            break;
+
+        case ASK:
+            game->choiceMenu->active = true;
+
+            strncpy(game->choiceMenu->description,"Aceitar Missão?",sizeof(game->choiceMenu->description));      
+            FillCallbacks(game->choiceMenu,AcceptQuestCallback,game,RejectCallback,game);
+            break;
+
+        default:
+            break;
+            
     }
-    
-    UpdateBoolValue(&localCanInteract);
-    gameManager->canInteract = false;
 
 }
 
-void DrawQuestChoice(GameManager *gameManager){
-    DialogueStatus *dialogueStatus = &gameManager->dialogueStatus;    
-    if(*dialogueStatus == NONE || *dialogueStatus == CHOICE || *dialogueStatus == GIVE) return; 
-    
-    DrawRectangle(100,600,400,120,Fade(BLACK,0.7));
-    if(*dialogueStatus == GIVE_CHOICE){
-        DrawText("Entregar itens?",120,620,20,WHITE);
-    }else{
-        DrawText("Aceitar Missão?",120,620,20,WHITE);
+void AcceptQuestCallback(void *context){
+    GameManager *gameManager = (GameManager *)context;
+
+    Quest *quest = GetQuestById(gameManager->activeQuestId);
+    quest->status = IN_PROGRESS;
+
+    PreDoneAcceptQuestPopUp("Missão Aceita",&gameManager->activePopup);
+    gameManager->player->canTalk = false;
+
+}
+
+void GiveQuestItemsCallback(void *context){
+    GameManager *gameManager = (GameManager *)context;
+    gameManager->player->canTalk = false;
+
+    Quest *quest = GetQuestById(gameManager->activeQuestId);
+
+    if(CheckInventoryHasItem(gameManager->player->inventory,quest->requiredItemId,quest->requiredItemAmount)){
+        quest->status = COMPLETED;
+        RemoveItem(&gameManager->player->inventory,quest->requiredItemId,quest->requiredItemAmount);
+        AddItemToInventory(&gameManager->player->inventory,quest->giftItemId,quest->giftItemAmount);
+        PreDoneCollectItemPopup(quest->giftItemId,&gameManager->activePopup);
+        return;
     }
 
-    const char *options[] = {"Sim","Não"};
-    for(int i = 0;i < 2;i++){
-        Color color = (i == gameManager->selectedOption ) ? YELLOW : WHITE;
-        DrawText(options[i],140,650 + i * 25,20,color);
-    }
+    PreDoneWarningPopup("Não tem os itens necessarios",&gameManager->activePopup);
+    
+}
+ 
+void RejectCallback(void *context){
+
 }

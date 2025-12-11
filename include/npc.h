@@ -1,4 +1,3 @@
-
 #ifndef NPC_H
 #define NPC_H
 
@@ -15,10 +14,8 @@ typedef struct Player Player;
 
 typedef enum NpcType
 {
-
-    NORMAL,
+    NONE,
     QUEST_GIVER,
-
 } NpcType;
 
 //Npc,6 componentes
@@ -39,12 +36,9 @@ typedef struct NpcEntity
     Vector2 position;
     bool isPlayerNearby;
 
-    Dialogue requestDialogues[MAX_DIALOGUES];
-    Dialogue thanksDialogues[MAX_DIALOGUES];
-    Dialogue normalDialogues[MAX_DIALOGUES];
-    int requestDialogueCount;
-    int thanksDialogueCount;
-    int normalDialogueCount;
+    Dialogue requestDialogue;
+    Dialogue thanksDialogue;
+    Dialogue normalDialogue;
 
 } NpcEntity;
 

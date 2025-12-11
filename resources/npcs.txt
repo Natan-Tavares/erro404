@@ -3,6 +3,7 @@
 id:0
 position:150,200    
 requestDialogue:Porfavor encontre 3 moedas para mim.
+requestDialogue:Eu realmente preciso delas.
 dialogue:Va logo, eu vi algumas por ai
 thanksDialogue:Obrigado amigo\n 
 thanksDialogue:Fiquei sabendo de uma menina precisando de ajuda\nlogo a baixo de nós!

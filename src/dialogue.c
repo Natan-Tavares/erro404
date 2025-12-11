@@ -5,87 +5,93 @@
 #include <utils.h>
 #include <npc.h>
 
-void StartDialogue(Dialogue *dialogues,GameManager *gameManager,DialogueStatus status){
-    if(!dialogues || dialogues->text[0] == '\0') return; //evita (caso um npc não tenha dialogos) aparecer vazio o espaço do dialogo;
-
-    gameManager->activeDialogues = dialogues;
-    gameManager->dialogueStatus = status;
-    gameManager->selectedOption = 0;
+Dialogue CreateBlankDialogue(){
+    Dialogue dialogue = {0};
+    return dialogue;
 }
 
-void SkipDialogue(Dialogue *dialogue){
-    dialogue->visibleChars = strlen(dialogue->text);
+Dialogue CreateDialogueAs(DialogueType type){
+    Dialogue dialogue = {0};
+    
+    dialogue.type = type;
+
+    return dialogue;
 }
 
-bool TryToSkipDialogue(Dialogue *dialogue){
-    if(IsKeyPressed(KEY_E) && dialogue->canSkip){
-        SkipDialogue(dialogue);
-        dialogue->canSkip = false;
+void FillDialogue(Dialogue *self,const char *content){
+    if(self->activeTextLineAmount >= MAX_TEXT_AMOUNT) return;
+    
+    TextLine textLine = (TextLine){.canSkip=false,.visibleChars=0};
+
+    strncpy(textLine.content, content, MAX_TEXT_LENGTH - 1);
+    textLine.content[MAX_TEXT_LENGTH - 1] = '\0';
+    replaceEscapedNewlines(textLine.content);
+
+    self->textlines[self->activeTextLineAmount] = textLine;
+    self->activeTextLineAmount++;
+}
+
+void SkipTextLine(TextLine *textLine){
+    textLine->visibleChars = strlen(textLine->content);
+}
+
+bool TryToSkipTextLine(TextLine *textLine){
+    if(IsKeyPressed(KEY_E) && textLine->canSkip){
+        SkipTextLine(textLine);
+    
+        textLine->canSkip = false;
         return true;
     }
-    dialogue->canSkip = true;
+
+    textLine->canSkip = true;
     return false;
 }
 
-bool PassthroughAllDialogues(Dialogue *dialogues,GameManager *gameManager){
+bool ProcessDialogue(Dialogue *self){
 
-    Dialogue *activeDialogue = &dialogues[gameManager->activeDialogueIndex];
+    TextLine *activeTextLine = &self->textlines[self->activeTextLineIndex];
 
-    if(activeDialogue->text[0] == '\0'){
-        gameManager->activeDialogues = NULL;             
+    if(self->activeTextLineIndex >= self->activeTextLineAmount || activeTextLine->content[0] == '\0'){
+        self->activeTextLineIndex = 0;
         return true;
     }
 
-    int textLen = strlen(activeDialogue->text);
+    int textLen = strlen(activeTextLine->content);
 
-    if(activeDialogue->visibleChars < textLen){
-        UpdateVisibleChars(activeDialogue->text,&activeDialogue->visibleChars,0.05);
-
-        TryToSkipDialogue(activeDialogue);
+    if(activeTextLine->visibleChars < textLen){
+        UpdateVisibleChars(activeTextLine->content,&activeTextLine->visibleChars,0.05);
+        TryToSkipTextLine(activeTextLine);
 
         return false;
-    }else if(IsKeyPressed(KEY_E) && gameManager->canInteract){
-        gameManager->activeDialogueIndex++;
-        activeDialogue->visibleChars = 0;
+    }else if(IsKeyPressed(KEY_E)){
+        activeTextLine->visibleChars = 0;
+        self->activeTextLineIndex++;
         return false;
     }
 
     return false;
+
 }
 
-void UpdateDialogue(GameManager *gameManager){
-    Dialogue *dialogues = gameManager->activeDialogues;
-    if(!dialogues) return;
+void UpdateDialogue(Dialogue **self){
+    if(!(*self)) return;
 
-    if(PassthroughAllDialogues(dialogues,gameManager)){
-        DialogueStatus *status = &gameManager->dialogueStatus;
-
-        switch (*status)
-        {
-            case NONE:
-                break;
-        
-            case CHOICE:
-                *status = RESPONSE;
-                break;
-
-            case GIVE:
-                *status = GIVE_CHOICE;
-                break;
-
-            default:
-                break;
+    if(ProcessDialogue(*self)){
+        if((*self)->onComplete){
+            //ele roda StartQuestChoice com o gameManager como contexto em todos so dialogos, Não colocar a função diretamente para evitar acoplamento
+            (*self)->onComplete((*self)->callbackContext);
         }
-
-        gameManager->activeDialogueIndex = 0;
-        return;
+        
+        (*self) = NULL;
+    
     }
     
 }
 
-void DrawDialogue(GameManager *gameManager) {
-    Dialogue *dialogues = gameManager->activeDialogues;
-    if (!dialogues) return;
+void DrawDialogue(Dialogue *self){
+    if(!self) return;
+
+    TextLine activeTextLine = self->textlines[self->activeTextLineIndex]; 
 
     int screenWidth = WINDOW_WIDTH;
     int screenHeight = WINDOW_HEIGHT;
@@ -98,19 +104,13 @@ void DrawDialogue(GameManager *gameManager) {
     DrawRectangleRounded((Rectangle){boxX, boxY, boxWidth, boxHeight}, 0.1f, 8, Fade(BLACK, 0.7f));
     DrawRectangleRoundedLines((Rectangle){boxX, boxY, boxWidth, boxHeight}, 0.1f, 8, Fade(WHITE, 0.3f));
 
-    Npc *npc = GetNpcById(gameManager->activeNpc->id);
- 
-    if (npc->name && strlen(npc->name) > 0) {
-        DrawText(npc->name, boxX + 20, boxY + 10, 24, YELLOW);
-    }
-
-    const char *visibleText = TextSubtext(dialogues[gameManager->activeDialogueIndex].text, 0, dialogues[gameManager->activeDialogueIndex].visibleChars);
+    const char *visibleText = TextSubtext(activeTextLine.content, 0, activeTextLine.visibleChars);
     DrawTextEx(GetFontDefault(), visibleText, 
             (Vector2){boxX + 20, boxY + 50}, 20, 2, WHITE);
 
 
-    int textLen = strlen(dialogues[gameManager->activeDialogueIndex].text);
-    if (dialogues[gameManager->activeDialogueIndex].visibleChars >= textLen) {
+    int textLen = strlen(activeTextLine.content);
+    if (activeTextLine.visibleChars >= textLen) {
         DrawText("Pressione [E] para continuar", boxX + boxWidth - 350, boxY + boxHeight - 30, 18, GRAY);
     }
 }

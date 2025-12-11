@@ -10,6 +10,7 @@
 #include <player.h>
 #include <sprite.h>
 #include <door.h>
+#include <choice.h>
 #include <camera.h>
 #include <tilemap.h>
 #include <npc.h>
@@ -39,9 +40,10 @@ int main()
         },
         .activeQuestsCount = 0,
         .activeNpc = NULL,
-        .canInteract = true,
-        .activeDialogueIndex = 0,
     };
+
+    ChoiceMenu choiceMenu = CreateChoiceMenu();
+    game.choiceMenu = &choiceMenu;
 
     NpcEntity *npcEntityList = LoadNpcs("resources/npcs.txt",&game.numberOfNpcEntitys);
     ItemEntity *ItemEntitylist = LoadItems("resources/items.txt",&game.numberOfItemEntitys);
@@ -67,6 +69,7 @@ int main()
             .animation = idle,        
         },
         .canInteract = true,
+        .canTalk = true,
 
     };
 
@@ -82,6 +85,8 @@ int main()
         .position = {300,300},
     };
 
+    game.player = &player;
+
     InitInventory(&player.inventory);
 
     while (!WindowShouldClose())
@@ -92,32 +97,28 @@ int main()
 
         }else if (game.currentScreen == GAME) {
             if (IsKeyPressed(KEY_C)) game.currentScreen = MENU;
-            
+
             UpdatePlayer(&player,objectEntityList,map,game);
+
+			if(GetDistance(camera.target,player.object.position) > 25) UpdateCamera2D(&camera,player.object.position);
 
             UpdateObjectEntitys(objectEntityList,&player,&game);
 
             UpdateItemEntity(ItemEntitylist,&game,&player);
-
             UpdateItemsAnimation();
-
-			if(GetDistance(camera.target,player.object.position) > 25) UpdateCamera2D(&camera,player.object.position);
 
             UpdateNpc(&player,npcEntityList,&game);
 
-            UpdateDialogue(&game);
+            UpdateDialogue(&game.activeDialogue);
 
-            UpdateQuestChoice(&player,&game); 
+            UpdateChoiceMenu(game.choiceMenu);
+
+            UpdatePopup(&game.activePopup);
 
             UpdateGame(player,&game);
 
-            player.canInteract = true;
-
-            if(IsKeyPressed(KEY_P)){
-                Popup popup = CreatePopup("Coletou:Moeda",0.2);
-                game.activePopup = &popup;
-            }
-            UpdatePopup(&game.activePopup);
+            if(IsKeyPressed(KEY_E)) game.player->canInteract = false;
+            else game.player->canInteract = true;
 
 		}else if(game.currentScreen == END){
             UpdateEndMenu(&game);
@@ -147,12 +148,10 @@ int main()
 
 			    EndMode2D();
 
-                DrawDialogue(&game);
+                DrawDialogue(game.activeDialogue);
 
-                DrawQuestChoice(&game);
-
-                DrawObjectInteract(objectEntityList,game);
-
+                DrawChoiceMenu(*game.choiceMenu);
+                
                 DrawInventory(&player.inventory,(Vector2){100,100});
 
                 Drawpopup(game.activePopup);

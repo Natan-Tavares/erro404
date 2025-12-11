@@ -14,15 +14,15 @@ Popup CreatePopup(char *content,float moveSpeed){
     float posX = WINDOW_WIDTH - (MeasureText(content,fontSize) + 20);
     float posY = WINDOW_HEIGHT - (fontSize + 10);
 
-    Popup self = (Popup){.alpha = 1.0f,.moveSpeed=moveSpeed,.fontSize=fontSize,.position = (Vector2){posX,posY}};
+    Popup self = (Popup){.alpha = 1.0f,.color=WHITE,.moveSpeed=moveSpeed,.fontSize=fontSize,.position = (Vector2){posX,posY}};
 
     strncpy(self.content, content, sizeof(self.content));
 
     return self;
 }
 
-Popup CreatePopupPro(char *content,float moveSpeed,int fontSize,Vector2 position,float initialAlpha){
-    Popup self = (Popup){.alpha=initialAlpha,.fontSize=fontSize,.moveSpeed=moveSpeed,.position=position};
+Popup CreatePopupPro(char *content,float moveSpeed,Color color,int fontSize,Vector2 position,float initialAlpha){
+    Popup self = (Popup){.alpha=initialAlpha,.color=color,.fontSize=fontSize,.moveSpeed=moveSpeed,.position=position};
 
     strncpy(self.content,content,sizeof(self.content));
 
@@ -51,7 +51,7 @@ void UpdatePopup(Popup **self){
 void Drawpopup(Popup *self){
     if(!self) return;
 
-    Color textColor = ColorAlpha(WHITE,self->alpha);
+    Color textColor = ColorAlpha(self->color,self->alpha);
 
     DrawText(self->content,self->position.x,self->position.y,self->fontSize,textColor);
 
@@ -76,11 +76,28 @@ void PreDoneAcceptQuestPopUp(char *message,Popup **self){
 
     int fontSize = 30;
 
+    Color textColor = WHITE;
+
     float posX = (WINDOW_WIDTH/2) - (MeasureText(message,fontSize)/2);
     float posY = (WINDOW_HEIGHT/2) - (fontSize/2);
 
-    *popup = CreatePopupPro(message,0,fontSize,(Vector2){posX,posY},1);
+    *popup = CreatePopupPro(message,0,textColor,fontSize,(Vector2){posX,posY},1);
 
     *self = popup;
 
+}
+
+void PreDoneWarningPopup(char *message,Popup **self){
+    Popup *popup = malloc(sizeof(Popup));
+
+    int fontSize = 40;
+
+    Color textColor = RED;
+
+    float posX = (WINDOW_WIDTH/2) - (MeasureText(message,fontSize)/2);
+    float posY = (WINDOW_HEIGHT) - (fontSize + 20);
+
+    *popup = CreatePopupPro(message,0,textColor,fontSize,(Vector2){posX,posY},1);
+
+    *self = popup;
 }

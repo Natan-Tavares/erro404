@@ -6,6 +6,7 @@
 #include <inventory.h>
 #include <utils.h>
 #include <string.h>
+#include <choice.h>
 #include <popup.h>
 #include <game.h>
 
@@ -80,18 +81,6 @@ bool CheckChestProximity(ObjectEntity *objectEntity,Player player){
 
 }
 
-bool TryToInteractWithChest(ObjectEntity *objectEntity,Player *player,GameManager *gameManager){
-    if(gameManager->activeObject == objectEntity) return false;
-    ChestData *chestData = ((ChestData *)objectEntity->data);
-
-    if(CheckChestProximity(objectEntity,*player) && player->canInteract && IsKeyPressed(KEY_E)){
-        gameManager->activeObject = objectEntity;
-        player->canInteract = false;
-        return true;
-    }
-    return false;
-}
-
 void OpenChest(ObjectEntity *object){
     ChestData *chestData = ((ChestData *)object->data);
 
@@ -100,52 +89,50 @@ void OpenChest(ObjectEntity *object){
 
 }
 
-bool CheckChestInteraction(ObjectEntity *object,Player *player,int option){
-    ChestData *objectData = ((ChestData *)object->data);
-    player->canInteract = false;
+void TryToOpenChest(void *context){
+    GameManager *gameManager = (GameManager *)context;
+    Player *player = gameManager->player;
+    ChestData *objectData = (ChestData *)gameManager->activeObject->data;
 
-    switch (option) {
-        
-        case 0:
-            return CheckInventoryHasItem(player->inventory,objectData->requiredItemId,objectData->requiredItemAmount);
-            break;
-            
+    gameManager->choiceMenu->active = false;
+
+    if(CheckInventoryHasItem(gameManager->player->inventory,objectData->requiredItemId,objectData->requiredItemAmount)){
+        OpenChest(gameManager->activeObject);
+        RemoveItem(&(player->inventory),objectData->requiredItemId,objectData->requiredItemAmount);
+        AddItemToInventory(&(player->inventory),objectData->giftItemId,objectData->giftItemAmount);
+        PreDoneCollectItemPopup(objectData->giftItemId,&gameManager->activePopup);
+        return;
     }
 
-    return false;
+    PreDoneWarningPopup("A tranca não sai do lugar",&gameManager->activePopup);
 
 }
 
-void UpdateChestInteraction(ObjectEntity *objectEntity,Player *player,GameManager *gameManager){
-    if(gameManager->activeObject != objectEntity) return;
+void RejectOpenChest(void *context){
+    GameManager *gameManager = (GameManager *)context;
 
-    ChestData *objectData = ((ChestData *)objectEntity->data);
+    PreDoneWarningPopup("O Bau olha fundo nos seus olhos",&gameManager->activePopup);
+    gameManager->choiceMenu->active = false;
 
-    if(IsKeyPressed(KEY_UP)) gameManager->selectedOption = (gameManager->selectedOption+1) %2; 
-    if(IsKeyPressed(KEY_DOWN)) gameManager->selectedOption = (gameManager->selectedOption+1) %2;
+}
 
-    if(IsKeyPressed(KEY_E) && player->canInteract){
+bool TryToInteractWithChest(ObjectEntity *objectEntity,Player *player,GameManager *gameManager){
+    ChestData *chestData = ((ChestData *)objectEntity->data);
 
-        if(CheckChestInteraction(objectEntity,player,gameManager->selectedOption)){
-            RemoveItem(&(player->inventory),objectData->requiredItemId,objectData->requiredItemAmount);
-            OpenChest(objectEntity);
-            AddItemToInventory(&(player->inventory),objectData->giftItemId,objectData->giftItemAmount);
-            PreDoneCollectItemPopup(objectData->giftItemId,&gameManager->activePopup);
-        }
-        
+    if(CheckChestProximity(objectEntity,*player) && IsKeyPressed(KEY_E) && !gameManager->choiceMenu->active){
+        gameManager->choiceMenu->active = true;
+        gameManager->choiceMenu->justOpened = true;
+        gameManager->activeObject = objectEntity;
         player->canInteract = false;
-        gameManager->activeObject = NULL;
-        return;
+        strncpy(gameManager->choiceMenu->description,"Tentar abrir o baú?",sizeof(gameManager->choiceMenu->description));
+        FillCallbacks(gameManager->choiceMenu,TryToOpenChest,gameManager,RejectOpenChest,gameManager);
+        return true;
     }
-    UpdateBoolValue(&player->canInteract);
-    gameManager->canInteract = false;
-
+    return false;
 }
 
 void UpdateChest(ObjectEntity *objectEntity,Player *player,GameManager *gameManager){
 
     TryToInteractWithChest(objectEntity,player,gameManager);
-
-    UpdateChestInteraction(objectEntity,player,gameManager);
 
 }

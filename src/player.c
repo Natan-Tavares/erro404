@@ -99,20 +99,6 @@ void PlayerStatemachine(Player *self){
 
 }
 
-void InteractWithNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager){
-
-    for(int i = 0;i < gameManager->numberOfNpcEntitys;i++){
-
-        if(npcEntityList[i].isPlayerNearby && IsKeyPressed(KEY_E) && gameManager->canInteract){
-            TalkToNpc(player,&npcEntityList[i],gameManager);
-        }
-    }
-
-    gameManager->canInteract = true;
-
-}
-
-
 void UpdatePlayer(Player *player,ObjectEntity *objectEntityList,unsigned char *map,GameManager game){
     MovePlayer(player);
     
