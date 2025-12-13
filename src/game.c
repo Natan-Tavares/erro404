@@ -31,6 +31,10 @@ void UpdateEndMenu(GameManager *gameManager){
 
 }
 
+void RestartGame(){
+	
+}
+
 void DrawEndMenu(GameManager *gameManager){
 	int titleFontSize = 60;
 	int titleWidth = MeasureText(TextSubtext("Fim de jogo", 0, gameManager->menu.lettersShown), titleFontSize);
