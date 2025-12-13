@@ -31,8 +31,8 @@ void UpdateEndMenu(GameManager *gameManager){
 
 }
 
-void RestartGame(){
-	
+void RestartGame(GameManager *gameManager){
+
 }
 
 void DrawEndMenu(GameManager *gameManager){

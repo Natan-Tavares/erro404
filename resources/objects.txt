@@ -32,11 +32,6 @@ position:456,792
 #caixa
 id:0
 pushable:sim
-position:456,872
-
-#caixa
-id:0
-pushable:sim
 position:472,872
 
 #caixa
@@ -51,12 +46,7 @@ position:424,760
 #caixa
 id:0
 pushable:sim
-position:392,824    
-
-#caixa
-id:0
-pushable:sim
-position:408,824   
+position:392,824      
 
 #caixa
 id:0
