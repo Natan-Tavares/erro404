@@ -98,7 +98,7 @@ int main()
     {
 
         UpdateMusicStream(music);
-
+        
 		if (game.currentScreen == MENU) {
             UpdateMenu(&game);
 
