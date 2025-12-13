@@ -235,6 +235,40 @@ void DrawNpcs(NpcEntity *npcEntityList,int numberOfNpcs){
     }
 }
 
+void DrawNpcDialogue(void *context){
+    GameManager *gameManager = (GameManager *)context;
+
+    TextLine activeTextLine = gameManager->activeDialogue->textlines[gameManager->activeDialogue->activeTextLineIndex]; 
+
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    int boxWidth = screenWidth - 200;
+    int boxHeight = 200;
+    int boxX = 100;
+    int boxY = screenHeight - boxHeight - 50;
+
+    DrawRectangleRounded((Rectangle){boxX, boxY, boxWidth, boxHeight}, 0.1f, 8, Fade(BLACK, 0.7f));
+    DrawRectangleRoundedLines((Rectangle){boxX, boxY, boxWidth, boxHeight}, 0.1f, 8, Fade(WHITE, 0.3f));
+
+    Npc *npc = GetNpcById(gameManager->activeNpc->npcId);
+ 
+    if (npc->name && strlen(npc->name) > 0) {
+        DrawText(npc->name, boxX + 20, boxY + 10, 24, YELLOW);
+    }
+
+    const char *visibleText = TextSubtext(activeTextLine.content, 0, activeTextLine.visibleChars);
+    DrawTextEx(GetFontDefault(), visibleText, 
+            (Vector2){boxX + 20, boxY + 50}, 20, 2, WHITE);
+
+
+    int textLen = strlen(activeTextLine.content);
+    if (activeTextLine.visibleChars >= textLen) {
+        DrawText("Pressione [E] para continuar", boxX + boxWidth - 350, boxY + boxHeight - 30, 18, GRAY);
+    }
+
+}
+
 /*
     Função para atualizar o valor do isPlayerNearby dos npcs
     Recebendo o npc para checar,o sprite do plyer e uma distancia de detecção
@@ -279,7 +313,7 @@ void TalkToNpc(Player *player,NpcEntity *npcEntity,GameManager *gameManager){
     Npc *npc = GetNpcById(npcEntity->npcId);
     Quest *quest = GetQuestById(npc->questId);
 
-    gameManager->activeNpc = npc;
+    gameManager->activeNpc = npcEntity;
 
     if(npc->type == QUEST_GIVER){
         gameManager->activeQuestId = npc->questId;
@@ -303,9 +337,8 @@ void TalkToNpc(Player *player,NpcEntity *npcEntity,GameManager *gameManager){
         gameManager->activeDialogue = &npcEntity->normalDialogue;
     }
     
-    gameManager->activeDialogue->onComplete = StartQuestChoice;
-    gameManager->activeDialogue->callbackContext = gameManager;
-
+    DefineCallbacks(gameManager->activeDialogue,StartQuestChoice,gameManager,DrawNpcDialogue,gameManager);
+    
 }
 
 void UpdateNpc(Player *player,NpcEntity *npcEntityList,GameManager *gameManager){

@@ -4,7 +4,6 @@
 #include <raylib.h>
 #include <quest.h>
 #include <menu.h>
-#include <npc.h>
 #include <dialogue.h>
 
 #define WINDOW_WIDTH 800 //Tamanho da largura da Janela do Jogo
@@ -20,6 +19,7 @@ typedef enum GameScreen {
 }GameScreen;
 
 typedef struct ObjectEntity ObjectEntity;
+typedef struct NpcEntity NpcEntity;
 typedef struct Popup Popup;
 typedef struct ChoiceMenu ChoiceMenu;
 typedef struct Dialogue Dialogue;
@@ -36,7 +36,7 @@ typedef struct GameManager
     int numberOfItemEntitys; //Componente que armazena a quantidade de entidades de items no mapa
     int numberOfObjectEntitys; //Componente que armazena a quantidade de objetos no mapa
 
-    Npc *activeNpc; //Componente que armazena qual npc esta ativo 
+    NpcEntity *activeNpc; //Componente que armazena qual npc esta ativo 
     ObjectEntity *activeObject;
     Dialogue *activeDialogue;
     Quest activeQuest;

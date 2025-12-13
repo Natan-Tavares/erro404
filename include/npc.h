@@ -60,6 +60,8 @@ void FreeNpcCatalog();
 
 void UpdateNpcAnimation();
 
+void DrawNpcDialogue(void *context);
+
 //Desenha os npcs da lista passada 
 void DrawNpcs(NpcEntity *npcEntityList,int numberOfNpcs);
 

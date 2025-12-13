@@ -24,7 +24,12 @@
 int main()
 {
     InitWindow(WINDOW_WIDTH,WINDOW_HEIGHT,"ERR0 404");
+    InitAudioDevice();
 	SetTargetFPS(60);
+
+    Music music = LoadMusicStream("resources/audios/Game music.wav");
+    PlayMusicStream(music);
+    SetMusicVolume(music, 0.3f);
 
 	unsigned char *map = ReadMap("resources/maps/map.bin");
 
@@ -92,10 +97,13 @@ int main()
     while (!WindowShouldClose())
     {
 
+        UpdateMusicStream(music);
+
 		if (game.currentScreen == MENU) {
             UpdateMenu(&game);
 
         }else if (game.currentScreen == GAME) {
+
             if (IsKeyPressed(KEY_C)) game.currentScreen = MENU;
 
             UpdatePlayer(&player,objectEntityList,map,game);
@@ -150,11 +158,11 @@ int main()
 
                 DrawDialogue(game.activeDialogue);
 
+                Drawpopup(game.activePopup);
+
                 DrawChoiceMenu(*game.choiceMenu);
                 
                 DrawInventory(&player.inventory,(Vector2){100,100});
-
-                Drawpopup(game.activePopup);
 
             }else if(game.currentScreen == END){
                 DrawEndMenu(&game);
@@ -163,6 +171,7 @@ int main()
 		EndDrawing();
     }
 
+    UnloadMusicStream(music);
     UnloadTexture(player.sprite.texture);
     FreeAllObjectEntitys(objectEntityList);
     free(map);
@@ -173,6 +182,7 @@ int main()
     FreeItemCatalog();
     FreeTileCatalog();
     FreeObjectCatalog();
+    CloseAudioDevice();
     CloseWindow();
     return 0;
 }

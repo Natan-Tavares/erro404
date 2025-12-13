@@ -92,7 +92,7 @@ void TryToOpenDoor(void *context){
         return;
     }
 
-    PreDoneWarningPopup("A Porta nem se meche",&gameManager->activePopup);
+    PreDoneWarningPopup("A Porta nem se meche",&gameManager->activePopup);  
 
 }
 
@@ -102,7 +102,6 @@ void RejectOpenDoor(void *context){
     PreDoneWarningPopup("A Porta nem se mantem estatica",&gameManager->activePopup);
 
 }
-
 
 bool TryToInteractWithDoor(ObjectEntity *objectEntity,Player *player,GameManager *gameManager){
     DoorData *doorData = ((DoorData *)objectEntity->data);

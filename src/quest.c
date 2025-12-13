@@ -4,6 +4,7 @@
 #include <dialogue.h>
 #include <game.h>
 #include <string.h>
+#include <npc.h>
 #include <choice.h>
 #include <stdio.h>
 #include <popup.h>
@@ -46,7 +47,7 @@ void StartQuestChoice(void *context){
             game->choiceMenu->active = true;
 
             strncpy(game->choiceMenu->description,"Entregar Itens?",sizeof(game->choiceMenu->description));
-            FillCallbacks(game->choiceMenu,GiveQuestItemsCallback,game,RejectCallback,game);
+            FillCallbacks(game->choiceMenu,TryToGiveQuestItemsCallback,game,RejectCallback,game);
             break;
 
         case ASK:
@@ -74,17 +75,26 @@ void AcceptQuestCallback(void *context){
 
 }
 
-void GiveQuestItemsCallback(void *context){
+void GiveQuestItems(GameManager *gameManager){
+    Quest *quest = GetQuestById(gameManager->activeQuestId);
+
+    quest->status = COMPLETED;
+    RemoveItem(&gameManager->player->inventory,quest->requiredItemId,quest->requiredItemAmount);
+    AddItemToInventory(&gameManager->player->inventory,quest->giftItemId,quest->giftItemAmount);
+    PreDoneCollectItemPopup(quest->giftItemId,&gameManager->activePopup);
+}
+
+void TryToGiveQuestItemsCallback(void *context){
     GameManager *gameManager = (GameManager *)context;
     gameManager->player->canTalk = false;
 
     Quest *quest = GetQuestById(gameManager->activeQuestId);
 
     if(CheckInventoryHasItem(gameManager->player->inventory,quest->requiredItemId,quest->requiredItemAmount)){
-        quest->status = COMPLETED;
-        RemoveItem(&gameManager->player->inventory,quest->requiredItemId,quest->requiredItemAmount);
-        AddItemToInventory(&gameManager->player->inventory,quest->giftItemId,quest->giftItemAmount);
-        PreDoneCollectItemPopup(quest->giftItemId,&gameManager->activePopup);
+        GiveQuestItems(gameManager);
+
+        gameManager->activeDialogue = &gameManager->activeNpc->thanksDialogue;
+        DefineCallbacks(gameManager->activeDialogue,StartQuestChoice,gameManager,DrawNpcDialogue,gameManager);
         return;
     }
 

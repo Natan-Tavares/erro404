@@ -16,6 +16,7 @@ Tile *GetTileCatalog(){
     static bool initialized = false;
 
     if(!initialized){
+        catalog[0] = (Tile){0,false,(Sprite){0}};
         catalog[1] = (Tile){1,false,(Sprite){.texture=LoadTexture("resources/textures/grass.png")}};
         catalog[2] = (Tile){2,true,(Sprite){.texture=LoadTexture("resources/textures/brick.png")}};
         catalog[3] = (Tile){3,true,(Sprite){}};
@@ -32,6 +33,8 @@ Tile GetTileById(unsigned char id){
     for(int i = 0; i < NUMBER_OF_TILES;i++){
         if(catalog[i].id == id) return catalog[i];
     }
+
+    return catalog[0];
 
 }
 
@@ -127,6 +130,8 @@ void DrawMap(unsigned char *self) {
         for (int x = 0; x < MAP_COLS; x++) {
 
             Tile tile = GetTileById(self[y * MAP_COLS + x]);
+
+            if(tile.sprite.texture.id == 0) continue;
 
             DrawTexturePro(
                 tile.sprite.texture,

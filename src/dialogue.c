@@ -1,9 +1,7 @@
 #include "dialogue.h"
-#include <game.h>
 #include <raylib.h>
 #include <string.h>
 #include <utils.h>
-#include <npc.h>
 
 Dialogue CreateBlankDialogue(){
     Dialogue dialogue = {0};
@@ -35,6 +33,17 @@ void SkipTextLine(TextLine *textLine){
     textLine->visibleChars = strlen(textLine->content);
 }
 
+void DefineCallbacks(Dialogue *self,DialogueCallback onComplete,void *onCompleteContext,DialogueCallback onDraw,void *onDrawContext){
+
+    self->onComplete = onComplete;
+    self->onCompleteContext = onCompleteContext;
+
+    self->onDraw = onDraw;
+    self->onDrawContext = onDrawContext;
+
+}
+
+
 bool TryToSkipTextLine(TextLine *textLine){
     if(IsKeyPressed(KEY_E) && textLine->canSkip){
         SkipTextLine(textLine);
@@ -55,7 +64,7 @@ bool ProcessDialogue(Dialogue *self){
         self->activeTextLineIndex = 0;
         return true;
     }
-
+  
     int textLen = strlen(activeTextLine->content);
 
     if(activeTextLine->visibleChars < textLen){
@@ -79,7 +88,7 @@ void UpdateDialogue(Dialogue **self){
     if(ProcessDialogue(*self)){
         if((*self)->onComplete){
             //ele roda StartQuestChoice com o gameManager como contexto em todos so dialogos, Não colocar a função diretamente para evitar acoplamento
-            (*self)->onComplete((*self)->callbackContext);
+            (*self)->onComplete((*self)->onCompleteContext);
         }
         
         (*self) = NULL;
@@ -88,13 +97,12 @@ void UpdateDialogue(Dialogue **self){
     
 }
 
-void DrawDialogue(Dialogue *self){
-    if(!self) return;
+void DefaultDrawDialogue(Dialogue *self){
 
     TextLine activeTextLine = self->textlines[self->activeTextLineIndex]; 
 
-    int screenWidth = WINDOW_WIDTH;
-    int screenHeight = WINDOW_HEIGHT;
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
 
     int boxWidth = screenWidth - 200;
     int boxHeight = 200;
@@ -113,4 +121,16 @@ void DrawDialogue(Dialogue *self){
     if (activeTextLine.visibleChars >= textLen) {
         DrawText("Pressione [E] para continuar", boxX + boxWidth - 350, boxY + boxHeight - 30, 18, GRAY);
     }
+}
+
+void DrawDialogue(Dialogue *self){
+    if(!self) return;
+
+    if(self->onDraw){
+        self->onDraw(self->onDrawContext);
+        return;
+    }
+
+    DefaultDrawDialogue(self);
+
 }

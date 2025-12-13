@@ -225,6 +225,7 @@ void ReadObjects(ObjectEntity *ObjectEntitys,FILE *file){
 
         if(line[0] == '#'){
             index++;
+            memset(&ObjectEntitys[index],0,sizeof(ObjectEntity));
             continue;
         }
         line[strcspn(line,"\n")] = '\0';

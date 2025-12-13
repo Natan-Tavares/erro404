@@ -36,7 +36,9 @@ typedef struct Dialogue{
     DialogueType type;
 
     DialogueCallback onComplete;
-    void *callbackContext;
+    void *onCompleteContext;
+    DialogueCallback onDraw;
+    void *onDrawContext;
 
 }Dialogue;
 
@@ -47,6 +49,8 @@ Dialogue CreateBlankDialogue();
 Dialogue CreateDialogueAs(DialogueType type);
 
 void FillDialogue(Dialogue *self,const char *content);
+
+void DefineCallbacks(Dialogue *self,DialogueCallback onComplete,void *onCompleteContext,DialogueCallback onDraw,void *onDrawContext);
 
 void UpdateDialogue(Dialogue **self);
 

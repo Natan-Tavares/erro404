@@ -37,7 +37,7 @@ void AcceptQuestCallback(void *context);
 
 void RejectCallback(void *context);
 
-void GiveQuestItemsCallback(void *context);
+void TryToGiveQuestItemsCallback(void *context);
 
 
 #endif
